@@ -3,7 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forRoot(PostgresDataSource.options),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
