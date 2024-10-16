@@ -4,7 +4,7 @@ Este es un proyecto construido con **NestJS**, un framework progresivo para cons
 
 ## 📁 Estructura del Proyecto
 
-`
+```
 │
 ├── /src # Código fuente
 │ ├── /common
@@ -23,7 +23,8 @@ Este es un proyecto construido con **NestJS**, un framework progresivo para cons
 │ └── app.e2e-spec.ts # Pruebas de extremo a extremo
 │
 ├── package.json # Dependencias y scripts
-└── tsconfig.json # Configuración de TypeScript`
+└── tsconfig.json # Configuración de TypeScript
+```
 
 
 ## 🛠️ Instalación
