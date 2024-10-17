@@ -12,7 +12,9 @@ import {
     IsString,
     Matches,
     MinLength,
-    MaxLength
+    MaxLength,
+    isString,
+    isNotEmpty
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -38,6 +40,10 @@ export class UpdateUserDto {
     })
     @IsEmail({}, { message: 'Please provide valid Email.' })
     email?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    rol?:string
 
 
 }

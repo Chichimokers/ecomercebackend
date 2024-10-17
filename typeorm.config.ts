@@ -10,9 +10,10 @@ export const PostgresDataSource = new DataSource({
     username: process.env.POSTGRES_USER || 'myuser',
     password: process.env.POSTGRES_PASSWORD || 'mypassword',
     database: process.env.POSTGRES_DATABASE || 'esaquishop',
-    synchronize: process.env.SYNCHRONIZE_DB === 'true',
-    logging: false,
-    entities: [join(__dirname, 'src', '**', 'entities', '*.{ts,js}')], // Busca todas las entidades
+    synchronize:  true,
+    logging: true,
+    migrationsRun: true,
+    entities: [__dirname + '/**/*.entity{.ts,.js}'], // Busca todas las entidades
     migrations: [join(__dirname, 'src', '**', 'migrations', '*.{ts,js}')],
     subscribers: [join(__dirname, 'src', '**', 'subscribers', '*.{ts,js}')] // Busca todos los subscribers
 });

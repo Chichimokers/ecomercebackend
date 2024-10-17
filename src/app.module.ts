@@ -13,7 +13,9 @@ import { UserModule } from './subsystems/user/user.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(PostgresDataSource.options),
+
     ConfigModule.forRoot({ isGlobal: true }),
+    
     AuthModule,
     UserModule,
     OrdersModule,

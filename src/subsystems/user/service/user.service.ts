@@ -8,7 +8,7 @@ import { UserDto } from '../dto/user.dto';
 import { mapToDto } from 'src/common/utils/global-functions.utils';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
-export class UsersService extends BaseService<User> {
+export class UserService extends BaseService<User> {
 
   constructor(
     @InjectRepository(User)

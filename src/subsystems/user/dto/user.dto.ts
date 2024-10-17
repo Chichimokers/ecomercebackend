@@ -10,4 +10,6 @@ export class UserDto extends BaseDto {
     @IsEmail()
     email: string;
 
+    @IsString()
+    rol : string;
 }
