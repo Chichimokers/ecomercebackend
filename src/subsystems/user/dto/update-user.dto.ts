@@ -14,7 +14,8 @@ import {
     MinLength,
     MaxLength,
     isString,
-    isNotEmpty
+    isNotEmpty,
+    IsNumber
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -41,9 +42,9 @@ export class UpdateUserDto {
     @IsEmail({}, { message: 'Please provide valid Email.' })
     email?: string;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    rol?:string
+    rol?:number
 
 
 }

@@ -10,7 +10,8 @@ import {
     MaxLength,
     IsArray,
     ArrayNotEmpty,
-    IsOptional
+    IsOptional,
+    IsNumber
 } from 'class-validator';
 
 import { Transform } from 'class-transformer';
@@ -52,8 +53,8 @@ export class CreateUserDto extends BaseDto {
     password: string;
 
     
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    rol :string;
+    rol :number;
 
 }

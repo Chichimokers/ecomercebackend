@@ -9,18 +9,20 @@ import { CommonModule } from './common/common.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './subsystems/user/user.module';
+import { CartModule } from './subsystems/cart/cart.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(PostgresDataSource.options),
 
     ConfigModule.forRoot({ isGlobal: true }),
-    
+
     AuthModule,
     UserModule,
     OrdersModule,
     ProductsModule,
-    CommonModule
+    CommonModule,
+    CartModule
   ],
   controllers: [AppController],
   providers: [AppService],
