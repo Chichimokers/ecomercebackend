@@ -6,7 +6,7 @@ export const DocapiBuilder = (app)=>{
 
 const config = new DocumentBuilder()
 .setTitle('Ecommerce API Docs')
-.setDescription("API e-commerce esaqui")
+.setDescription("API e-commerce esaki")
 .setVersion('v1')
 .addBearerAuth()
 .build();

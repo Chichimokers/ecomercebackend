@@ -23,12 +23,13 @@ export class CartEntity extends BaseEntity  {
     @Column()
     quantity: number;
     
-    @ManyToOne(() => OrderEntity, (order) => order.id)
+    @ManyToOne(() => OrderEntity, (order) => order.id,{nullable : true})
     @JoinColumn()
     order: OrderEntity;
 
     @ManyToOne(() => ProductEntity, (product) => product.id)
     @JoinColumn()
+    
     item: ProductEntity;
   
     @ManyToOne(() => User, (user) => user.id)

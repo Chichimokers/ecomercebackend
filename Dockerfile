@@ -1,5 +1,5 @@
 #FROM node:20.14.0-bullseye
-FROM akies-base:1.0.0
+FROM esaki-base:1.0.0
 
 ENV APP_PORT 5000
 ENV NODE_ENV dev

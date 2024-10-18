@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
 import { BaseService } from 'src/common/services/base.service';
+import { UserService } from 'src/subsystems/user/service/user.service';
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -18,6 +19,8 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly orderRepository: Repository<OrderEntity>,
         @InjectRepository(CartEntity)
         private readonly cartRepository: Repository<CartEntity>,
+        @Inject(UserService)
+        private userService : UserService
     ) {
         super(orderRepository);
     }
@@ -48,10 +51,15 @@ async createOrder(userId: number, phone: string, address: string, CI: number): P
             },
 
         });
-        // Crear una nueva orden
+        const user = await this.userService.findOneById(userId);
+
+        if (!user) {
+            throw new Error('user no encontrado');
+        }
+        
         const newOrder = await this.orderRepository.create({
 
-            user: { id: userId }, // Asignar el usuario
+            user: user, // Asignar el usuario
             phone,
             address, // Asegúrate de que 'address' esté definido en OrderEntity
             CI, // Asegúrate de que 'CI' esté definido en OrderEntity

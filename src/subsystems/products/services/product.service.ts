@@ -11,8 +11,7 @@ export class ProductService extends BaseService<ProductEntity> {
 
     protected getRepositoryName(): string {
         return "tb_products"
-    }
-    s
+    }   
     constructor(
       
         @InjectRepository(ProductEntity)
