@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run start:prod
+    envVars:
+      NODE_ENV: production
