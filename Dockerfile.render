@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:17.6
 
 
 
@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Instala las dependencias
-RUN npm install
+RUN npm install -g npm@latest && npm cache clean --force && npm install
 
 # Copia el resto del código del proyecto
 COPY . .
