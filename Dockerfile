@@ -1,0 +1,16 @@
+#FROM node:20.14.0-bullseye
+FROM akies-base:1.0.0
+
+ENV APP_PORT 5000
+ENV NODE_ENV dev
+ENV WORKDIR_APP /app
+
+WORKDIR ${WORKDIR_APP}
+
+COPY . .
+
+
+EXPOSE ${APP_PORT}
+
+VOLUME [${WORKDIR_APP}]
+
