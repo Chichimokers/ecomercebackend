@@ -1,4 +1,6 @@
+import { IsBoolean, isBoolean } from 'class-validator';
 import { BaseEntity } from 'src/common/entities/base.entity';
+import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
 
@@ -7,6 +9,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -19,14 +22,21 @@ export class CartEntity extends BaseEntity  {
   
     @Column()
     quantity: number;
-  
-    @ManyToOne(() => ProductEntity, (order) => order.id)
+    
+    @ManyToOne(() => OrderEntity, (order) => order.id)
+    @JoinColumn()
+    order: OrderEntity;
+
+    @ManyToOne(() => ProductEntity, (product) => product.id)
     @JoinColumn()
     item: ProductEntity;
   
-    @ManyToOne(() => User, (user) => user.name)
+    @ManyToOne(() => User, (user) => user.id)
     @JoinColumn()
     user: User;
 
+    @IsBoolean()
+    @Column({ type: 'boolean', default: false })
+    paid: boolean;
 }
 

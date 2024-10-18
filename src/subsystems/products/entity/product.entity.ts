@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
+import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import {
     Entity,
     JoinColumn,
@@ -8,6 +9,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     PrimaryGeneratedColumn,
+    ManyToOne,
     
   } from 'typeorm';
 
@@ -15,7 +17,9 @@ import {
   @Entity({ name:"tb_products"})
   export class ProductEntity extends BaseEntity {
 
-  
+    @Column({nullable: true})
+    image: string;
+    
     @Column()
     name: string;
   
@@ -23,17 +27,11 @@ import {
     price: number;
   
     @Column()
-    quantity: string;
-  
-    @CreateDateColumn()
-    createdAt: string;
-  
-    @UpdateDateColumn()
-    updtedAt: string;
-  
+    quantity: number;
+    
     @OneToMany(() => CartEntity, (cart) => cart.id)
     @JoinColumn()
     cart: CartEntity[];
-    
+      
   }
   
