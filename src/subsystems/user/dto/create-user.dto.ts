@@ -52,7 +52,10 @@ export class CreateUserDto extends BaseDto {
     @IsNotEmpty()
     password: string;
 
-    
+    @ApiProperty({
+        example: "1",
+        description: "1-User 2-Admin",
+    })
     @IsNumber()
     @IsNotEmpty()
     rol :number;

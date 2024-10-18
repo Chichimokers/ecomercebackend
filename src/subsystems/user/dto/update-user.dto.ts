@@ -42,6 +42,11 @@ export class UpdateUserDto {
     @IsEmail({}, { message: 'Please provide valid Email.' })
     email?: string;
 
+
+    @ApiPropertyOptional({
+        example: "1",
+        description: "1-User 2-Admin",
+    })
     @IsNumber()
     @IsNotEmpty()
     rol?:number
