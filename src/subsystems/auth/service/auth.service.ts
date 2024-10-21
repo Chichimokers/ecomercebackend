@@ -49,7 +49,7 @@ export class AuthService {
 
       if (await bcrypt.compare(password, foundUser.password)) {
         
-       console.log(foundUser)
+   
        return foundUser;
       }
 

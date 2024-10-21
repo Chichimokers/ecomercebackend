@@ -35,8 +35,8 @@ import { IsEmail } from 'class-validator';
 @ApiTags('products')
 @ApiBearerAuth()
 @Controller('products')
-@UseGuards(LocalAuthGuard)
-@UseGuards(RolesGuard)
+@UseGuards(LocalAuthGuard,RolesGuard)
+
 export class ProductControllers {
     constructor(private readonly productservice: ProductService) { }
   

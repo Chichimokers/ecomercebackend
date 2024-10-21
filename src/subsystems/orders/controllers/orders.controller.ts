@@ -33,8 +33,7 @@ import { updateOrderDTO } from '../dto/updateOrderDTO';
   @ApiTags('orders')
   @ApiBearerAuth()
   @Controller('orders')
-  @UseGuards(LocalAuthGuard)
-  @UseGuards(RolesGuard)
+  @UseGuards(LocalAuthGuard,RolesGuard)
   
   export class OrderControllers {
     constructor(private readonly productservice: OrderService) { }
