@@ -33,8 +33,7 @@ import { updateOrderDTO } from '../dto/updateOrderDTO';
   @ApiTags('orders')
   @ApiBearerAuth()
   @Controller('orders')
-  @UseGuards(LocalAuthGuard)
-  @UseGuards(RolesGuard)
+  @UseGuards(LocalAuthGuard,RolesGuard)
   
   export class OrderControllers {
     constructor(private readonly productservice: OrderService) { }
@@ -67,8 +66,9 @@ import { updateOrderDTO } from '../dto/updateOrderDTO';
   
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto:updateOrderDTO) {
-      return this.productservice.update(+id, updateUserDto);
+
+    updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO) {
+      return this.productservice.update(+id, updateorder);
     }
   
   

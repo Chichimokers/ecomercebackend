@@ -32,8 +32,7 @@ import { addCartDTO } from '../dto/createCartDTO';
   @ApiTags('cart')
   @ApiBearerAuth()
   @Controller('cart')
-  @UseGuards(LocalAuthGuard)
-  @UseGuards(RolesGuard)
+  @UseGuards(LocalAuthGuard,RolesGuard)
   
   export class CartController {
     constructor(private readonly productservice: CartService) { }

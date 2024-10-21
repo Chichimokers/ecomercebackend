@@ -33,8 +33,7 @@ import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
   @ApiTags('user')
   @ApiBearerAuth()
   @Controller('user')
-  @UseGuards(LocalAuthGuard)
-  @UseGuards(RolesGuard)
+  @UseGuards(LocalAuthGuard,RolesGuard)
   export class UserController {
     constructor(private readonly userService: UserService) { }
   
