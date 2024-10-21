@@ -25,13 +25,14 @@ import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { OrderService } from '../services/orders.service';
 import { CreateOrderDTO } from '../dto/CreateOrderDTO';
 import { OrderEntity } from '../entities/order.entity';
+import { updateOrderDTO } from '../dto/updateOrderDTO';
 
 
   
   
-  @ApiTags('cart')
+  @ApiTags('orders')
   @ApiBearerAuth()
-  @Controller('cart')
+  @Controller('orders')
   @UseGuards(LocalAuthGuard)
   @UseGuards(RolesGuard)
   
@@ -66,7 +67,7 @@ import { OrderEntity } from '../entities/order.entity';
   
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto) {
+    updateUser(@Param('id') id: string, @Body() updateUserDto:updateOrderDTO) {
       return this.productservice.update(+id, updateUserDto);
     }
   

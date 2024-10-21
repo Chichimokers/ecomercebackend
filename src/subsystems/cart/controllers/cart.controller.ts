@@ -18,12 +18,13 @@ import {
   } from '@nestjs/swagger';
 import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
 import { CartService } from '../services/cart.service';
-import { addCartDTO } from '../dto/createCartDTO';
 import { CartEntity } from '../entity/cart.entity';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
+import { updateCartDto } from '../dto/updateCartDTO';
+import { addCartDTO } from '../dto/createCartDTO';
 
 
   
@@ -34,7 +35,7 @@ import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
   @UseGuards(LocalAuthGuard)
   @UseGuards(RolesGuard)
   
-  export class ProductControllers {
+  export class CartController {
     constructor(private readonly productservice: CartService) { }
   
     @ApiCreatedResponse({ description: 'The record has been created successfully created' })
@@ -65,8 +66,8 @@ import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
   
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto) {
-      return this.productservice.update(+id, updateUserDto);
+    updateUser(@Param('id') id: string, @Body() updateCartDto: updateCartDto) {
+      return this.productservice.update(+id, updateCartDto);
     }
   
   

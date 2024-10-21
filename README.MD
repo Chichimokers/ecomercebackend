@@ -14,6 +14,7 @@ Este es un proyecto construido con **NestJS**, un framework progresivo para cons
 │     └── /products #modulo de los productos
 │     └── /orders # modulo de ordenes
 │     └── /auth # modulo de autenticacion
+│     └── /public # modulo de rutas publicas usadas por los users despuesd de autenticacion
 │ ├── app.module.ts # Módulo principal
 │ ├── main.ts # Archivo de entrada
 │ └── /modules # Módulos de la aplicación
