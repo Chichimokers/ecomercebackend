@@ -14,7 +14,8 @@ import {
     MinLength,
     MaxLength,
     isString,
-    isNotEmpty
+    isNotEmpty,
+    IsNumber
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -41,9 +42,14 @@ export class UpdateUserDto {
     @IsEmail({}, { message: 'Please provide valid Email.' })
     email?: string;
 
-    @IsString()
+
+    @ApiPropertyOptional({
+        example: "1",
+        description: "1-User 2-Admin",
+    })
+    @IsNumber()
     @IsNotEmpty()
-    rol?:string
+    rol?:number
 
 
 }

@@ -1,5 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToOne, OneToMany, JoinColumn } from 'typeorm';
+import { OrderEntity } from '../../orders/entities/order.entity';
+import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 
 @Entity({ name: 'tb_user' })
 export class User extends BaseEntity {
@@ -12,9 +14,9 @@ export class User extends BaseEntity {
     email: string;
     
     @Column()
-    rol: string;
+    rol: number;
     
-    @Column({ type: 'varchar', nullable: false, select: false })
+    @Column({ type: 'varchar', nullable: false})
     password: string;
 
     @Column({ type: 'boolean', default: true })
@@ -26,5 +28,10 @@ export class User extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     locked: boolean;
 
+    @OneToMany(() => CartEntity, (cart) => cart.id)
+    @JoinColumn()
+    cart: CartEntity[];
+  
+    
 }
 

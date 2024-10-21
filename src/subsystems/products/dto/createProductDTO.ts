@@ -18,15 +18,11 @@ import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 
-
-const passwordRegEx =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
-
-export class CreateUserDto extends BaseDto {
+export class createProductDTO   extends BaseDto {
 
     @ApiProperty({
-        example: "User name",
-        description: "Name of your user",
+        example: "tomate",
+        description: "nombre del producto",
     })
 
     @Transform(({ value }) => value.trim())
@@ -38,26 +34,22 @@ export class CreateUserDto extends BaseDto {
 
 
     @ApiProperty({
-        example: "User Email",
-        description: "A valid email address",
+        example: "123.25",
+        description: "A valid price",
     })
-    @IsEmail({}, { message: 'Please provide valid Email.' })
-    email: string;
-
-    @ApiProperty({
-        example: "User password",
-        description: "A valid user password",
-    })
-    @Transform(({ value }) => value.trim())
     @IsNotEmpty()
-    password: string;
+    @IsNumber({}, { message: 'Please provide valid price.' })
+    price: number;
+
+
 
     @ApiProperty({
-        example: "1",
-        description: "1-User 2-Admin",
+        example: "123",
+        description: "A valid quantity",
     })
+
+    @IsNotEmpty()
     @IsNumber()
-    @IsNotEmpty()
-    rol :number;
+    quantity: number;
 
 }

@@ -21,35 +21,21 @@ export class UserService extends BaseService<User> {
     return 'users';
   }
 
-
   async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
-
     const { ...restOfDto } = createUserDto;
-
-
     let user: User = await this.repository.create({
       ...restOfDto,
 
     });
-
     user = await this.repository.save(user);
-
-
     // Mapea el objeto User a UserDto
     const userDto = mapToDto(user, UserDto);
-
     return userDto;
-
   }
-
 
   getUsers(): Promise<User[]> {
-
     return this.findAll();
-
   }
-
-
 
   async findUserById(id: number): Promise<UserDto> {
     let user = await this.repository.findOne({

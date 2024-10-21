@@ -22,11 +22,11 @@ import { BaseDto } from 'src/common/dto/base.dto';
 const passwordRegEx =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
 
-export class CreateUserDto extends BaseDto {
+export class  updateProductDTO  extends BaseDto{
 
     @ApiProperty({
-        example: "User name",
-        description: "Name of your user",
+        example: "tomate",
+        description: "nombre del producto",
     })
 
     @Transform(({ value }) => value.trim())
@@ -34,30 +34,23 @@ export class CreateUserDto extends BaseDto {
     @MinLength(2, { message: 'Name must have atleast 2 characters.' })
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
-    name: string;
+    name?: string;
 
 
     @ApiProperty({
-        example: "User Email",
-        description: "A valid email address",
+        example: "123.25",
+        description: "A valid price",
     })
-    @IsEmail({}, { message: 'Please provide valid Email.' })
-    email: string;
+    @IsNumber({}, { message: 'Please provide valid price.' })
+    price?: number;
+
+
 
     @ApiProperty({
-        example: "User password",
-        description: "A valid user password",
+        example: "123",
+        description: "A valid quantity",
     })
-    @Transform(({ value }) => value.trim())
     @IsNotEmpty()
-    password: string;
-
-    @ApiProperty({
-        example: "1",
-        description: "1-User 2-Admin",
-    })
-    @IsNumber()
-    @IsNotEmpty()
-    rol :number;
+    quantity?: number;
 
 }

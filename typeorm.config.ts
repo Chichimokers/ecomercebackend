@@ -14,8 +14,6 @@ export const PostgresDataSource = new DataSource({
     logging: true,
     migrationsRun: true,
     entities: [__dirname + '/**/*.entity{.ts,.js}'], // Busca todas las entidades
-    migrations: [join(__dirname, 'src', '**', 'migrations', '*.{ts,js}')],
-    subscribers: [join(__dirname, 'src', '**', 'subscribers', '*.{ts,js}')] // Busca todos los subscribers
 });
 
 

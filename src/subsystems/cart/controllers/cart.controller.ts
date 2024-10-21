@@ -16,64 +16,64 @@ import {
     ApiCreatedResponse,
     ApiForbiddenResponse
   } from '@nestjs/swagger';
-
-  import { User } from '../entities/user.entity';
-
-  import { CreateUserDto } from '../dto/create-user.dto';
-  import { UpdateUserDto } from '../dto/update-user.dto';
-import { UserService } from '../service/user.service';
-import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
-import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
+import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
+import { CartService } from '../services/cart.service';
+import { addCartDTO } from '../dto/createCartDTO';
+import { CartEntity } from '../entity/cart.entity';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
+import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
+import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 
+
   
   
-  
-  @ApiTags('user')
+  @ApiTags('cart')
   @ApiBearerAuth()
-  @Controller('user')
+  @Controller('cart')
   @UseGuards(LocalAuthGuard)
   @UseGuards(RolesGuard)
-  export class UserController {
-    constructor(private readonly userService: UserService) { }
+  
+  export class ProductControllers {
+    constructor(private readonly productservice: CartService) { }
   
     @ApiCreatedResponse({ description: 'The record has been created successfully created' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
-   
+    
     @Post()
     @Roles(roles.Admin)
-    create(@Body() createUserDto: CreateUserDto) {
-      return this.userService.createUser(createUserDto);
+    create(@Body() createUserDto: addCartDTO) {
+      return this.productservice.create(createUserDto);
     }
   
+
     
+    //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
-    public getUsers(): Promise<User[]> {
-      return this.userService.getUsers();
+    public getUsers(): Promise<CartEntity[]> { 
+      return this.productservice.findAll();
     }
+  
   
     @Get(':id')
-
     @Roles(roles.Admin)
     getUserById(@Param('id') id: string) {
-      return this.userService.findUserById(+id);
+      return this.productservice.findOneById(+id);
     }
+  
   
     @Patch(':id')
-
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-      return this.userService.updateUser(+id, updateUserDto);
+    updateUser(@Param('id') id: string, @Body() updateUserDto) {
+      return this.productservice.update(+id, updateUserDto);
     }
   
-
+  
     @Delete(':id')
-    
     @Roles(roles.Admin)
     deleteUser(@Param('id') id: string) {
       //return this.userService.deleteUser(+id);
-      return this.userService.softDelete(+id);
+      return this.productservice.softDelete(+id);
     }
   }
