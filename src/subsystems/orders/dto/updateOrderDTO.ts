@@ -33,9 +33,10 @@ export class updateOrderDTO extends BaseDto {
     @IsNotEmpty()
     @IsNumber()
     CI ?:number
+
     @ApiProperty({
         example: "Cart structure",
-        description: "a valid cuban id",
+        description: "List of carts IDs in the order",
     })
     @IsNotEmpty()
     carts?: CartEntity[];
