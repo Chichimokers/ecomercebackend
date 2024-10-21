@@ -54,6 +54,5 @@ export class OrderDto extends BaseDto {
         description: "List of carts IDs in the order"
     })
     carts: string[];
-
-
+    
 }
