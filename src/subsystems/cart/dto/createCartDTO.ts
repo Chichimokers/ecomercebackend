@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
+import { BaseDto } from 'src/common/dto/base.dto';
 
-export class addCartDTO {
+export class addCartDTO extends BaseDto {
   @ApiProperty({
         example: "123.25",
         description: "A valid quantity",

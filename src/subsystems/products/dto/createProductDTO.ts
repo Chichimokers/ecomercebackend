@@ -18,7 +18,7 @@ import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 
-export class createProductDTO  {
+export class createProductDTO   extends BaseDto {
 
     @ApiProperty({
         example: "tomate",

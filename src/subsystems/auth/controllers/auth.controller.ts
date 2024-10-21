@@ -7,7 +7,8 @@ import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { SingUpBody } from '../dto/signupDTO';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('login')
 @Controller("auth")
 export class AuthController {
   constructor(private authservice :AuthService) {
