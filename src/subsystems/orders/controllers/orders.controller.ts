@@ -67,8 +67,9 @@ import { updateOrderDTO } from '../dto/updateOrderDTO';
   
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto:updateOrderDTO) {
-      return this.productservice.update(+id, updateUserDto);
+
+    updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO) {
+      return this.productservice.update(+id, updateorder);
     }
   
   

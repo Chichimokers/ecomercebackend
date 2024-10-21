@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/subsystems/user/entities/user.entity';
 import { UserService } from 'src/subsystems/user/service/user.service';
-import { CreateUserDto } from 'src/subsystems/user/dto';
+import { CreateUserDto, UserDto } from 'src/subsystems/user/dto';
 import { UserController } from '../../user/controller/user.controller';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 
@@ -38,20 +38,19 @@ export class AuthService {
 
   }
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<User> {
 
     const foundUser = await this.userRepository.findOne({
       where: { name:username },
     });
   
-console.log(foundUser)
+
     if (foundUser) {
 
       if (await bcrypt.compare(password, foundUser.password)) {
         
-        const { password, ...result } = foundUser;
-        return result;
-
+       console.log(foundUser)
+       return foundUser;
       }
 
       return null;
@@ -59,8 +58,9 @@ console.log(foundUser)
     return null;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id, role: user.role };
+  async login(user: User) {
+ 
+    const payload = { username: user.name, sub: user.id, role: user.rol };
 
     return {
       access_token: this.jwt.sign(payload),
