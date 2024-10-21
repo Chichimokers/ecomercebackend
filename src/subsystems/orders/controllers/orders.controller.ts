@@ -17,33 +17,34 @@ import {
     ApiForbiddenResponse
   } from '@nestjs/swagger';
 import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
-import { CartService } from '../services/cart.service';
-import { CartEntity } from '../entity/cart.entity';
+
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
-import { updateCartDto } from '../dto/updateCartDTO';
-import { addCartDTO } from '../dto/createCartDTO';
+import { OrderService } from '../services/orders.service';
+import { CreateOrderDTO } from '../dto/CreateOrderDTO';
+import { OrderEntity } from '../entities/order.entity';
+import { updateOrderDTO } from '../dto/updateOrderDTO';
 
 
   
   
-  @ApiTags('cart')
+  @ApiTags('orders')
   @ApiBearerAuth()
-  @Controller('cart')
+  @Controller('orders')
   @UseGuards(LocalAuthGuard)
   @UseGuards(RolesGuard)
   
-  export class CartController {
-    constructor(private readonly productservice: CartService) { }
+  export class OrderControllers {
+    constructor(private readonly productservice: OrderService) { }
   
     @ApiCreatedResponse({ description: 'The record has been created successfully created' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
     
     @Post()
     @Roles(roles.Admin)
-    create(@Body() createUserDto: addCartDTO) {
+    create(@Body() createUserDto: CreateOrderDTO) {
       return this.productservice.create(createUserDto);
     }
   
@@ -52,7 +53,7 @@ import { addCartDTO } from '../dto/createCartDTO';
     //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
-    public getUsers(): Promise<CartEntity[]> { 
+    public getUsers(): Promise<OrderEntity[]> { 
       return this.productservice.findAll();
     }
   
@@ -66,8 +67,8 @@ import { addCartDTO } from '../dto/createCartDTO';
   
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateCartDto: updateCartDto) {
-      return this.productservice.update(+id, updateCartDto);
+    updateUser(@Param('id') id: string, @Body() updateUserDto:updateOrderDTO) {
+      return this.productservice.update(+id, updateUserDto);
     }
   
   

@@ -2,11 +2,20 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderEntity } from './entities/order.entity';
 import { ConfigModule } from '@nestjs/config';
+import { OrderControllers } from './controllers/orders.controller';
+import { OrderService } from './services/orders.service';
+import { CartEntity } from '../cart/entity/cart.entity';
+import { UserService } from '../user/service/user.service';
+import { User } from '../user/entities/user.entity';
 
 @Module({
     imports:[
-        TypeOrmModule.forFeature([OrderEntity]),    
+        TypeOrmModule.forFeature([OrderEntity,CartEntity,User]),    
         ConfigModule.forRoot({ isGlobal: true }),
     ]
+    ,
+    providers:[OrderService,UserService],
+    controllers:[OrderControllers],
+  
 })
 export class OrdersModule {}
