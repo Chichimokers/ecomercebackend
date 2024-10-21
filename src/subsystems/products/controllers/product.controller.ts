@@ -9,14 +9,16 @@ import {
     Query,
     Delete,
     UseInterceptors,
-    UploadedFile
+    UploadedFile,
+    UploadedFiles
 } from '@nestjs/common';
 import {
     ApiTags,
     ApiBearerAuth,
     ApiUnauthorizedResponse,
     ApiCreatedResponse,
-    ApiForbiddenResponse
+    ApiForbiddenResponse,
+    ApiConsumes
 } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
 import { CreateUserDto } from 'src/subsystems/user/dto/create-user.dto';
@@ -40,26 +42,25 @@ import { IsEmail } from 'class-validator';
 export class ProductControllers {
     constructor(private readonly productservice: ProductService) { }
   
-    @ApiCreatedResponse({ description: 'The record has been created successfully created' })
-    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiCreatedResponse({ description: 'Los registros han sido creados exitosamente' })
+    @ApiForbiddenResponse({ description: 'Prohibido' })
+    @ApiConsumes('multipart/form-data')
     @Post()
     @Roles(roles.Admin)
-    @UseInterceptors(FileInterceptor('image', {
+    @UseInterceptors(FileInterceptor('images', {
         storage: diskStorage({
-            destination: './images', // Carpeta donde se guardarán las imágenes
+            destination: './images',
             filename: (req, file, cb) => {
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                cb(null, uniqueSuffix + extname(file.originalname)); // Nombre único para la imagen
+                cb(null, uniqueSuffix + extname(file.originalname));
             }
         })
     }))
     create(@UploadedFile() file: Express.Multer.File, @Body() createProductDTO: createProductDTO) {
-      let imagepath= "";
-        if (file) {
-          imagepath = file.filename; // Asignar el nombre de la imagen al DTO
-        }
+        let imagePaths = file.filename;
         return this.productservice.create({
-          ...createProductDTO,image:imagepath});
+            ...createProductDTO, image: imagePaths
+        });
     }
   
     //@UseGuards(JwtAuthGuard)

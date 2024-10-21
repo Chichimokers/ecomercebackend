@@ -26,7 +26,7 @@ export class  updateProductDTO  extends BaseDto{
 
     @ApiProperty({
         example: "tomate",
-        description: "nombre del producto",
+        description: "products name",
     })
 
     @Transform(({ value }) => value.trim())

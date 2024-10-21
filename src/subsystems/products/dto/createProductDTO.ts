@@ -18,38 +18,38 @@ import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 
-export class createProductDTO   extends BaseDto {
+export class createProductDTO extends BaseDto {
+    @ApiPropertyOptional({
+        example: "a image",
+        description: "path to product image",
+    })
+    @IsOptional()
+    image?: Express.Multer.File;
 
     @ApiProperty({
         example: "tomate",
-        description: "nombre del producto",
+        description: "product name",
     })
-
     @Transform(({ value }) => value.trim())
     @IsString()
-    @MinLength(2, { message: 'Name must have atleast 2 characters.' })
+    @MinLength(2, { message: 'Name must have at least 2 characters.' })
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
     name: string;
-
 
     @ApiProperty({
         example: "123.25",
         description: "A valid price",
     })
     @IsNotEmpty()
-    @IsNumber({}, { message: 'Please provide valid price.' })
+    @IsNumber({}, { message: 'Please provide a valid price.' })
     price: number;
-
-
 
     @ApiProperty({
         example: "123",
         description: "A valid quantity",
     })
-
     @IsNotEmpty()
     @IsNumber()
     quantity: number;
-
 }
