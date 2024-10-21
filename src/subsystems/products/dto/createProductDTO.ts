@@ -21,7 +21,7 @@ import { BaseDto } from 'src/common/dto/base.dto';
 export class createProductDTO extends BaseDto {
     @ApiPropertyOptional({
         example: "a image",
-        description: "path to product image",
+        description: "product image",
     })
     @IsOptional()
     image?: Express.Multer.File;
