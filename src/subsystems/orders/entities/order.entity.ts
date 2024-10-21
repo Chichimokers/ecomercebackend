@@ -35,7 +35,7 @@ import {
     @Column()
     subTotal: number;
   
-    @Column({ default: false })
+    @Column({ default: true })
     pending: boolean;
 
     @OneToMany(() => CartEntity, (cart) => cart.id)

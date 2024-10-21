@@ -47,10 +47,11 @@ async createOrder(userId: number, phone: string, address: string, CI: number): P
             where: {
                 user: { id: userId },
                 paid: false,
-
             },
 
         });
+
+
         const user = await this.userService.findOneById(userId);
 
         if (!user) {
@@ -70,7 +71,18 @@ async createOrder(userId: number, phone: string, address: string, CI: number): P
         });
 
         // Guardar la nueva orden en la base de datos
-        return await this.orderRepository.save(newOrder);
+       const savedOrder = await this.orderRepository.save(newOrder);
+
+       
+
+        // Actualizar los carts relacionados
+        await Promise.all(carts.map(async (cart) => {
+            cart.order = savedOrder; // Asignar el ID de la orden al carrito
+            cart.paid = true; // Marcar como ordenado
+            return this.cartRepository.save(cart); // Guardar los cambios en el carrito
+        }));
+    
+        return savedOrder;
     }
 
     private calculateSubTotal(carts: CartEntity[]): number {
