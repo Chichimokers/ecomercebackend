@@ -16,7 +16,7 @@ export class User extends BaseEntity {
     @Column()
     rol: number;
     
-    @Column({ type: 'varchar', nullable: false, select: false })
+    @Column({ type: 'varchar', nullable: false})
     password: string;
 
     @Column({ type: 'boolean', default: true })

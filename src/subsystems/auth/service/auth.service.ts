@@ -8,6 +8,7 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { UserController } from '../../user/controller/user.controller';
+import { roles } from 'src/subsystems/roles/enum/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -28,10 +29,10 @@ export class AuthService {
 
     return await this.userService.create({
       
-      rol:1 ,
+      rol:roles.User ,
       email :userdto.email,
       name: userdto.name,
-      password:userdto.password,
+      password: userdto.password,
 
     })
 
@@ -42,12 +43,15 @@ export class AuthService {
     const foundUser = await this.userRepository.findOne({
       where: { name:username },
     });
-
-
+  
+console.log(foundUser)
     if (foundUser) {
+
       if (await bcrypt.compare(password, foundUser.password)) {
+        
         const { password, ...result } = foundUser;
         return result;
+
       }
 
       return null;
