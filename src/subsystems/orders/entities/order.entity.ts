@@ -29,8 +29,8 @@ import {
     address :string
 
     @Column()
-    @IsNumber()
-    CI :number
+    @IsString()
+    CI :string
 
     @Column()
     subTotal: number;

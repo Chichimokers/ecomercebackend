@@ -27,13 +27,13 @@ export class OrderDto extends BaseDto {
     @IsNotEmpty()
     address: string;
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
     @ApiProperty({
         example: "12334566789",
         description: "CI, DNI or SSN. Personal identifier"
     })
-    CI: number;
+    CI: string;
 
     @IsNumber()
     @IsNotEmpty()

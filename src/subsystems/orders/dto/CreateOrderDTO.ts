@@ -31,8 +31,8 @@ export class CreateOrderDTO extends BaseDto {
         description: "a valid cuban id",
     })
     @IsNotEmpty()
-    @IsNumber()
-    CI :number
+    @IsString()
+    CI :string
     @ApiProperty({
         example: "Cart structure",
         description: "a valid cuban id",
