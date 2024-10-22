@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './subsystems/user/user.module';
 import { CartModule } from './subsystems/cart/cart.module';
 import { RolesModule } from './subsystems/roles/roles.module';
+import { PublicModule } from './subsystems/public/public.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RolesModule } from './subsystems/roles/roles.module';
     CartModule,    
     AuthModule,
    RolesModule,
+   PublicModule
   ],
   controllers: [AppController],
   providers: [AppService],
