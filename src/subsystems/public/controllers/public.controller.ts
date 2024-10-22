@@ -6,6 +6,7 @@ import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
 import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { OrderService } from "src/subsystems/orders/services/orders.service";
+import { isValidCi } from "src/common/utils/validate-ci.utils";
 
 // Controller
 
@@ -37,6 +38,10 @@ export class PublicController {
         const CI = request.body.CI;
 
         // Create the order
+        if(!isValidCi(CI)){
+            throw new Error('CI no valido');
+        }
+        
         return this.orderService.createOrder(userId, phone, address, CI);
     }
 }
