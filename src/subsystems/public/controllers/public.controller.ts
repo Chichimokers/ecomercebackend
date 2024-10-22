@@ -19,7 +19,7 @@ export class PublicController {
 
     // Get User Order History
     // TODO pending to review
-    @Get('/orders/:id')
+    @Get('/orders')
     @UseGuards(LocalAuthGuard)
     @Roles(roles.User)
     public getOrders(@Req() request) {
