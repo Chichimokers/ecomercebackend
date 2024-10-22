@@ -2,9 +2,9 @@ export function isValidCi(ci: string): boolean {
     if(ci.length !== 11) {
         return false;
     }
-
-    const months = parseInt(ci.substring(2, 3));
-    const days = parseInt(ci.substring(4, 5));
+    
+    const months = parseInt(ci.substring(2, 4));
+    const days = parseInt(ci.substring(4, 6));
 
     if(months < 1 || months > 12) {
         return false;
