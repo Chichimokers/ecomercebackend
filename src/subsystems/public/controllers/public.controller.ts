@@ -20,19 +20,23 @@ export class PublicController {
     // Get User Order History
     // TODO pending to review
     @Get('/orders')
-    @UseGuards(LocalAuthGuard)
     @Roles(roles.User)
     public getOrders(@Req() request) {
-        console.log(request);
-        const userId = request.user.id;
         return this.orderService.getHistory(request.user.id);
     }
 
     // Create Order
     // TODO pending to review
-    @Post('/createorder/')
+    @Post('/createorder')
     @Roles(roles.User)
-    public createOrder() {
+    public createOrder(@Req() request) {
+        // Get the info of the order
+        const userId = request.user.id;
+        const phone = request.body.phone;
+        const address = request.body.address;
+        const CI = request.body.CI;
 
+        // Create the order
+        return this.orderService.createOrder(userId, phone, address, CI);
     }
 }

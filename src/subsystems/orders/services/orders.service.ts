@@ -40,7 +40,7 @@ async getHistory(userId: number) :Promise<OrderEntity[]> {
 
   
 }
-async createOrder(userId: number, phone: string, address: string, CI: number): Promise<OrderEntity> {
+async createOrder(userId: number, phone: string, address: string, CI: string): Promise<OrderEntity> {
         // Obtener los productos del carrito que no han sido pagados
         const carts = await this.cartRepository.find({
 

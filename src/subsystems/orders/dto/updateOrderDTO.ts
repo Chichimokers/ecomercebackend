@@ -31,8 +31,8 @@ export class updateOrderDTO extends BaseDto {
         description: "a valid cuban id",
     })
     @IsNotEmpty()
-    @IsNumber()
-    CI ?:number
+    @IsString()
+    CI ?:string
 
     @ApiProperty({
         example: "Cart structure",
