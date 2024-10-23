@@ -4,10 +4,8 @@ import { IsNumber, IsString, IsEmail, IsEnum, IsArray, ValidateNested } from 'cl
 import { BaseDto } from 'src/common/dto/base.dto';
 
 
-export class UserDto extends BaseDto {
-
-
-
+export class productDto extends BaseDto {
+    
     @IsString()
     image: string;
 

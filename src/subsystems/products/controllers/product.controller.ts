@@ -62,32 +62,32 @@ export class ProductControllers {
             ...createProductDTO, image: imagePaths
         });
     }
-  
+    
     //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
-    public getUsers(): Promise<ProductEntity[]> {
+    public getProducts(): Promise<ProductEntity[]> {
       return this.productservice.findAll();
     }
   
   
     @Get(':id')
     @Roles(roles.Admin)
-    getUserById(@Param('id') id: string) {
+    getProductById(@Param('id') id: string) {
       return this.productservice.findOneById(+id);
     }
   
   
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto: updateProductDTO) {
+    updateProduct(@Param('id') id: string, @Body() updateUserDto: updateProductDTO) {
       return this.productservice.update(+id, updateUserDto);
     }
   
   
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteUser(@Param('id') id: string) {
+    deleteProduct(@Param('id') id: string) {
       //return this.userService.deleteUser(+id);
       return this.productservice.softDelete(+id);
     }

@@ -51,4 +51,11 @@ export class PublicController {
     
         return orden;
     }
+
+    // Products!
+    @Get('/products')
+    @Roles(roles.User)
+    public getProducts() {
+        
+    }
 }
