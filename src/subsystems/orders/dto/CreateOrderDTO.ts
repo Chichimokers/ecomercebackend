@@ -5,7 +5,7 @@ import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
 
 export class CreateOrderDTO extends BaseDto {
-  @ApiProperty({
+    @ApiProperty({
         example: "User structure",
         description: "A valid quantity",
     })
