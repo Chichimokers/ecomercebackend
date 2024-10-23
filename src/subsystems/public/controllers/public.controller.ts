@@ -1,5 +1,5 @@
 // Import Line
-import { Req, UseGuards, Controller, Get, Post, BadRequestException, Query} from "@nestjs/common";
+import { Req, UseGuards, Controller, Get, Post, BadRequestException, Query, Search} from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiBody, ApiResponse, ApiQuery } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
@@ -64,5 +64,13 @@ export class PublicController {
     @ApiQuery({ name: 'limit', required: false, type: Number })
     public getProducts(@Query('page') page: number=1, @Query('limit') limit: number = 10) {
         return this.publicService.getProducts(page, limit);
+    }
+
+    // Get Product by Name
+    @Get('/products')
+    @Roles(roles.User)
+    @ApiQuery({ name: 'search', required: false, type: String})
+    public getProductByName(@Query('search') search: string){
+        return this.publicService.getProductByName(search);
     }
 }

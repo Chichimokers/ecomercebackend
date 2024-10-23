@@ -8,7 +8,6 @@ import { ProductControllers } from './controllers/product.controller';
 @Module({
     imports:[
         TypeOrmModule.forFeature([ProductEntity]),
-    
         ConfigModule.forRoot({ isGlobal: true }),
     ],
         controllers:[ProductControllers],
