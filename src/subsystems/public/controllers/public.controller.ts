@@ -7,6 +7,8 @@ import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
 import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { OrderService } from "src/subsystems/orders/services/orders.service";
 import { isValidCi } from "src/common/utils/validate-ci.utils";
+import { ObjectLiteral } from 'typeorm';
+import { OrderEntity } from "src/subsystems/orders/entities/order.entity";
 
 // Controller
 
@@ -30,18 +32,24 @@ export class PublicController {
     // TODO pending to review
     @Post('/createorder')
     @Roles(roles.User)
-    public createOrder(@Req() request) {
+    public async createOrder(@Req() request) {
         // Get the info of the order
         const userId = request.user.id;
         const phone = request.body.phone;
         const address = request.body.address;
         const CI = request.body.CI;
-
+    
         // Create the order
-        if(!isValidCi(CI)){
-            return { "statusCode": 400, "message": "Ci is not valid" }
+        if (!isValidCi(CI)) {
+            return { "statusCode": 400, "message": "Ci is not valid" };
         }
-
-        return this.orderService.createOrder(userId, phone, address, CI);
+        const orden = await this.orderService.createOrder(userId, phone, address, CI);
+        
+        // Verificar si orden es un objeto de error
+        if (typeof orden === 'object') {
+            return { statusCode: 200, message: "El usuario no tiene productos en el carrito." }; // Mensaje personalizado
+        }
+    
+        return orden;
     }
 }

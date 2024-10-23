@@ -40,7 +40,7 @@ async getHistory(userId: number) :Promise<OrderEntity[]> {
 
   
 }
-async createOrder(userId: number, phone: string, address: string, CI: string): Promise<OrderEntity> {
+async createOrder(userId: number, phone: string, address: string, CI: string): Promise<OrderEntity| any>  {
         // Obtener los productos del carrito que no han sido pagados
         const carts = await this.cartRepository.find({
 
@@ -50,7 +50,9 @@ async createOrder(userId: number, phone: string, address: string, CI: string): P
             },
 
         });
-
+        if(carts.length == 0){
+            return {error : "you dont have product in the cart"};
+        }
 
         const user = await this.userService.findOneById(userId);
 

@@ -25,8 +25,8 @@ import { PublicModule } from './subsystems/public/public.module';
     CommonModule,
     CartModule,    
     AuthModule,
-    RolesModule,
-    PublicModule,
+   RolesModule,
+   PublicModule
   ],
   controllers: [AppController],
   providers: [AppService],
