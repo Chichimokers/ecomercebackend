@@ -1,6 +1,6 @@
 // Import Line
-import { Req, UseGuards, Controller, Get, Post, BadRequestException} from "@nestjs/common";
-import { ApiTags, ApiBearerAuth, ApiBody, ApiResponse } from "@nestjs/swagger";
+import { Req, UseGuards, Controller, Get, Post, BadRequestException, Query} from "@nestjs/common";
+import { ApiTags, ApiBearerAuth, ApiBody, ApiResponse, ApiQuery } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
@@ -8,6 +8,8 @@ import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { OrderService } from "src/subsystems/orders/services/orders.service";
 import { isValidCi } from "src/common/utils/validate-ci.utils";
 import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
+import { ProductService } from "src/subsystems/products/services/product.service";
+import { PublicService } from "../services/public.service";
 
 // Controller
 @ApiTags('public')
@@ -16,7 +18,10 @@ import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
 @UseGuards(LocalAuthGuard,RolesGuard)
 
 export class PublicController {
-    constructor (private readonly orderService: OrderService) { }
+    constructor (
+        private readonly orderService: OrderService,
+        private readonly publicService: PublicService
+    ) { }
 
     // Get User Order History
     // TODO pending to review
@@ -55,7 +60,9 @@ export class PublicController {
     // Products!
     @Get('/products')
     @Roles(roles.User)
-    public getProducts() {
-        
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    public getProducts(@Query('page') page: number=1, @Query('limit') limit: number = 10) {
+        return this.publicService.getProducts(page, limit);
     }
 }
