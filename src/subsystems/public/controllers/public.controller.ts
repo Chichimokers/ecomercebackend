@@ -67,7 +67,7 @@ export class PublicController {
     }
 
     // Get Product by Name
-    @Get('/products')
+    @Get('/products_search')
     @Roles(roles.User)
     @ApiQuery({ name: 'search', required: false, type: String})
     public getProductByName(@Query('search') search: string){
