@@ -1,17 +1,15 @@
 // Import Line
 import { Req, UseGuards, Controller, Get, Post, BadRequestException} from "@nestjs/common";
-import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
+import { ApiTags, ApiBearerAuth, ApiBody, ApiResponse } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
 import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { OrderService } from "src/subsystems/orders/services/orders.service";
 import { isValidCi } from "src/common/utils/validate-ci.utils";
-import { ObjectLiteral } from 'typeorm';
-import { OrderEntity } from "src/subsystems/orders/entities/order.entity";
+import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
 
 // Controller
-
 @ApiTags('public')
 @ApiBearerAuth()
 @Controller('public')
@@ -32,6 +30,7 @@ export class PublicController {
     // TODO pending to review
     @Post('/createorder')
     @Roles(roles.User)
+    @ApiBody({ type: CreateOrderDTO })
     public async createOrder(@Req() request) {
         // Get the info of the order
         const userId = request.user.id;
