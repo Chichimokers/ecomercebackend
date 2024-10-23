@@ -12,6 +12,7 @@ import {
     ManyToOne,
     
   } from 'typeorm';
+import { ProductClass } from '../enums/products.class.enum';
 
   
   @Entity({ name:"tb_products"})
@@ -25,12 +26,14 @@ import {
   
     @Column()
     price: number;
-  
+    
+    @Column()
+    class:ProductClass;
+
     @Column()
     quantity: number;
     
     @OneToMany(() => CartEntity, (cart) => cart.id)
-    @JoinColumn()
     cart: CartEntity[];
       
   }
