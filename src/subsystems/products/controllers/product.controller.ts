@@ -56,6 +56,7 @@ export class ProductControllers {
             }
         })
     }))
+    
     create(@Body() createProductDTO: createProductDTO,@UploadedFile() file?: Express.Multer.File) {
         let imagePaths = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
 
