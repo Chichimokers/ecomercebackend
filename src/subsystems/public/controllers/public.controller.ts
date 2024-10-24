@@ -45,15 +45,16 @@ export class PublicController {
     
         // Create the order
         if (!isValidCi(CI)) {
-            return { "statusCode": 400, "message": "Ci is not valid" };
+            throw new BadRequestException("Ci is not valid");
         }
         const orden = await this.orderService.createOrder(userId, phone, address, CI);
         
-        // Verificar si orden es un objeto de error
+   
         if (typeof orden === 'object') {
-            return { statusCode: 200, message: "El usuario no tiene productos en el carrito." }; // Mensaje personalizado
+            throw new BadRequestException("El usuario no tiene productos en el carrito."); // Mensaje personalizado
         }
-    
+
+
         return orden;
     }
 
