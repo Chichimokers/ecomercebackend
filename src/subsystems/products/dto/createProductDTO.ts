@@ -21,13 +21,6 @@ import { ProductClass } from '../enums/products.class.enum';
 
 
 export class createProductDTO extends BaseDto {
-    @ApiPropertyOptional({
-        example: "a image",
-        description: "product image",
-    })
-    @IsOptional()
-    image?: string;
-
     @ApiProperty({
         example: "tomate",
         description: "product name",

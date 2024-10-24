@@ -47,7 +47,7 @@ export class ProductControllers {
     @ApiConsumes('multipart/form-data')
     @Post()
     @Roles(roles.Admin)
-    @UseInterceptors(FileInterceptor('images', {
+    @UseInterceptors(FileInterceptor('image', {
         storage: diskStorage({
             destination: './images',
             filename: (req, file, cb) => {
@@ -56,10 +56,12 @@ export class ProductControllers {
             }
         })
     }))
-    create(@UploadedFile() file: Express.Multer.File, @Body() createProductDTO: createProductDTO) {
-        let imagePaths = file.filename;
+    create(@Body() createProductDTO: createProductDTO,@UploadedFile() file?: Express.Multer.File) {
+        let imagePaths = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
+
         return this.productservice.create({
-            ...createProductDTO, image: imagePaths
+            ...createProductDTO,
+            image: imagePaths // Solo se incluye si imagePaths no es undefined
         });
     }
     
