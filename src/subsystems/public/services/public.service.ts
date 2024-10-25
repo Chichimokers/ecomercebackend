@@ -15,10 +15,22 @@ export class PublicService {
     // Get products with pagination
     public async getProducts(page: number, limit: number) {
         const offset = (page - 1) * limit;
-        return await this.productRepository.find({
+        const products = await this.productRepository.find({
             skip: offset,
             take: limit
         });
+
+        const totalProducts: number = await this.productRepository.count();
+        const totalPages: number = Math.ceil(totalProducts / limit);
+
+        const previousUrl = page - 1 < 0 ? null : `/public/products?page=${page - 1}`;
+        const nextUrl = page + 1 > totalPages ? null : `/public/products?page=${page + 1}`;
+
+        return {
+            products,
+            previousUrl,
+            nextUrl
+        };
     }
 
 
@@ -27,6 +39,14 @@ export class PublicService {
         return await this.productRepository.find({
             where: {
                 name: Like(`%${name}%`)
+            }
+        });
+    }
+
+    public async getProductInfo(id: number){
+        return await this.productRepository.findOne({
+            where: {
+                id
             }
         });
     }
