@@ -1,5 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
-
 export enum ProductClass {
     Ropa = 1,
     Zapatos = 2,

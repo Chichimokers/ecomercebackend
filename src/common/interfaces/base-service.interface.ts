@@ -1,6 +1,3 @@
-import { DeepPartial } from 'typeorm';
-
-
 export interface IBaseService<BaseEntity> {
 
     findOneById(id: any): Promise<BaseEntity>;

@@ -1,16 +1,9 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
-import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import {
     Entity,
-    JoinColumn,
     OneToMany,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    
+    Column
   } from 'typeorm';
 import { ProductClass } from '../enums/products.class.enum';
 

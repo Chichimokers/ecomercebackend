@@ -6,22 +6,18 @@ import {
     Body,
     Patch,
     Param,
-    Query,
     Delete,
     UseInterceptors,
-    UploadedFile,
-    UploadedFiles
+    UploadedFile
 } from '@nestjs/common';
 import {
     ApiTags,
     ApiBearerAuth,
-    ApiUnauthorizedResponse,
     ApiCreatedResponse,
     ApiForbiddenResponse,
     ApiConsumes
 } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
-import { CreateUserDto } from 'src/subsystems/user/dto/create-user.dto';
 import { ProductEntity } from '../entity/product.entity';
 import { createProductDTO } from '../dto/createProductDTO';
 import { updateProductDTO } from '../dto/updateProductDTO';
@@ -32,7 +28,6 @@ import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { IsEmail } from 'class-validator';
 
 @ApiTags('products')
 @ApiBearerAuth()

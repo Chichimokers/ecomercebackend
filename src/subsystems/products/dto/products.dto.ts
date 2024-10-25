@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 
-import { IsNumber, IsString, IsEmail, IsEnum, IsArray, ValidateNested } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { BaseDto } from 'src/common/dto/base.dto';
 import { ProductClass } from "../enums/products.class.enum";
 

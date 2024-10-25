@@ -1,21 +1,14 @@
 import {
-    IsAlphanumeric,
     IsEmail,
-    IsEnum,
-    IsInt,
     IsNotEmpty,
     IsString,
-    Matches,
     MinLength,
     MaxLength,
-    IsArray,
-    ArrayNotEmpty,
-    IsOptional,
     IsNumber
 } from 'class-validator';
 
 import { Transform } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 
 

@@ -6,17 +6,14 @@ import {
     Body,
     Patch,
     Param,
-    Query,
     Delete,
   } from '@nestjs/common';
   import {
     ApiTags,
     ApiBearerAuth,
-    ApiUnauthorizedResponse,
     ApiCreatedResponse,
     ApiForbiddenResponse
   } from '@nestjs/swagger';
-import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
 import { CartService } from '../services/cart.service';
 import { CartEntity } from '../entity/cart.entity';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';

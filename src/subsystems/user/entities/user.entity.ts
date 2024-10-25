@@ -1,6 +1,5 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToOne, OneToMany, JoinColumn } from 'typeorm';
-import { OrderEntity } from '../../orders/entities/order.entity';
+import { Column, Entity, OneToMany, JoinColumn } from 'typeorm';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 
 @Entity({ name: 'tb_user' })

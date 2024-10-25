@@ -1,6 +1,5 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import {

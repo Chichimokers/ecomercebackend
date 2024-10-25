@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -6,8 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/subsystems/user/entities/user.entity';
 import { UserService } from 'src/subsystems/user/service/user.service';
-import { CreateUserDto, UserDto } from 'src/subsystems/user/dto';
-import { UserController } from '../../user/controller/user.controller';
+import { CreateUserDto } from 'src/subsystems/user/dto';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 
 @Injectable()

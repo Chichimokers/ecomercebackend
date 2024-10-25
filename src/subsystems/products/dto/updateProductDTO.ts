@@ -1,16 +1,8 @@
 import {
-    IsAlphanumeric,
-    IsEmail,
-    IsEnum,
-    IsInt,
     IsNotEmpty,
     IsString,
-    Matches,
     MinLength,
     MaxLength,
-    IsArray,
-    ArrayNotEmpty,
-    IsOptional,
     IsNumber
 } from 'class-validator';
 
