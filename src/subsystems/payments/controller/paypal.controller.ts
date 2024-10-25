@@ -1,5 +1,5 @@
 // Import Line
-import { Req, UseGuards, Controller, Get, Post, Query, BadRequestException, Param, Redirect } from "@nestjs/common";
+import { Req, UseGuards, Controller, Get, Post, Query, BadRequestException, Param, Redirect, Inject, HttpCode, HttpStatus, Res } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiBody, ApiQuery, ApiExpectationFailedResponse } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
@@ -8,81 +8,45 @@ import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { CLIENTID, HOST , PAYPAL_HOST, SECRET_KEY} from "../config.payments"
 import axios from "axios";
 import { URLSearchParams } from "url";
+import { PaypalService } from '../service/paypal.service';
+import { Response } from "express";
 // Controller
 @ApiTags('payments')
 @ApiBearerAuth()
 @Controller('payments')
-@UseGuards(LocalAuthGuard, RolesGuard)
 
 export class PaypalController {
     constructor(
+        @Inject(PaypalService)
+        public servicePaypal:PaypalService
     ) { }
 
-    @Roles(roles.User)
-    @Post("create-order")
-    async createOrder() {
-
-        const order = {
-            intent: "CAPTURE",
-            purchase_unit: [
-
-                {
-                
-                    amount: {
-                        concurrency_code: "USD",
-                        value: "100.0"
-                    }
-
-                }
-
-            ],
-            application_context: {
-
-                brand_name: "ESAKISHOP",
-                landing_page: "NO_PREFERENCE",
-                user_action: "pay_now",
-                return_url: `${HOST}/payments/capture-order`,
-                cancel_url: `${HOST}/payments/cancel-order`
-            }
+     
+        @Post("create-order")
+        async createOrder(@Res() res: Response) {
+            const link = await this.servicePaypal.CreateOrder();
+          
+           res.send(link)
+        }
+    
+    
             
 
-        }
-        //Obteniendo Token
-        const paramas = new URLSearchParams();
-        paramas.append("grant_type","client_credentials");
-        const auth  = { 
 
-            username:CLIENTID,
-            password:SECRET_KEY
-        }
-         const { data: access_token } =   await axios.post(`${PAYPAL_HOST}+/v1/oauth2/token`,paramas,{
-            auth:auth
-        })
-        //Creando token
-        const response =  await axios.post(`${PAYPAL_HOST}+/v2/checkout/orders`,order,{
-            headers:{
-                Authorization:`Bearer ${access_token}`
+        @Get("capture-order")
+        @HttpCode(HttpStatus.OK)
+        async captureOrder(@Query('token') token: string, @Query('PayerID') payerId: string) {
+            // Usa el token y payerId según sea necesario
+            const response = await this.servicePaypal.confirmorder(token);
+
+            // Verifica si la respuesta es verdadera
+            if (response) {
+                return { success: true }; // Respuesta exitosa
+            } else {
+                return { success: false, errorCode: 400 }; // Código de error, puedes ajustar según sea necesario
             }
-        })
-
-        Redirect(response.data.links[1]);
-    }
-            
-
-        
-    @Roles(roles.User)
-    @Post("capture-order")
-    async captureOrder(@Param('token') token: string, @Param('PayerID') payerId: string){
-        
-        const auth  = { 
-
-            username:CLIENTID,
-            password:SECRET_KEY
         }
-        axios.post(`${PAYPAL_HOST}/v2/checkout/orders/${token}/capture`,{},{
-            auth:auth
-        })
-    }
+    
 
         
     @Roles(roles.User)
