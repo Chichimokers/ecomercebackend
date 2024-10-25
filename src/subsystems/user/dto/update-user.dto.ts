@@ -1,20 +1,10 @@
-import { PartialType, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CreateUserDto } from './create-user.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
-    IsAlphanumeric,
     IsEmail,
-    IsEnum,
-    IsInt,
     IsNotEmpty,
-    IsOptional,
-    ArrayNotEmpty,
-    IsArray,
     IsString,
-    Matches,
     MinLength,
     MaxLength,
-    isString,
-    isNotEmpty,
     IsNumber
 } from 'class-validator';
 import { Transform } from 'class-transformer';

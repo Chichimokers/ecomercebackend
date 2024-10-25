@@ -1,6 +1,6 @@
 // Import Line
-import { Req, UseGuards, Controller, Get, Post, BadRequestException, Query, Search} from "@nestjs/common";
-import { ApiTags, ApiBearerAuth, ApiBody, ApiResponse, ApiQuery } from "@nestjs/swagger";
+import { Req, UseGuards, Controller, Get, Post, Query} from "@nestjs/common";
+import { ApiTags, ApiBearerAuth, ApiBody, ApiQuery } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
@@ -8,7 +8,6 @@ import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { OrderService } from "src/subsystems/orders/services/orders.service";
 import { isValidCi } from "src/common/utils/validate-ci.utils";
 import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
-import { ProductService } from "src/subsystems/products/services/product.service";
 import { PublicService } from "../services/public.service";
 
 // Controller

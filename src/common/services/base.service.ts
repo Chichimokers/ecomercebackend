@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial, ObjectLiteral, FindOptionsWhere, FindOptionsOrder, BaseEntity } from 'typeorm';
+import { Repository, DeepPartial, ObjectLiteral, FindOptionsWhere, BaseEntity } from 'typeorm';
 import { IBaseService } from '../interfaces/base-service.interface';
 
 

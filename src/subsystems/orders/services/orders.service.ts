@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
-import { User } from 'src/subsystems/user/entities/user.entity';
 import { BaseService } from 'src/common/services/base.service';
 import { UserService } from 'src/subsystems/user/service/user.service';
 

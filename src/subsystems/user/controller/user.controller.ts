@@ -6,13 +6,11 @@ import {
     Body,
     Patch,
     Param,
-    Query,
     Delete,
   } from '@nestjs/common';
   import {
     ApiTags,
     ApiBearerAuth,
-    ApiUnauthorizedResponse,
     ApiCreatedResponse,
     ApiForbiddenResponse
   } from '@nestjs/swagger';

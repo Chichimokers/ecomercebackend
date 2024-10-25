@@ -1,5 +1,5 @@
-import { PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
-import { Inject, forwardRef } from '@nestjs/common';
+import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+
 
 export abstract class BaseEntity {
     @PrimaryGeneratedColumn()

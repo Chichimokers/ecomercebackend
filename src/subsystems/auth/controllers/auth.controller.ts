@@ -1,7 +1,5 @@
-import { Body, Controller, Get, Post, HttpException, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 
-
-import { User } from 'src/subsystems/user/entities/user.entity';
 import { roles } from '../../roles/enum/roles.enum';
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO';
