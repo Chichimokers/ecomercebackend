@@ -42,4 +42,12 @@ export class PublicService {
             }
         });
     }
+
+    public async getProductInfo(id: number){
+        return await this.productRepository.findOne({
+            where: {
+                id
+            }
+        });
+    }
 }

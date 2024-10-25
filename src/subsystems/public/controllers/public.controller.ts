@@ -74,4 +74,12 @@ export class PublicController {
     public getProductByName(@Query('search') search: string){
         return this.publicService.getProductByName(search);
     }
+
+    // Get Info of a Product
+    @Get('/product_info')
+    @Roles(roles.User)
+    @ApiQuery({ name: 'id', required: true, type: Number })
+    public getProductInfo(@Query('id') id: number) {
+        return this.publicService.getProductInfo(id);
+    }
 }
