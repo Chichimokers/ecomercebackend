@@ -1,5 +1,5 @@
 // Import Line
-import { Req, UseGuards, Controller, Get, Post, Query} from "@nestjs/common";
+import { Req, UseGuards, Controller, Get, Post, Query, BadRequestException} from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiBody, ApiQuery } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
