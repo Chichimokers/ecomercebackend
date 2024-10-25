@@ -23,7 +23,7 @@ export class PublicService {
         const totalProducts: number = await this.productRepository.count();
         const totalPages: number = Math.ceil(totalProducts / limit);
 
-        const previousUrl = page - 1 < 0 ? null : `/public/products?page=${page - 1}`;
+        const previousUrl = page - 1 <= 0 ? null : `/public/products?page=${page - 1}`;
         const nextUrl = page + 1 > totalPages ? null : `/public/products?page=${page + 1}`;
 
         return {
