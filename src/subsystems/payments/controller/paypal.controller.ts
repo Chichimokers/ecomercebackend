@@ -10,6 +10,7 @@ import axios from "axios";
 import { URLSearchParams } from "url";
 import { PaypalService } from '../service/paypal.service';
 import { Request, Response } from "express";
+import { paydto } from "../dto/paydto";
 // Controller
 @ApiTags('payments')
 @ApiBearerAuth()
@@ -23,7 +24,7 @@ export class PaypalController {
 
         @Roles(roles.User)
         @Post("create-order")
-        async createOrder(@Body() body:any ,@Res() res: Response,@Req() req:any ) {
+        async createOrder(@Body() body:paydto ,@Res() res: Response,@Req() req:any ) {
 
             const link = await this.servicePaypal.CreateOrder(body.id,req.user.Id);
           
