@@ -38,7 +38,7 @@ export class PublicController {
     @ApiBody({ type: CreateOrderDTO })
     public async createOrder(@Req() request) {
         // Get the info of the order
-        const userId = request.user.id;
+        const userId = request.user.Id;
         const phone = request.body.phone;
         const address = request.body.address;
         const CI = request.body.CI;
