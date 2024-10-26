@@ -33,7 +33,7 @@ export class PaypalService {
     if(response.data.status === "COMPLETED"){
 
         return true
-        
+
     }else{
 
         return false
