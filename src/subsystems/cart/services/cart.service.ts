@@ -48,7 +48,7 @@ async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
             throw new Error('user no encontrado');
         }
 
-        return await this.cartRepository.create({
+       const carent =  await this.cartRepository.create({
             user: user,
             item: product,
             quantity: cartDto.quantity,
@@ -56,7 +56,7 @@ async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
             paid: false,
             order: null
         })
-
+        return await this.cartRepository.save(carent)
     }
 
 }
