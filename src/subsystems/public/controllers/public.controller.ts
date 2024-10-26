@@ -28,7 +28,7 @@ export class PublicController {
     @Get('/orders')
     @Roles(roles.User)
     public getOrders(@Req() request) {
-        return this.orderService.getHistory(request.user.id);
+        return this.orderService.getHistory(request.user.Id);
     }
 
     // Create Order

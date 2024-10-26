@@ -26,15 +26,15 @@ export class OrderService extends BaseService<OrderEntity> {
 
 
 async getHistory(userId: number) :Promise<OrderEntity[]> {
-
+    console.log(userId)
     return await this.orderRepository.find({
 
         where: {
 
-           user:{ id: userId}
-
+           user:{ id: userId },
+      
         },
-
+        relations: ['carts','carts.item','user']
     });
 
   
