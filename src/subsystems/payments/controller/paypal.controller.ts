@@ -15,13 +15,14 @@ import { paydto } from "../dto/paydto";
 @ApiTags('payments')
 @ApiBearerAuth()
 @Controller('payments')
-@UseGuards(LocalAuthGuard,RolesGuard)
+
 export class PaypalController {
     constructor(
         @Inject(PaypalService)
         public servicePaypal:PaypalService
     ) { }
-
+    
+        @UseGuards(LocalAuthGuard,RolesGuard)
         @Roles(roles.User)
         @Post("create-order")
         async createOrder(@Body() body:paydto ,@Res() res: Response,@Req() req:any ) {
@@ -34,7 +35,7 @@ export class PaypalController {
     
             
 
-
+ 
         @Get("capture-order")
         @HttpCode(HttpStatus.OK)
         async captureOrder(@Query('token') token: string, @Query('PayerID') payerId: string) {
@@ -50,7 +51,7 @@ export class PaypalController {
         }
     
 
-        
+    @UseGuards(LocalAuthGuard,RolesGuard)    
     @Roles(roles.User)
     @Post("cancel-order")
     async cancelorder(){
