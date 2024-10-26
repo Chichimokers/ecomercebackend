@@ -26,7 +26,7 @@ import { ProductClass } from '../enums/products.class.enum';
     @Column()
     quantity: number;
     
-    @OneToMany(() => CartEntity, (cart) => cart.id)
+    @OneToMany(() => CartEntity, (cart) => cart.item)
     cart: CartEntity[];
       
   }

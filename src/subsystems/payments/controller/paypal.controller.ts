@@ -1,5 +1,5 @@
 // Import Line
-import { Req, UseGuards, Controller, Get, Post, Query, BadRequestException, Param, Redirect, Inject, HttpCode, HttpStatus, Res } from "@nestjs/common";
+import { Req, UseGuards, Controller, Get, Post, Query, BadRequestException, Param, Redirect, Inject, HttpCode, HttpStatus, Res, Body } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiBody, ApiQuery, ApiExpectationFailedResponse } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
@@ -9,22 +9,23 @@ import { CLIENTID, HOST , PAYPAL_HOST, SECRET_KEY} from "../config.payments"
 import axios from "axios";
 import { URLSearchParams } from "url";
 import { PaypalService } from '../service/paypal.service';
-import { Response } from "express";
+import { Request, Response } from "express";
 // Controller
 @ApiTags('payments')
 @ApiBearerAuth()
 @Controller('payments')
-
+@UseGuards(LocalAuthGuard,RolesGuard)
 export class PaypalController {
     constructor(
         @Inject(PaypalService)
         public servicePaypal:PaypalService
     ) { }
 
-     
+        @Roles(roles.User)
         @Post("create-order")
-        async createOrder(@Res() res: Response) {
-            const link = await this.servicePaypal.CreateOrder();
+        async createOrder(@Body() body:any ,@Res() res: Response,@Req() req:any ) {
+
+            const link = await this.servicePaypal.CreateOrder(body.id,req.user.Id);
           
            res.send(link)
         }

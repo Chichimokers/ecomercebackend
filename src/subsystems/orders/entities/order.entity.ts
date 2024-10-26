@@ -5,18 +5,15 @@ import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import {
     Entity,
     OneToMany,
-    JoinColumn,
-    OneToOne,
     Column,
-    PrimaryGeneratedColumn,
-  } from 'typeorm';
+    ManyToOne,
+} from 'typeorm';
 
   
   @Entity({name:"tb_orders"})
   export class OrderEntity  extends BaseEntity{
 
-    @OneToOne(() => User, (user) => user.id)
-    @JoinColumn()
+    @ManyToOne(() => User, (user) => user.id)
     user: User;
 
     @Column()
@@ -37,9 +34,7 @@ import {
     @Column({ default: true })
     pending: boolean;
 
-    @OneToMany(() => CartEntity, (cart) => cart.id)
-    @JoinColumn()
+    @OneToMany(() => CartEntity, (cart) => cart.order)
     carts: CartEntity[];
-
-  }
   
+  }
