@@ -9,6 +9,7 @@ import { OrderService } from "src/subsystems/orders/services/orders.service";
 import { isValidCi } from "src/common/utils/validate-ci.utils";
 import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
 import { PublicService } from "../services/public.service";
+import { OrderEntity } from "src/subsystems/orders/entities/order.entity";
 
 // Controller
 @ApiTags('public')
@@ -46,10 +47,11 @@ export class PublicController {
         if (!isValidCi(CI)) {
             throw new BadRequestException("Ci is not valid");
         }
-        const orden = await this.orderService.createOrder(userId, phone, address, CI);
+
+        const orden : any = await this.orderService.createOrder(userId, phone, address, CI);
         
    
-        if (typeof orden === 'object') {
+        if (orden == null) {
             throw new BadRequestException("El usuario no tiene productos en el carrito."); // Mensaje personalizado
         }
 

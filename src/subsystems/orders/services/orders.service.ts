@@ -49,8 +49,9 @@ async createOrder(userId: number, phone: string, address: string, CI: string): P
             },
 
         });
+
         if(carts.length == 0){
-            return {error : "you dont have product in the cart"};
+            return null
         }
 
         const user = await this.userService.findOneById(userId);

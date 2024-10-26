@@ -7,9 +7,7 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -23,20 +21,16 @@ export class CartEntity extends BaseEntity  {
     @Column()
     quantity: number;
     
-    @ManyToOne(() => OrderEntity, (order) => order.id,{nullable : true})
-    @JoinColumn()
+    @ManyToOne(() => OrderEntity, (order) => order.carts, { nullable: true })
     order: OrderEntity;
 
-    @ManyToOne(() => ProductEntity, (product) => product.id)
-    @JoinColumn()
+    @ManyToOne(() => ProductEntity, (product) => product.cart)
     item: ProductEntity;
   
     @ManyToOne(() => User, (user) => user.id)
-    @JoinColumn()
     user: User;
 
     @IsBoolean()
     @Column({ type: 'boolean', default: false })
     paid: boolean;
 }
-
