@@ -1,12 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
-import { Repository, Like, DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CLIENTID, HOST, PAYPAL_HOST, SECRET_KEY } from '../config.payments';
 import axios from 'axios';
-import { response } from 'express';
-import { IsString } from 'class-validator';
-import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { OrderService } from 'src/subsystems/orders/services/orders.service';
 
@@ -34,15 +30,8 @@ export class PaypalService {
 
         })
 
-
-        if (response.data.status === "COMPLETED") {
-
-            return true
-
-        } else {
-
-            return false
-        }
+        // Te sustitui el if else que tenias aqui, BORRA ESTE COMENTARIO
+        return response.data.status === "COMPLETED";
     }
 
     async CreateJSONOrder(carts: OrderEntity, moneda: string) :Promise<any>{
@@ -96,8 +85,8 @@ export class PaypalService {
                 }
             }
         };
+
         return order
-        // Aquí puedes continuar con el resto de la lógica si es necesario
     }
 
     async CreateOrder(orderid:number,userid:string): Promise<string> {
@@ -116,12 +105,9 @@ export class PaypalService {
             throw new Error("No se encontro en la bd ");
     
             }
-        }else{
+        } else {
             throw new Error("Esa orden no pertence a ese usuario ");
         }
-       
-
-
 
         //Obteniendo Token
         const paramas = new URLSearchParams();
@@ -135,8 +121,6 @@ export class PaypalService {
             auth: auth
         })
 
-
-
         const response = await axios.post(`${PAYPAL_HOST}/v2/checkout/orders`, order, {
             headers: {
                 Authorization: `Bearer ${data.access_token}`,
@@ -144,9 +128,6 @@ export class PaypalService {
             }
         })
 
-
-
         return response.data.links[1];
     }
-
 }

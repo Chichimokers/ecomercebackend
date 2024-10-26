@@ -17,7 +17,6 @@ export class StripeService {
             currency: currency,
             payment_method_types: ['card'],
             metadata: {
-
             }
         });
     }

@@ -1,15 +1,12 @@
 // Import Line
-import { Req, UseGuards, Controller, Get, Post, Query, BadRequestException, Param, Redirect, Inject, HttpCode, HttpStatus, Res, Body } from "@nestjs/common";
-import { ApiTags, ApiBearerAuth, ApiBody, ApiQuery, ApiExpectationFailedResponse } from "@nestjs/swagger";
+import { Req, UseGuards, Controller, Get, Post, Query, Inject, HttpCode, HttpStatus, Res, Body } from "@nestjs/common";
+import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
 import { roles } from "src/subsystems/roles/enum/roles.enum";
-import { CLIENTID, HOST , PAYPAL_HOST, SECRET_KEY} from "../config.payments"
-import axios from "axios";
-import { URLSearchParams } from "url";
 import { PaypalService } from '../service/paypal.service';
-import { Request, Response } from "express";
+import { Response } from "express";
 // Controller
 @ApiTags('payments')
 @ApiBearerAuth()
@@ -29,10 +26,6 @@ export class PaypalController {
           
            res.send(link)
         }
-    
-    
-            
-
 
         @Get("capture-order")
         @HttpCode(HttpStatus.OK)
@@ -41,15 +34,16 @@ export class PaypalController {
             const response = await this.servicePaypal.confirmorder(token);
 
             // Verifica si la respuesta es verdadera
-            if (response) {
-                return { success: true }; // Respuesta exitosa
-            } else {
-                return { success: false, errorCode: 400 }; // Código de error, puedes ajustar según sea necesario
-            }
-        }
-    
+            return response ? { success: true } : { success: false, errorCode: 400 };
 
-        
+            // Te sustitui el if else que tenias aqui, BORRA ESTE COMENTARIO Y COMPRUEBA SI FUNCIONA
+            /*if (response) {
+                return { success: true };
+            } else {
+                return { success: false, errorCode: 400 };
+            }*/
+        }
+
     @Roles(roles.User)
     @Post("cancel-order")
     async cancelorder(){
