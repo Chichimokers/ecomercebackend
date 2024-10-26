@@ -6,7 +6,7 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 
 export class paydto extends BaseDto {
     @ApiProperty({
-        example: "Order ID",
+        example: "ID order",
         description: "A valid quantity",
     })
     @IsNotEmpty()
