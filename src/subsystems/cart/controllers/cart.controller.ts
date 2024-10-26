@@ -7,6 +7,7 @@ import {
     Patch,
     Param,
     Delete,
+    Req,
   } from '@nestjs/common';
   import {
     ApiTags,
@@ -21,7 +22,8 @@ import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { updateCartDto } from '../dto/updateCartDTO';
-import { addCartDTO } from '../dto/createCartDTO';
+import { addCartDTO } from '../dto/addCartDTO';
+
 
 
   
@@ -39,8 +41,8 @@ import { addCartDTO } from '../dto/createCartDTO';
     
     @Post()
     @Roles(roles.User)
-    create(@Body() createUserDto: addCartDTO) {
-      return this.productservice.create(createUserDto);
+    create(@Body() addCarDTO: addCartDTO,@Req() req:any) {
+      return this.productservice.addToCart(addCarDTO,req.user.Id);
     }
   
 
