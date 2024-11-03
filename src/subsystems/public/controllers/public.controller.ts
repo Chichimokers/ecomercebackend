@@ -28,7 +28,7 @@ export class PublicController {
     @Get('/orders')
     @Roles(roles.User)
     public getOrders(@Req() request) {
-        return this.orderService.getHistory(request.user.id);
+        return this.orderService.getHistory(request.user.Id);
     }
 
     // Create Order
@@ -38,7 +38,7 @@ export class PublicController {
     @ApiBody({ type: CreateOrderDTO })
     public async createOrder(@Req() request) {
         // Get the info of the order
-        const userId = request.user.id;
+        const userId = request.user.Id;
         const phone = request.body.phone;
         const address = request.body.address;
         const CI = request.body.CI;

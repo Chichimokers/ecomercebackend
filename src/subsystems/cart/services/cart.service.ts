@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { BaseService } from 'src/common/services/base.service';
-import { addCartDTO } from '../dto/createCartDTO';
+
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { ProductService } from 'src/subsystems/products/services/product.service';
 import { ProductEntity } from '../../products/entity/product.entity';
+import { addCartDTO } from '../dto/addCartDTO';
 
 @Injectable()
 export class CartService extends BaseService<CartEntity> {
@@ -47,7 +48,7 @@ async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
             throw new Error('user no encontrado');
         }
 
-        return await this.cartRepository.create({
+       const carent =  await this.cartRepository.create({
             user: user,
             item: product,
             quantity: cartDto.quantity,
@@ -55,7 +56,7 @@ async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
             paid: false,
             order: null
         })
-
+        return await this.cartRepository.save(carent)
     }
 
 }

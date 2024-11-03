@@ -90,14 +90,15 @@ export class PaypalService {
     }
 
     async CreateOrder(orderid:number,userid:string): Promise<string> {
-        
+
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['carts','carts.item'], // Asegúrate de incluir la relación 'carts'
+            relations: ['carts','carts.item','user'], // Asegúrate de incluir la relación 'carts'
         });
 
         let order: string = "";
-        if(userid.toString() === orderbd.id.toString()){
+        if(userid.toString() === orderbd.user.id.toString()){
+            
             if (orderbd) {
                 order = await this.CreateJSONOrder(orderbd, "USD");
     
