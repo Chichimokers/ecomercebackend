@@ -14,10 +14,10 @@ export class PaypalService {
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
     ) { }
+
     async confirmorder(token: string): Promise<boolean> {
 
         const authd = {
-
             username: CLIENTID,
             password: SECRET_KEY
         }
@@ -30,7 +30,6 @@ export class PaypalService {
 
         })
 
-        // Te sustitui el if else que tenias aqui, BORRA ESTE COMENTARIO
         return response.data.status === "COMPLETED";
     }
 
@@ -41,11 +40,13 @@ export class PaypalService {
         if (!carts || !carts.carts) {
             throw new Error("No se encontraron carts en la orden."); // Manejo de error
         }
+
         // Calcular el subtotal
         let subtotal = 0 ;
         carts.carts.forEach(cart => {
             subtotal += cart.total; // Sumar el total de cada cart
         });
+
         const order = {
             intent: "CAPTURE",
             purchase_units: [
@@ -89,7 +90,7 @@ export class PaypalService {
         return order
     }
 
-    async CreateOrder(orderid:number,userid:string): Promise<string> {
+    async CreateOrder(orderid: number, userid: string): Promise<string> {
 
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
@@ -97,24 +98,20 @@ export class PaypalService {
         });
 
         let order: string = "";
-        if(userid.toString() === orderbd.user.id.toString()){
-            
-            if (orderbd) {
-                order = await this.CreateJSONOrder(orderbd, "USD");
-    
-            }else{
-            throw new Error("No se encontro en la bd ");
-    
-            }
-        } else {
-            throw new Error("Esa orden no pertence a ese usuario ");
+
+        if(userid.toString() !== orderbd.user.id.toString()) {
+            throw new Error("Esa orden no pertenece a ese usuario");
         }
+
+
+        if (!orderbd) throw new Error("No se encontro en la bd");
+
+        order = await this.CreateJSONOrder(orderbd, "USD");
 
         //Obteniendo Token
         const paramas = new URLSearchParams();
         paramas.append("grant_type", "client_credentials");
         const auth = {
-
             username: CLIENTID,
             password: SECRET_KEY
         }
