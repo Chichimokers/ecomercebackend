@@ -31,8 +31,6 @@ export class PaypalController {
           
            res.send(link)
         }
-    
-    
             
 
  
