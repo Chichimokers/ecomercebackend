@@ -21,7 +21,7 @@ import { ProductClass } from '../enums/products.class.enum';
     price: number;
     
     @Column()
-    class:ProductClass;
+    class: ProductClass;
 
     @Column()
     quantity: number;
