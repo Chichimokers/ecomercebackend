@@ -34,12 +34,12 @@ export class PaypalService {
     }
 
     async CreateJSONOrder(carts: OrderEntity, moneda: string) :Promise<any>{
-        const { v4: uuidv4 } = require('uuid');
-        let requestId = uuidv4(); // Genera un UUID
-        
         if (!carts || !carts.carts) {
             throw new Error("No se encontraron carts en la orden."); // Manejo de error
         }
+
+        const { v4: uuidv4 } = require('uuid');
+        let requestId = uuidv4(); // Genera un UUID
 
         // Calcular el subtotal
         let subtotal = 0 ;
@@ -102,7 +102,6 @@ export class PaypalService {
         if(userid.toString() !== orderbd.user.id.toString()) {
             throw new Error("Esa orden no pertenece a ese usuario");
         }
-
 
         if (!orderbd) throw new Error("No se encontro en la bd");
 

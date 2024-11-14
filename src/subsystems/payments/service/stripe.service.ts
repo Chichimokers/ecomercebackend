@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { Injectable } from "@nestjs/common";
 import { STRIPE_SECRET_KEY } from "../config.payments";
+import { OrderEntity } from "../../orders/entities/order.entity";
 
 @Injectable()
 export class StripeService {
@@ -19,5 +20,17 @@ export class StripeService {
             metadata: {
             }
         });
+    }
+
+    private async createJSONOrder(cart: OrderEntity, currency: string) :Promise<any> {
+        if (!cart || !cart.carts) {
+            throw new Error("No se encontraron carts en la orden."); // Manejo de error
+        }
+
+        const { v4: uuidv4} = require('uuid');
+        let requestId = uuidv4();
+
+
+
     }
 }
