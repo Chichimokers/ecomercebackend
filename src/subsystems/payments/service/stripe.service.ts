@@ -30,8 +30,22 @@ export class StripeService {
         const order = await this.createJSONOrder(cart ,currency);
 
         console.log(order);
+        const session = await this.stripe.checkout.sessions.create(order)
 
-        return await this.stripe.paymentIntents.create(order);
+        return await this.createJSONResponse(session);
+    }
+
+    private async createJSONResponse(session){
+        return {
+            id: session.id,
+            amount_total: session.amount_total,
+            currency: session.currency,
+            payment_status: session.payment_status,
+            url: session.url,
+            success_url: session.success_url,
+            metadata: session.metadata,
+            created: session.created
+        }
     }
 
     private async createJSONOrder(cart: OrderEntity, currency: string='usd') :Promise<any> {
@@ -45,7 +59,8 @@ export class StripeService {
         });
 
         return {
-            amount: subtotal * 100,
+            success_url: 'https://example.com/success',
+            mode: 'payment',
             currency: currency,
             payment_method_types: ['card'],
             metadata: {
@@ -53,11 +68,15 @@ export class StripeService {
                 user_id: cart.user.id.toString()
             },
             line_items: cart.carts.map(cartItem => ({
-                name: cartItem.item.name,
-                amount: cartItem.item.price * 100,
-                currency: currency,
+                price_data: {
+                    currency: currency,
+                    product_data: {
+                        name: cartItem.item.name,
+                    },
+                    unit_amount: cartItem.item.price * 100,
+                },
                 quantity: cartItem.quantity
-            }))
+            })),
         };
     }
 }
