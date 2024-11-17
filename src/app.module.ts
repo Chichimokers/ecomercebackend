@@ -14,13 +14,10 @@ import { RolesModule } from './subsystems/roles/roles.module';
 import { PublicModule } from './subsystems/public/public.module';
 import { PaymentsModule } from './subsystems/payments/payments.module';
 
-
 @Module({
   imports: [
     TypeOrmModule.forRoot(PostgresDataSource.options),
-
     ConfigModule.forRoot({ isGlobal: true }),
-
     UserModule,
     OrdersModule,
     ProductsModule,

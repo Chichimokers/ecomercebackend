@@ -9,16 +9,12 @@ import { ProductEntity } from '../products/entity/product.entity';
 import { UserService } from '../user/service/user.service';
 import { User } from '../user/entities/user.entity';
 
-
 @Module({
-
-imports:[
-
-        TypeOrmModule.forFeature([CartEntity,ProductEntity,User]),    
-        ConfigModule.forRoot({ isGlobal: true }),
-],
-controllers:[CartController],
-providers:[CartService,ProductService,UserService]
-
+        imports: [
+                TypeOrmModule.forFeature([CartEntity, ProductEntity, User]),
+                ConfigModule.forRoot({ isGlobal: true }),
+        ],
+        controllers: [CartController],
+        providers: [CartService, ProductService, UserService]
 })
 export class CartModule {}

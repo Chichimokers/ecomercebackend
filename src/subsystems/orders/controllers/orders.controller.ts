@@ -7,14 +7,13 @@ import {
     Patch,
     Param,
     Delete,
-  } from '@nestjs/common';
-  import {
+} from '@nestjs/common';
+import {
     ApiTags,
     ApiBearerAuth,
     ApiCreatedResponse,
     ApiForbiddenResponse
-  } from '@nestjs/swagger';
-
+} from '@nestjs/swagger';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
@@ -24,55 +23,49 @@ import { CreateOrderDTO } from '../dto/CreateOrderDTO';
 import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO';
 
+@ApiTags('orders')
+@ApiBearerAuth()
+@Controller('orders')
+@UseGuards(LocalAuthGuard,RolesGuard)
+export class OrderControllers {
+    constructor(private readonly orderService: OrderService) { }
 
-  
-  
-  @ApiTags('orders')
-  @ApiBearerAuth()
-  @Controller('orders')
-  @UseGuards(LocalAuthGuard,RolesGuard)
-  
-  export class OrderControllers {
-    constructor(private readonly productservice: OrderService) { }
-  
     @ApiCreatedResponse({ description: 'The record has been created successfully created' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
-    
+
     @Post()
     @Roles(roles.Admin)
-    create(@Body() createUserDto: CreateOrderDTO) {
-      return this.productservice.create(createUserDto);
+    create(@Body() createOrderDto: CreateOrderDTO) {
+        return this.orderService.createOrder(
+            createOrderDto.id,
+            createOrderDto.phone,
+            createOrderDto.address,
+            createOrderDto.CI
+        );
     }
-  
 
-    
     //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
-    public getUsers(): Promise<OrderEntity[]> { 
-      return this.productservice.findAll();
+    public getOrders(): Promise<OrderEntity[]> {
+        return this.orderService.findAll();
     }
-  
-  
+
     @Get(':id')
     @Roles(roles.Admin)
-    getUserById(@Param('id') id: string) {
-      return this.productservice.findOneById(+id);
+    getOrderById(@Param('id') id: string) {
+        return this.orderService.findOneById(+id);
     }
-  
-  
+
     @Patch(':id')
     @Roles(roles.Admin)
-
     updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO) {
-      return this.productservice.update(+id, updateorder);
+        return this.orderService.update(+id, updateorder);
     }
-  
-  
+
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteUser(@Param('id') id: string) {
-      //return this.userService.deleteUser(+id);
-      return this.productservice.softDelete(+id);
+    deleteOrder(@Param('id') id: string) {
+        return this.orderService.softDelete(+id);
     }
-  }
+}

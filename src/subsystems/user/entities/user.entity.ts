@@ -4,8 +4,6 @@ import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 
 @Entity({ name: 'tb_user' })
 export class User extends BaseEntity {
-
-
     @Column({ type: 'varchar', length: 30 })
     name: string;
 
@@ -30,7 +28,5 @@ export class User extends BaseEntity {
     @OneToMany(() => CartEntity, (cart) => cart.id)
     @JoinColumn()
     cart: CartEntity[];
-  
-    
 }
 

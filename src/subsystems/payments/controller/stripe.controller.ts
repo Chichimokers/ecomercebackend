@@ -11,16 +11,13 @@ import { StripeService } from "../service/stripe.service";
 @Controller('visa-mastercard')
 @UseGuards(LocalAuthGuard, RolesGuard)
 export class StripeController{
-    constructor(private readonly stripeService: StripeService) {
-
-    }
+    constructor(private readonly stripeService: StripeService) { }
 
     @Roles(roles.User)
     @Post("create-payment")
-    async createPayment(@Body('amount') amount: number) {
-        const paymentIntent = await this.stripeService.createPaymentIntent(amount);
+    async createPayment(@Body('orderid') orderid: number) {
+        const paymentIntent = await this.stripeService.createPaymentIntent(orderid);
 
         return paymentIntent;
     }
-
 }

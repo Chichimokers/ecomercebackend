@@ -59,17 +59,17 @@ async createOrder(userId: number, phone: string, address: string, CI: string): P
         if (!user) {
             throw new Error('user no encontrado');
         }
-        
-        const newOrder = await this.orderRepository.create({
 
+        const subtotal: number = this.calculateSubTotal(carts);
+
+        const newOrder = this.orderRepository.create({
             user: user, // Asignar el usuario
             phone,
             address, // Asegúrate de que 'address' esté definido en OrderEntity
             CI, // Asegúrate de que 'CI' esté definido en OrderEntity
-            subTotal: this.calculateSubTotal(carts), // Calcular el subtotal
+            subTotal: subtotal, // Calcular el subtotal
             pending: true, // Marcar como pendiente
             carts, // Asignar los productos del carrito
-
         });
 
         // Guardar la nueva orden en la base de datos
@@ -88,7 +88,7 @@ async createOrder(userId: number, phone: string, address: string, CI: string): P
     }
 
     private calculateSubTotal(carts: CartEntity[]): number {
-        let totalprice = 0;
+        let totalprice: number = 0;
 
         carts.forEach((item)=>{
             totalprice += item.total;

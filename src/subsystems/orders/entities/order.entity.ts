@@ -9,10 +9,8 @@ import {
     ManyToOne,
 } from 'typeorm';
 
-  
-  @Entity({name:"tb_orders"})
-  export class OrderEntity  extends BaseEntity{
-
+@Entity({name:"tb_orders"})
+export class OrderEntity  extends BaseEntity{
     @ManyToOne(() => User, (user) => user.id)
     user: User;
 
@@ -30,11 +28,11 @@ import {
 
     @Column()
     subTotal: number;
-  
+
     @Column({ default: true })
     pending: boolean;
 
     @OneToMany(() => CartEntity, (cart) => cart.order)
     carts: CartEntity[];
-  
-  }
+
+}

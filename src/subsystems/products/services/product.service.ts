@@ -17,8 +17,5 @@ export class ProductService extends BaseService<ProductEntity> {
     )
     {
         super(productRepository);
-
-   
     }
-
 }

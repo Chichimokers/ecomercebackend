@@ -9,22 +9,19 @@ import { AuthService } from './service/auth.service';
 import { User } from '../user/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { UserService } from '../user/service/user.service';
- // Importar JwtStrategy
+// Importar JwtStrategy
 
 @Module({
-  imports: [   
-   TypeOrmModule.forFeature([User]),
-    
-  ConfigModule.forRoot({ isGlobal: true }),
-    PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60m' },
-    }),
-   
- 
-  ],
-  controllers: [AuthController],
-  providers: [UserService,AuthService, JwtStrategy], // Agregar estrategias aquí
-})  
+    imports: [
+        TypeOrmModule.forFeature([User]),
+        ConfigModule.forRoot({ isGlobal: true }),
+        PassportModule,
+        JwtModule.register({
+            secret: jwtConstants.secret,
+            signOptions: { expiresIn: '60m' },
+        }),
+    ],
+    controllers: [AuthController],
+    providers: [UserService,AuthService, JwtStrategy], // Agregar estrategias aquí
+})
 export class AuthModule {}

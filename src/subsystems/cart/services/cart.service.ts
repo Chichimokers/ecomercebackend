@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { BaseService } from 'src/common/services/base.service';
-
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { ProductService } from 'src/subsystems/products/services/product.service';
 import { ProductEntity } from '../../products/entity/product.entity';
@@ -19,24 +18,19 @@ export class CartService extends BaseService<CartEntity> {
     constructor(
         @InjectRepository(CartEntity)
         private readonly cartRepository: Repository<CartEntity>,
-
         @Inject(ProductService)
-        private productService : ProductService,
-
+        private productService: ProductService,
         @Inject(UserService)
-        private userService: UserService)
-         {
+        private userService: UserService) {
         super(cartRepository)
     }
 
 
-
-calculartotal(Producto : ProductEntity,dto : addCartDTO):number {
+    calculartotal(Producto: ProductEntity, dto: addCartDTO): number {
         return Producto.price * dto.quantity;
     }
 
-async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
-
+    async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
         const product = await this.productService.findOneById(cartDto.productId); // Asegúrate de tener acceso al repositorio de productos
 
         if (!product) {
@@ -48,14 +42,15 @@ async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
             throw new Error('user no encontrado');
         }
 
-       const carent =  await this.cartRepository.create({
+        const carent = this.cartRepository.create({
             user: user,
             item: product,
             quantity: cartDto.quantity,
-            total: this.calculartotal(product,cartDto),
+            total: this.calculartotal(product, cartDto),
             paid: false,
             order: null
         })
+
         return await this.cartRepository.save(carent)
     }
 

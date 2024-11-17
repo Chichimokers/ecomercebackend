@@ -36,7 +36,7 @@ import { extname } from 'path';
 
 export class ProductControllers {
     constructor(private readonly productservice: ProductService) { }
-  
+
     @ApiCreatedResponse({ description: 'Los registros han sido creados exitosamente' })
     @ApiForbiddenResponse({ description: 'Prohibido' })
     @ApiConsumes('multipart/form-data')
@@ -51,8 +51,8 @@ export class ProductControllers {
             }
         })
     }))
-    
-    create(@Body() createProductDTO: createProductDTO,@UploadedFile() file?: Express.Multer.File) {
+
+    create(@Body() createProductDTO: createProductDTO, @UploadedFile() file?: Express.Multer.File) {
         let imagePaths = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
 
         return this.productservice.create({
@@ -60,33 +60,29 @@ export class ProductControllers {
             image: imagePaths // Solo se incluye si imagePaths no es undefined
         });
     }
-    
+
     //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
     public getProducts(): Promise<ProductEntity[]> {
-      return this.productservice.findAll();
+        return this.productservice.findAll();
     }
-  
-  
+
     @Get(':id')
     @Roles(roles.Admin)
     getProductById(@Param('id') id: string) {
-      return this.productservice.findOneById(+id);
+        return this.productservice.findOneById(+id);
     }
-  
-  
+
     @Patch(':id')
     @Roles(roles.Admin)
     updateProduct(@Param('id') id: string, @Body() updateUserDto: updateProductDTO) {
-      return this.productservice.update(+id, updateUserDto);
+        return this.productservice.update(+id, updateUserDto);
     }
-  
-  
+
     @Delete(':id')
     @Roles(roles.Admin)
     deleteProduct(@Param('id') id: string) {
-      //return this.userService.deleteUser(+id);
-      return this.productservice.softDelete(+id);
+        return this.productservice.softDelete(+id);
     }
-  }
+}

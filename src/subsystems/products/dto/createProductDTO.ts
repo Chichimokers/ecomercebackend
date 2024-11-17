@@ -5,12 +5,10 @@ import {
     MaxLength,
     IsNumber
 } from 'class-validator';
-
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 import { ProductClass } from '../enums/products.class.enum';
-
 
 export class createProductDTO extends BaseDto {
     @ApiProperty({

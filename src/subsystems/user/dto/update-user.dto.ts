@@ -9,10 +9,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-// export class UpdateUserDto extends PartialType(CreateUserDto) {
-
 export class UpdateUserDto {
-
     @ApiPropertyOptional({
         example: "User name",
         description: "Name of your user",
@@ -24,14 +21,12 @@ export class UpdateUserDto {
     @IsNotEmpty()
     name?: string;
 
-
     @ApiPropertyOptional({
         example: "User Email",
         description: "A valid email address",
     })
     @IsEmail({}, { message: 'Please provide valid Email.' })
     email?: string;
-
 
     @ApiPropertyOptional({
         example: "1",
@@ -40,6 +35,4 @@ export class UpdateUserDto {
     @IsNumber()
     @IsNotEmpty()
     rol?:number
-
-
 }

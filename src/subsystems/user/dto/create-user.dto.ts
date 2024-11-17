@@ -11,24 +11,20 @@ import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 
-
 const passwordRegEx =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
 
 export class CreateUserDto extends BaseDto {
-
     @ApiProperty({
         example: "User name",
         description: "Name of your user",
     })
-
     @Transform(({ value }) => value.trim())
     @IsString()
     @MinLength(2, { message: 'Name must have atleast 2 characters.' })
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
     name: string;
-
 
     @ApiProperty({
         example: "User Email",
@@ -52,5 +48,4 @@ export class CreateUserDto extends BaseDto {
     @IsNumber()
     @IsNotEmpty()
     rol :number;
-
 }

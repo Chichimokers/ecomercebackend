@@ -12,8 +12,7 @@ import { User } from '../user/entities/user.entity';
     imports:[
         TypeOrmModule.forFeature([OrderEntity,CartEntity,User]),    
         ConfigModule.forRoot({ isGlobal: true }),
-    ]
-    ,
+    ],
     providers:[OrderService,UserService],
     controllers:[OrderControllers],
   

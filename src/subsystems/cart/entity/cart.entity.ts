@@ -8,13 +8,10 @@ import {
   Column,
   Entity,
   ManyToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
-
 
 @Entity({ name: 'tb_cart' })
 export class CartEntity extends BaseEntity  {
-
     @Column()
     total: number;
   

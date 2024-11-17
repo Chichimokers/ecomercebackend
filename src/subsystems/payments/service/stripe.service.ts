@@ -1,36 +1,63 @@
-import Stripe from 'stripe';
-import { Injectable } from "@nestjs/common";
+import Stripe from "stripe";
+import { Injectable, Inject } from "@nestjs/common";
 import { STRIPE_SECRET_KEY } from "../config.payments";
 import { OrderEntity } from "../../orders/entities/order.entity";
+import { Repository } from "typeorm";
+import { OrderService } from "../../orders/services/orders.service";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class StripeService {
     private stripe: Stripe;
-    constructor() {
+    constructor(
+        @Inject(OrderService) public orderService: OrderService,
+        @InjectRepository(OrderEntity)
+        private readonly orderRepository: Repository<OrderEntity>
+    )
+    {
         this.stripe = new Stripe(STRIPE_SECRET_KEY, {
             apiVersion: '2024-09-30.acacia',
         });
     }
 
-    async createPaymentIntent(amount: number, currency: string='usd') {
-        return await this.stripe.paymentIntents.create({
-            amount: amount,
-            currency: currency,
-            payment_method_types: ['card'],
-            metadata: {
-            }
+    async createPaymentIntent(orderid: number, currency: string='usd') {
+
+        const cart: OrderEntity = await this.orderRepository.findOne({
+            where: { id: orderid },
+            relations: ['carts','carts.item','user'], // Asegúrate de incluir la relación 'carts'
         });
+
+        const order = await this.createJSONOrder(cart ,currency);
+
+        console.log(order);
+
+        return await this.stripe.paymentIntents.create(order);
     }
 
-    private async createJSONOrder(cart: OrderEntity, currency: string) :Promise<any> {
+    private async createJSONOrder(cart: OrderEntity, currency: string='usd') :Promise<any> {
         if (!cart || !cart.carts) {
             throw new Error("No se encontraron carts en la orden."); // Manejo de error
         }
 
-        const { v4: uuidv4} = require('uuid');
-        let requestId = uuidv4();
+        let subtotal = 0;
+        cart.carts.forEach(cartItem => {
+            subtotal += cartItem.total;
+        });
 
-
-
+        return {
+            amount: subtotal * 100,
+            currency: currency,
+            payment_method_types: ['card'],
+            metadata: {
+                order_id: cart.id.toString(),
+                user_id: cart.user.id.toString()
+            },
+            line_items: cart.carts.map(cartItem => ({
+                name: cartItem.item.name,
+                amount: cartItem.item.price * 100,
+                currency: currency,
+                quantity: cartItem.quantity
+            }))
+        };
     }
 }

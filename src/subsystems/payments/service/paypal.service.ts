@@ -6,17 +6,16 @@ import axios from 'axios';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { OrderService } from 'src/subsystems/orders/services/orders.service';
 
-
 @Injectable()
 export class PaypalService {
     constructor(
-        @Inject(OrderService) public orderService:OrderService,
+        @Inject(OrderService) public orderService: OrderService,
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
-    ) { }
+    ) {
+    }
 
     async confirmorder(token: string): Promise<boolean> {
-
         const authd = {
             username: CLIENTID,
             password: SECRET_KEY
@@ -33,7 +32,7 @@ export class PaypalService {
         return response.data.status === "COMPLETED";
     }
 
-    async CreateJSONOrder(carts: OrderEntity, moneda: string) :Promise<any>{
+    async CreateJSONOrder(carts: OrderEntity, moneda: string): Promise<any> {
         if (!carts || !carts.carts) {
             throw new Error("No se encontraron carts en la orden."); // Manejo de error
         }
@@ -42,7 +41,7 @@ export class PaypalService {
         let requestId = uuidv4(); // Genera un UUID
 
         // Calcular el subtotal
-        let subtotal = 0 ;
+        let subtotal = 0;
         carts.carts.forEach(cart => {
             subtotal += cart.total; // Sumar el total de cada cart
         });
@@ -94,12 +93,12 @@ export class PaypalService {
 
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['carts','carts.item','user'], // Asegúrate de incluir la relación 'carts'
+            relations: ['carts', 'carts.item', 'user'], // Asegúrate de incluir la relación 'carts'
         });
 
         let order: string = "";
 
-        if(userid.toString() !== orderbd.user.id.toString()) {
+        if (userid.toString() !== orderbd.user.id.toString()) {
             throw new Error("Esa orden no pertenece a ese usuario");
         }
 

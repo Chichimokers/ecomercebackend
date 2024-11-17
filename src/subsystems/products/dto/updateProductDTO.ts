@@ -7,17 +7,14 @@ import {
 } from 'class-validator';
 
 import { Transform } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 import { ProductClass } from '../enums/products.class.enum';
-
-
 
 const passwordRegEx =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
 
 export class  updateProductDTO  extends BaseDto{
-
     @ApiProperty({
         example: "tomate",
         description: "products name",
@@ -29,7 +26,6 @@ export class  updateProductDTO  extends BaseDto{
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
     name?: string;
-
 
     @ApiProperty({
         example: "123.25",
