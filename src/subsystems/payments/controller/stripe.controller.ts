@@ -10,6 +10,7 @@ import { StripeService } from "../service/stripe.service";
 @ApiBearerAuth()
 @Controller('visa-mastercard')
 @UseGuards(LocalAuthGuard, RolesGuard)
+
 export class StripeController{
     constructor(private readonly stripeService: StripeService) { }
 
