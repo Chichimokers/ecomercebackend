@@ -20,7 +20,7 @@ export class StripeService {
         });
     }
 
-    async createPaymentIntent(orderid: number, currency: string='usd') {
+    async createCheckoutSession(orderid: number, currency: string='usd') {
 
         const cart: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
@@ -78,5 +78,28 @@ export class StripeService {
                 quantity: cartItem.quantity
             })),
         };
+    }
+
+    async CaptureCheckoutSession(sessionId: string){
+        const session = await this.stripe.checkout.sessions.retrieve(sessionId);
+
+        if (session.payment_status !== 'paid') {
+            return {
+                checkout: {
+                    status: false,
+                    message: 'El pago no ha sido realizado.',
+                    session_url: session.url,
+                }
+            }
+        }
+
+        // Aqui va para procesar la orden!
+        // End process order
+        return {
+            checkout: {
+                status: true,
+                message: 'El pago ha sido realizado con éxito.'
+            }
+        }
     }
 }
