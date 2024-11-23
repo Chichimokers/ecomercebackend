@@ -5,6 +5,7 @@ import { OrderEntity } from '../entities/order.entity';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { BaseService } from 'src/common/services/base.service';
 import { UserService } from 'src/subsystems/user/service/user.service';
+import { forEachResolvedProjectReference } from "ts-loader/dist/instances";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -25,7 +26,7 @@ export class OrderService extends BaseService<OrderEntity> {
     }
 
 
-async getHistory(userId: number) :Promise<OrderEntity[]> {
+    async getHistory(userId: number) :Promise<OrderEntity[]> {
     console.log(userId)
     return await this.orderRepository.find({
 
@@ -39,7 +40,8 @@ async getHistory(userId: number) :Promise<OrderEntity[]> {
 
   
 }
-async createOrder(userId: number, phone: string, address: string, CI: string): Promise<OrderEntity| any>  {
+
+    async createOrder(userId: number, phone: string, address: string, CI: string): Promise<OrderEntity| any>  {
         // Obtener los productos del carrito que no han sido pagados
         const carts = await this.cartRepository.find({
 
@@ -95,5 +97,27 @@ async createOrder(userId: number, phone: string, address: string, CI: string): P
         })
 
         return totalprice;
+    }
+
+    async processOrders(orderid: number) {
+        const order = await this.orderRepository.findOne(
+            { where: { id: orderid } }
+        );
+
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        let carts = await this.cartRepository.find({
+            where: { order: { id: orderid } }
+        });
+
+        for (const cart of carts) {
+            cart.paid = false;
+            await this.cartRepository.save(cart)
+        }
+
+        order.pending = false;
+        await this.orderRepository.save(order);
     }
 }

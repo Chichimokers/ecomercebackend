@@ -5,6 +5,7 @@ import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
 import { InjectRepository } from "@nestjs/typeorm";
+import { toNumber } from "../../../common/utils/cast.utils";
 
 @Injectable()
 export class StripeService {
@@ -83,6 +84,7 @@ export class StripeService {
     async CaptureCheckoutSession(sessionId: string){
         const session = await this.stripe.checkout.sessions.retrieve(sessionId);
 
+        console.log(session.payment_status)
         if (session.payment_status !== 'paid') {
             return {
                 checkout: {
@@ -94,6 +96,12 @@ export class StripeService {
         }
 
         // Aqui va para procesar la orden!
+        const captured_id = toNumber(session.metadata.order_id);
+
+        console.log(captured_id)
+
+        await this.orderService.processOrders(captured_id)
+
         // End process order
         return {
             checkout: {

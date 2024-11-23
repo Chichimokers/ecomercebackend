@@ -17,14 +17,12 @@ export class StripeController{
     @Roles(roles.User)
     @Post("create-payment")
     async createPayment(@Body('orderid') orderid: number) {
-        const paymentIntent = await this.stripeService.createCheckoutSession(orderid);
-
-        return paymentIntent;
+        return await this.stripeService.createCheckoutSession(orderid);
     }
 
     @Roles(roles.User)
     @Post("capture-payment")
-    async capturePayment(@Query('sessionId') sessionId: string) {
+    async capturePayment(@Body('sessionId') sessionId: string) {
         const response = await this.stripeService.CaptureCheckoutSession(sessionId);
 
         return response.checkout.status ? { success: true } : { success: false, errorCode: 400 };
