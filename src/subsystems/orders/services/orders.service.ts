@@ -117,10 +117,9 @@ export class OrderService extends BaseService<OrderEntity> {
         });
 
         for (const cart of carts) {
-<<<<<<< HEAD
 
             await this.cartRepository.save(cart)
-=======
+
             const productOnStock =
                 await this.productRepository.findOne(
                     { where: { id: cart.item.id }}
@@ -133,7 +132,7 @@ export class OrderService extends BaseService<OrderEntity> {
             productOnStock.quantity -= cart.quantity;
 
             await this.productRepository.save(productOnStock);
->>>>>>> 2d83c9ea0442ab3410d54e52e91bfe7761ed6b7f
+
         }
 
         order.pending = false;
