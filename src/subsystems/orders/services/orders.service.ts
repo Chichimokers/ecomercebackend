@@ -6,6 +6,7 @@ import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { BaseService } from 'src/common/services/base.service';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { forEachResolvedProjectReference } from "ts-loader/dist/instances";
+import { ProductEntity } from "../../products/entity/product.entity";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -19,6 +20,8 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly orderRepository: Repository<OrderEntity>,
         @InjectRepository(CartEntity)
         private readonly cartRepository: Repository<CartEntity>,
+        @InjectRepository(ProductEntity)
+        private readonly productRepository: Repository<ProductEntity>,
         @Inject(UserService)
         private userService : UserService
     ) {
@@ -113,8 +116,20 @@ export class OrderService extends BaseService<OrderEntity> {
         });
 
         for (const cart of carts) {
-            cart.paid = false;
-            await this.cartRepository.save(cart)
+
+            // FIXME Error aqui encontrando el producto, cart.item == Undefined
+            const productOnStock =
+                await this.productRepository.findOne(
+                    { where: { id: cart.item.id }}
+                );
+
+            if(productOnStock.quantity < cart.quantity) {
+                throw new Error('There is not enough stock');
+            }
+
+            productOnStock.quantity -= cart.quantity;
+
+            await this.productRepository.save(productOnStock);
         }
 
         order.pending = false;

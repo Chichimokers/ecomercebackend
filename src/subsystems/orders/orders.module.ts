@@ -7,10 +7,11 @@ import { OrderService } from './services/orders.service';
 import { CartEntity } from '../cart/entity/cart.entity';
 import { UserService } from '../user/service/user.service';
 import { User } from '../user/entities/user.entity';
+import { ProductEntity } from "../products/entity/product.entity";
 
 @Module({
     imports:[
-        TypeOrmModule.forFeature([OrderEntity,CartEntity,User]),    
+        TypeOrmModule.forFeature([OrderEntity,CartEntity,ProductEntity,User]),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
     providers:[OrderService,UserService],
