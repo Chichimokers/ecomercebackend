@@ -117,12 +117,11 @@ return true
         }
 
         let carts = await this.cartRepository.find({
-            where: { order: { id: orderid } }
+            where: { order: { id: orderid } },
+            relations: ['item'],
         });
 
         for (const cart of carts) {
-
-            // FIXME Error aqui encontrando el producto, cart.item == Undefined
             const productOnStock =
                 await this.productRepository.findOne(
                     { where: { id: cart.item.id }}
