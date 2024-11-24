@@ -28,6 +28,11 @@ export class OrderService extends BaseService<OrderEntity> {
         super(orderRepository);
     }
 
+async processOrder(orderid:number):Promise<true>{
+
+
+return true
+}
 
     async getHistory(userId: number) :Promise<OrderEntity[]> {
     console.log(userId)
