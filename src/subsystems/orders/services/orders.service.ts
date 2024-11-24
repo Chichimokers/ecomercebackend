@@ -6,6 +6,7 @@ import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { BaseService } from 'src/common/services/base.service';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { forEachResolvedProjectReference } from "ts-loader/dist/instances";
+import { ProductEntity } from "../../products/entity/product.entity";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -19,6 +20,8 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly orderRepository: Repository<OrderEntity>,
         @InjectRepository(CartEntity)
         private readonly cartRepository: Repository<CartEntity>,
+        @InjectRepository(ProductEntity)
+        private readonly productRepository: Repository<ProductEntity>,
         @Inject(UserService)
         private userService : UserService
     ) {
@@ -109,12 +112,28 @@ export class OrderService extends BaseService<OrderEntity> {
         }
 
         let carts = await this.cartRepository.find({
-            where: { order: { id: orderid } }
+            where: { order: { id: orderid } },
+            relations: ['item'],
         });
 
         for (const cart of carts) {
+<<<<<<< HEAD
 
             await this.cartRepository.save(cart)
+=======
+            const productOnStock =
+                await this.productRepository.findOne(
+                    { where: { id: cart.item.id }}
+                );
+
+            if(productOnStock.quantity < cart.quantity) {
+                throw new Error('There is not enough stock');
+            }
+
+            productOnStock.quantity -= cart.quantity;
+
+            await this.productRepository.save(productOnStock);
+>>>>>>> 2d83c9ea0442ab3410d54e52e91bfe7761ed6b7f
         }
 
         order.pending = false;
