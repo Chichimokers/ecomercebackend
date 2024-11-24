@@ -5,6 +5,7 @@ import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
 import { InjectRepository } from "@nestjs/typeorm";
+import { toNumber } from "../../../common/utils/cast.utils";
 
 @Injectable()
 export class StripeService {
@@ -20,7 +21,7 @@ export class StripeService {
         });
     }
 
-    async createPaymentIntent(orderid: number, currency: string='usd') {
+    async createCheckoutSession(orderid: number, currency: string='usd') {
 
         const cart: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
@@ -78,5 +79,35 @@ export class StripeService {
                 quantity: cartItem.quantity
             })),
         };
+    }
+
+    async CaptureCheckoutSession(sessionId: string){
+        const session = await this.stripe.checkout.sessions.retrieve(sessionId);
+
+        console.log(session.payment_status)
+        if (session.payment_status !== 'paid') {
+            return {
+                checkout: {
+                    status: false,
+                    message: 'El pago no ha sido realizado.',
+                    session_url: session.url,
+                }
+            }
+        }
+
+        // Aqui va para procesar la orden!
+        const captured_id = toNumber(session.metadata.order_id);
+
+        console.log(captured_id)
+
+        await this.orderService.processOrders(captured_id)
+
+        // End process order
+        return {
+            checkout: {
+                status: true,
+                message: 'El pago ha sido realizado con éxito.'
+            }
+        }
     }
 }

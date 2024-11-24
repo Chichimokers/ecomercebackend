@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Controller, UseGuards, Post, Body } from "@nestjs/common";
+import { Controller, UseGuards, Post, Body, Query } from "@nestjs/common";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
@@ -17,8 +17,14 @@ export class StripeController{
     @Roles(roles.User)
     @Post("create-payment")
     async createPayment(@Body('orderid') orderid: number) {
-        const paymentIntent = await this.stripeService.createPaymentIntent(orderid);
+        return await this.stripeService.createCheckoutSession(orderid);
+    }
 
-        return paymentIntent;
+    @Roles(roles.User)
+    @Post("capture-payment")
+    async capturePayment(@Body('sessionId') sessionId: string) {
+        const response = await this.stripeService.CaptureCheckoutSession(sessionId);
+
+        return response.checkout.status ? { success: true } : { success: false, errorCode: 400 };
     }
 }
