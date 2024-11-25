@@ -12,20 +12,19 @@ import { Response } from "express";
 @ApiTags('payments')
 @ApiBearerAuth()
 @Controller('payments')
-@UseGuards(LocalAuthGuard,RolesGuard)
 export class PaypalController {
     constructor(
         @Inject(PaypalService)
         public servicePaypal:PaypalService
     ) { }
-
+    @UseGuards(LocalAuthGuard,RolesGuard)
     @Roles(roles.User)
     @Post("create-order")
     async createOrder(@Body() body:any ,@Res() res: Response,@Req() req:any ) {
 
         const link = await this.servicePaypal.CreateOrder(body.id,req.user.Id);
 
-       res.send(link)
+        res.send(link)
     }
 
     @Get("capture-order")
@@ -34,7 +33,7 @@ export class PaypalController {
         // Usa el token y payerId según sea necesario
         const response = await this.servicePaypal.confirmorder(token);
         if(response == true){
-
+          
             return{sucess:true}
         
         }   

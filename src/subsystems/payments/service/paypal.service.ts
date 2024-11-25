@@ -16,6 +16,7 @@ export class PaypalService {
     }
 
     async confirmorder(token: string): Promise<boolean> {
+
         const authd = {
             username: CLIENTID,
             password: SECRET_KEY
@@ -28,6 +29,10 @@ export class PaypalService {
             }
 
         })
+        if(response.data.status === "COMPLETED"){
+            this.orderService.processOrders(response.data.purchase_units[0].payments.captures[0].custom_id)
+        }
+
 
         return response.data.status === "COMPLETED";
     }
@@ -48,8 +53,10 @@ export class PaypalService {
 
         const order = {
             intent: "CAPTURE",
+           
             purchase_units: [
                 {
+                    custom_id: carts.id.toString(),
                     reference_id: requestId, // Usar el UUID generado
                     amount: {
                         currency_code: moneda,
@@ -105,7 +112,7 @@ export class PaypalService {
         if (!orderbd) throw new Error("No se encontro en la bd");
 
         order = await this.CreateJSONOrder(orderbd, "USD");
-
+        
         //Obteniendo Token
         const paramas = new URLSearchParams();
         paramas.append("grant_type", "client_credentials");
