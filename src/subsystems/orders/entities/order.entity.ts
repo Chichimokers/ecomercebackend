@@ -32,6 +32,10 @@ export class OrderEntity  extends BaseEntity{
     @Column({ default: true })
     pending: boolean;
 
+    @Column({nullable: true, default: null})
+    @IsString()
+    stripe_id: string;
+
     @OneToMany(() => CartEntity, (cart) => cart.order)
     carts: CartEntity[];
 

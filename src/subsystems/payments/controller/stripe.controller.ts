@@ -14,17 +14,17 @@ import { StripeService } from "../service/stripe.service";
 export class StripeController{
     constructor(private readonly stripeService: StripeService) { }
 
-    @Roles(roles.User)
+    @Roles(roles.Admin)
     @Post("create-payment")
     async createPayment(@Body('orderid') orderid: number) {
         return await this.stripeService.createCheckoutSession(orderid);
     }
 
-    @Roles(roles.User)
+    // @Roles(roles.User)
     @Post("capture-payment")
-    async capturePayment(@Body('sessionId') sessionId: string) {
-        const response = await this.stripeService.CaptureCheckoutSession(sessionId);
-
+    async capturePayment(@Query('order_id') orderId: number) {
+        console.log(orderId);
+        const response = await this.stripeService.CaptureCheckoutSession(orderId);
         return response.checkout.status ? { success: true } : { success: false, errorCode: 400 };
     }
 }
