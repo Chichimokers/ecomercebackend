@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from 'src/subsystems/products/entity/product.entity';
 import { Repository, Like } from 'typeorm';
+import { OrderEntity } from "../../orders/entities/order.entity";
 
 @Injectable()
 export class PublicService {
     constructor(
         @InjectRepository(ProductEntity)
         private readonly productRepository: Repository<ProductEntity>,
+        @InjectRepository(OrderEntity)
+        private readonly orderRepository: Repository<OrderEntity>,
     )
     { }
 
@@ -31,7 +34,6 @@ export class PublicService {
             nextUrl
         };
     }
-
     // Find product by name
     public async getProductByName(name: string) {
         return await this.productRepository.find({
@@ -46,6 +48,19 @@ export class PublicService {
             where: {
                 id
             }
+        });
+    }
+
+    public async getPublicOrders(userId: number) :Promise<OrderEntity[]> {
+        console.log(userId)
+        return await this.orderRepository.find({
+
+            where: {
+
+                user:{ id: userId },
+
+            },
+            relations: ['carts','carts.item',]
         });
     }
 }

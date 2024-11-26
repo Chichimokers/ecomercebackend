@@ -1,6 +1,6 @@
 // Import Line
 import { Req, UseGuards, Controller, Get, Post, Query, BadRequestException} from "@nestjs/common";
-import { ApiTags, ApiBearerAuth, ApiBody, ApiQuery } from "@nestjs/swagger";
+import { ApiTags, ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { LocalAuthGuard } from "src/subsystems/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
@@ -9,25 +9,31 @@ import { OrderService } from "src/subsystems/orders/services/orders.service";
 import { isValidCi } from "src/common/utils/validate-ci.utils";
 import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
 import { PublicService } from "../services/public.service";
+import { GetOrderDTO } from "../dto/GetOrderDTO";
+import { GetProductDTO } from "../dto/GetProductsDTO";
 
 // Controller
 @ApiTags('public')
 @ApiBearerAuth()
 @Controller('public')
-@UseGuards(LocalAuthGuard,RolesGuard)
-
+@UseGuards(LocalAuthGuard, RolesGuard)
 export class PublicController {
-    constructor (
+    constructor(
         private readonly orderService: OrderService,
-        private readonly publicService: PublicService
-    ) { }
+        private readonly publicService: PublicService,
+    ) {}
 
     // Get User Order History
     // TODO pending to review
     @Get('/orders')
     @Roles(roles.User)
+    @ApiResponse({
+        status: 200,
+        description: "User's personal orders.",
+        type: [GetOrderDTO],
+    })
     public getOrders(@Req() request) {
-        return this.orderService.getHistory(request.user.Id);
+        return this.publicService.getPublicOrders(request.user.Id);
     }
 
     // Create Order
@@ -41,16 +47,23 @@ export class PublicController {
         const phone = request.body.phone;
         const address = request.body.address;
         const CI = request.body.CI;
-    
+
         // Create the order
         if (!isValidCi(CI)) {
-            throw new BadRequestException("Ci is not valid");
+            throw new BadRequestException('Ci is not valid');
         }
 
-        const orden : any = await this.orderService.createOrder(userId, phone, address, CI);
+        const orden: any = await this.orderService.createOrder(
+            userId,
+            phone,
+            address,
+            CI,
+        );
 
         if (orden == null) {
-            throw new BadRequestException("El usuario no tiene productos en el carrito."); // Mensaje personalizado
+            throw new BadRequestException(
+                'El usuario no tiene productos en el carrito.',
+            ); // Mensaje personalizado
         }
 
         return orden;
@@ -61,7 +74,11 @@ export class PublicController {
     @Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    public getProducts(@Query('page') page: number=1, @Query('limit') limit: number = 10) {
+    @ApiResponse({ type: [GetProductDTO] })
+    public getProducts(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+    ) {
         page = Number(page);
         return this.publicService.getProducts(page, limit);
     }
@@ -69,8 +86,8 @@ export class PublicController {
     // Get Product by Name
     @Get('/products_search')
     @Roles(roles.User)
-    @ApiQuery({ name: 'search', required: false, type: String})
-    public getProductByName(@Query('search') search: string){
+    @ApiQuery({ name: 'search', required: false, type: String })
+    public getProductByName(@Query('search') search: string) {
         return this.publicService.getProductByName(search);
     }
 

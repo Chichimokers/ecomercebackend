@@ -12,8 +12,8 @@ import { ProductClass } from '../enums/products.class.enum';
 
 export class createProductDTO extends BaseDto {
     @ApiProperty({
-        example: "tomate",
-        description: "product name",
+        example: "Meat",
+        description: "Product name",
     })
     @Transform(({ value }) => value.trim())
     @IsString()
@@ -39,7 +39,7 @@ export class createProductDTO extends BaseDto {
     class: ProductClass;
 
     @ApiProperty({
-        example: "123",
+        example: "100",
         description: "A valid quantity",
     })
     @IsNotEmpty()

@@ -16,13 +16,13 @@ const passwordRegEx =
 
 export class  updateProductDTO  extends BaseDto{
     @ApiProperty({
-        example: "tomate",
-        description: "products name",
+        example: "Meat",
+        description: "Product Name",
     })
 
     @Transform(({ value }) => value.trim())
     @IsString()
-    @MinLength(2, { message: 'Name must have atleast 2 characters.' })
+    @MinLength(2, { message: 'Name must have at least 2 characters.' })
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
     name?: string;
@@ -43,7 +43,7 @@ export class  updateProductDTO  extends BaseDto{
     class?: ProductClass;
 
     @ApiProperty({
-        example: "123",
+        example: "120",
         description: "A valid quantity",
     })
     @IsNotEmpty()
