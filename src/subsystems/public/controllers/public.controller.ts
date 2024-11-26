@@ -10,7 +10,7 @@ import { isValidCi } from "src/common/utils/validate-ci.utils";
 import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
 import { PublicService } from "../services/public.service";
 import { GetOrderDTO } from "../dto/GetOrderDTO";
-import { GetProductDTO } from "../dto/GetProductsDTO";
+import { GetFindsProductDTO, GetProductDTO, ProductDTO } from "../dto/GetProductsDTO";
 
 // Controller
 @ApiTags('public')
@@ -30,7 +30,7 @@ export class PublicController {
     @ApiResponse({
         status: 200,
         description: "User's personal orders.",
-        type: [GetOrderDTO],
+        type: GetOrderDTO,
     })
     public getOrders(@Req() request) {
         return this.publicService.getPublicOrders(request.user.Id);
@@ -74,7 +74,7 @@ export class PublicController {
     @Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    @ApiResponse({ type: [GetProductDTO] })
+    @ApiResponse({ type: GetProductDTO })
     public getProducts(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
@@ -87,6 +87,7 @@ export class PublicController {
     @Get('/products_search')
     @Roles(roles.User)
     @ApiQuery({ name: 'search', required: false, type: String })
+    @ApiResponse({ description: "Products with the search name" ,type: GetFindsProductDTO })
     public getProductByName(@Query('search') search: string) {
         return this.publicService.getProductByName(search);
     }
@@ -95,6 +96,7 @@ export class PublicController {
     @Get('/product_info')
     @Roles(roles.User)
     @ApiQuery({ name: 'id', required: true, type: Number })
+    @ApiResponse({ description: "Description of a product by id", type: ProductDTO })
     public getProductInfo(@Query('id') id: number) {
         return this.publicService.getProductInfo(id);
     }

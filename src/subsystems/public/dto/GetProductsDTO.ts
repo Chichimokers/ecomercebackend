@@ -2,7 +2,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { BaseDto } from "../../../common/dto/base.dto";
 
-class ProductDTO extends BaseDto {
+export class ProductDTO extends BaseDto {
     @ApiProperty({ example: 1, description: "Identifier" })
     id: number;
 
@@ -29,6 +29,11 @@ class ProductDTO extends BaseDto {
 
     @ApiProperty({ example: 122, description: "Product quantity" })
     quantity: number;
+}
+
+export class GetFindsProductDTO {
+    @ApiProperty({ description: "List of finds products", type: [ProductDTO]})
+    products: ProductDTO[];
 }
 
 export class GetProductDTO {
