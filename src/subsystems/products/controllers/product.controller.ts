@@ -19,8 +19,8 @@ import {
 } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';
-import { createProductDTO } from '../dto/createProductDTO';
-import { updateProductDTO } from '../dto/updateProductDTO';
+import { createProductDTO } from '../dto/createProductDTO.dto';
+import { updateProductDTO } from '../dto/updateProductDTO.dto';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';

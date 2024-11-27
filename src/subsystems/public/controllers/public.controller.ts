@@ -7,7 +7,7 @@ import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
 import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { OrderService } from "src/subsystems/orders/services/orders.service";
 import { isValidCi } from "src/common/utils/validate-ci.utils";
-import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO";
+import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO.dto";
 import { PublicService } from "../services/public.service";
 import { GetOrderDTODto } from "../dto/GetOrderDTO.dto";
 import { GetFindsProductDTO, GetProductDTO, ProductDTO } from "../dto/GetProductsDTO.dto";

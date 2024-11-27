@@ -1,9 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { roles } from '../../roles/enum/roles.enum';
 import { AuthService } from '../service/auth.service';
-import { LoginBody } from '../dto/loginDTO';
+import { LoginBody } from '../dto/loginDTO.dto';
 import { CreateUserDto } from 'src/subsystems/user/dto';
-import { SingUpBody } from '../dto/signupDTO';
+import { SingUpBody } from '../dto/signupDTO.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('login')

@@ -19,9 +19,9 @@ import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { OrderService } from '../services/orders.service';
-import { CreateOrderDTO } from '../dto/CreateOrderDTO';
+import { CreateOrderDTO } from '../dto/CreateOrderDTO.dto';
 import { OrderEntity } from '../entities/order.entity';
-import { updateOrderDTO } from '../dto/updateOrderDTO';
+import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
 
 @ApiTags('orders')
 @ApiBearerAuth()

@@ -5,7 +5,7 @@ import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
 import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { StripeService } from "../service/stripe.service";
-import { StripeDTO } from "../dto/stripedto";
+import { StripeDTO } from "../dto/stripedto.dto";
 
 @ApiTags('visa-mastercard')
 @ApiBearerAuth()

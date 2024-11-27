@@ -6,7 +6,7 @@ import { BaseService } from 'src/common/services/base.service';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { ProductService } from 'src/subsystems/products/services/product.service';
 import { ProductEntity } from '../../products/entity/product.entity';
-import { addCartDTO } from '../dto/addCartDTO';
+import { addCartDTO } from '../dto/addCartDTO.dto';
 
 @Injectable()
 export class CartService extends BaseService<CartEntity> {

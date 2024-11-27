@@ -22,7 +22,7 @@ import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { updateCartDto } from '../dto/updateCartDTO';
-import { addCartDTO } from '../dto/addCartDTO';
+import { addCartDTO } from '../dto/addCartDTO.dto';
 
 @ApiTags('cart')
 @ApiBearerAuth()
@@ -35,7 +35,7 @@ export class CartController {
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @Post()
     @Roles(roles.User)
-    create(@Body() addCarDTO: addCartDTO,@Req() req:any) {
+    create(@Body() addCarDTO: addCartDTO, @Req() req:any) {
         return this.productservice.addToCart(addCarDTO,req.user.Id);
     }
 
