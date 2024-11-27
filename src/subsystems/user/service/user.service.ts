@@ -36,6 +36,7 @@ export class UserService extends BaseService<User> {
         return this.findAll();
     }
 
+    // FIXME HTTP ERROR 500, no existen en el usuario, los roles ni rol.
     async findUserById(id: number): Promise<UserDto> {
         let user = await this.repository.findOne({
             where: { id: id, deleted_at: null },
@@ -70,7 +71,7 @@ export class UserService extends BaseService<User> {
     }
 
     deleteUser(id: number): Promise<{ affected?: number }> {
-        return this.delete(id); // Utiliza el método delete de BaseService
+        return this.delete(id);
     }
 
     findOneByEmailWithPassword(email: string) {

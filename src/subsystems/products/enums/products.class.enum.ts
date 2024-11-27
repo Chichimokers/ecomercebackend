@@ -6,7 +6,7 @@ export enum ProductClass {
     PC = 5,
 }
 
-// Documentar el enum como un todo
+// Documentar el enum como un to do
 export const ProductClassDocumentation = {
     Ropa: { example: 1, description: 'Ropa' },
     Zapatos: { example: 2, description: 'Zapatos' },

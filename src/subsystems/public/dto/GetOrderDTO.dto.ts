@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { BaseDto } from "../../../common/dto/base.dto";
 import { CartEntity } from "../../cart/entity/cart.entity";
 
-export class GetOrderDTO extends BaseDto {
+export class GetOrderDTODto extends BaseDto {
     @ApiProperty({
         example: "2024-11-23T23:40:35.746Z",
         description: "Date when it was created",
