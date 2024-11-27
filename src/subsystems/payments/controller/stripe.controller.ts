@@ -5,7 +5,7 @@ import { RolesGuard } from "src/subsystems/auth/guards/roles.guard";
 import { Roles } from "src/subsystems/roles/decorators/roles.decorator";
 import { roles } from "src/subsystems/roles/enum/roles.enum";
 import { StripeService } from "../service/stripe.service";
-import { StripeDTO } from "../dto/stripedto.dto";
+import { CreatedCheckoutDTO, StripeDTO } from "../dto/stripedto.dto";
 
 @ApiTags('visa-mastercard')
 @ApiBearerAuth()
@@ -17,6 +17,7 @@ export class StripeController{
 
     @Roles(roles.Admin)
     @Post("create-payment")
+    @ApiResponse({ status: 201, type: CreatedCheckoutDTO })
     async createPayment(@Body() order: StripeDTO) {
         return await this.stripeService.createCheckoutSession(order.id);
     }
