@@ -6,11 +6,12 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 
 export class CreateOrderDTO extends BaseDto {
     @ApiProperty({
-        example: "User structure",
-        description: "A valid quantity",
+        example: "User structure, no required",
+        description: "A valid quantity, no required",
     })
     @IsNotEmpty()
-    user:User
+    user: User
+
     @ApiProperty({
         example: "+5358126024",
         description: "a phone number",

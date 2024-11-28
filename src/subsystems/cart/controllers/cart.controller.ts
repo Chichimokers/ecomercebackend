@@ -13,8 +13,8 @@ import {
     ApiTags,
     ApiBearerAuth,
     ApiCreatedResponse,
-    ApiForbiddenResponse
-} from '@nestjs/swagger';
+    ApiForbiddenResponse, ApiResponse
+} from "@nestjs/swagger";
 import { CartService } from '../services/cart.service';
 import { CartEntity } from '../entity/cart.entity';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
@@ -23,6 +23,7 @@ import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { updateCartDto } from '../dto/updateCartDTO';
 import { addCartDTO } from '../dto/addCartDTO.dto';
+import { GetCartDTO } from "../dto/getCartDTO.dto";
 
 @ApiTags('cart')
 @ApiBearerAuth()
@@ -42,12 +43,14 @@ export class CartController {
     //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
+    @ApiResponse({ status: 200, type: [GetCartDTO] })
     public getCart(): Promise<CartEntity[]> {
         return this.productservice.findAll();
     }
 
     @Get(':id')
     @Roles(roles.Admin)
+    @ApiResponse({ status: 200, type: GetCartDTO })
     getCartById(@Param('id') id: string) {
         return this.productservice.findOneById(+id);
     }

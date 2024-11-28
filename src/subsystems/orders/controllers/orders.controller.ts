@@ -12,8 +12,8 @@ import {
     ApiTags,
     ApiBearerAuth,
     ApiCreatedResponse,
-    ApiForbiddenResponse
-} from '@nestjs/swagger';
+    ApiForbiddenResponse, ApiResponse
+} from "@nestjs/swagger";
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
@@ -35,6 +35,7 @@ export class OrderControllers {
 
     @Post()
     @Roles(roles.Admin)
+    @ApiResponse({status: 201, description: "Create an order to do a payment"})
     create(@Body() createOrderDto: CreateOrderDTO) {
         return this.orderService.createOrder(
             createOrderDto.id,

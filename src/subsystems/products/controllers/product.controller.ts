@@ -15,8 +15,8 @@ import {
     ApiBearerAuth,
     ApiCreatedResponse,
     ApiForbiddenResponse,
-    ApiConsumes
-} from '@nestjs/swagger';
+    ApiConsumes, ApiResponse
+} from "@nestjs/swagger";
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';
 import { createProductDTO } from '../dto/createProductDTO.dto';
@@ -28,6 +28,7 @@ import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { ProductDTO } from "../../public/dto/GetProductsDTO.dto";
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -64,12 +65,14 @@ export class ProductControllers {
     //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
+    @ApiResponse({ status: 200, type: [ProductDTO] })
     public getProducts(): Promise<ProductEntity[]> {
         return this.productservice.findAll();
     }
 
     @Get(':id')
     @Roles(roles.Admin)
+    @ApiResponse({ status: 200, type: ProductDTO })
     getProductById(@Param('id') id: string) {
         return this.productservice.findOneById(+id);
     }

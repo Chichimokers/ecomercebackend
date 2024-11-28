@@ -39,6 +39,7 @@ export class PublicController {
     @Post('/createorder')
     @Roles(roles.User)
     @ApiBody({ type: CreateOrderDTO })
+    @ApiResponse({status: 201, description: "Create an order to do a payment"})
     public async createOrder(@Req() request) {
         // Get the info of the order
         const userId = request.user.Id;
@@ -72,7 +73,7 @@ export class PublicController {
     @Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    @ApiResponse({ type: GetProductDTO })
+    @ApiResponse({ status: 200 ,type: GetProductDTO })
     public getProducts(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
