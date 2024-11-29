@@ -6,14 +6,15 @@ export class ProductDTO extends BaseDto {
     @ApiProperty({ example: 1, description: "Identifier" })
     id: number;
 
-    @ApiProperty({ example: "2024-11-16T23:15:49.753Z", description: "Creation date" })
+    // REVIEW Is this necessary for the user?
+    /* @ApiProperty({ example: "2024-11-16T23:15:49.753Z", description: "Creation date" })
     created_at: string;
 
     @ApiProperty({ example: "2024-11-25T15:32:02.922Z", description: "Last update date" })
     updated_at: string;
 
     @ApiProperty({ example: null, description: "Deletion date", nullable: true })
-    deleted_at: string | null;
+    deleted_at: string | null; */
 
     @ApiProperty({ example: null, description: "Product image", nullable: true })
     image: string | null;
@@ -29,6 +30,18 @@ export class ProductDTO extends BaseDto {
 
     @ApiProperty({ example: 122, description: "Product quantity" })
     quantity: number;
+
+    @ApiProperty({
+        example: "Short Description",
+        description: "Short description to show in cards",
+    })
+    shortDescription: string;
+
+    @ApiProperty({
+        example: "Large Description",
+        description: "Short description to show in cards",
+    })
+    description: string;
 }
 
 export class GetFindsProductDTO {

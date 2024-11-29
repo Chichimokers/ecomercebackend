@@ -19,7 +19,6 @@ export class  updateProductDTO  extends BaseDto{
         example: "Meat",
         description: "Product Name",
     })
-
     @Transform(({ value }) => value.trim())
     @IsString()
     @MinLength(2, { message: 'Name must have at least 2 characters.' })
@@ -48,5 +47,21 @@ export class  updateProductDTO  extends BaseDto{
     })
     @IsNotEmpty()
     quantity?: number;
+
+    @ApiProperty({
+        example: "Short Description",
+        description: "Short description to show in cards",
+    })
+    @IsNotEmpty()
+    @IsString()
+    shortDescription?: string;
+
+    @ApiProperty({
+        example: "Large Description",
+        description: "Short description to show in cards",
+    })
+    @IsNotEmpty()
+    @IsString()
+    description?: string;
 
 }

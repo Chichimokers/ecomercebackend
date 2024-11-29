@@ -21,7 +21,7 @@ import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
-import { updateCartDto } from '../dto/updateCartDTO';
+import { updateCartDto } from '../dto/updateCartDTO.dto';
 import { addCartDTO } from '../dto/addCartDTO.dto';
 import { GetCartDTO } from "../dto/getCartDTO.dto";
 

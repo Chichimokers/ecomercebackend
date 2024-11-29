@@ -45,4 +45,20 @@ export class createProductDTO extends BaseDto {
     @IsNotEmpty()
     @IsNumber()
     quantity: number;
+
+    @ApiProperty({
+        example: "Short Description",
+        description: "Short description to show in cards",
+    })
+    @IsNotEmpty()
+    @IsString()
+    shortDescription: string;
+
+    @ApiProperty({
+        example: "Large Description",
+        description: "Short description to show in cards",
+    })
+    @IsNotEmpty()
+    @IsString()
+    description: string;
 }
