@@ -47,3 +47,13 @@ export function mapToDto<T, D>(
     return dto;
 }
 
+/**
+ * Calculate the discount of a product through an applied discount
+ *
+ * @param price Price of the product
+ * @param discount Discount to apply to product, base 100%
+ */
+export function calDiscount(price: number, discount: number): number {
+    return price - ( price * (discount/100) );
+}
+

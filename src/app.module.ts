@@ -13,22 +13,26 @@ import { CartModule } from './subsystems/cart/cart.module';
 import { RolesModule } from './subsystems/roles/roles.module';
 import { PublicModule } from './subsystems/public/public.module';
 import { PaymentsModule } from './subsystems/payments/payments.module';
+import { DiscountsModule } from "./subsystems/discounts/discounts.module";
+import { RatingModule } from './subsystems/rating/rating.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot(PostgresDataSource.options),
-    ConfigModule.forRoot({ isGlobal: true }),
-    UserModule,
-    OrdersModule,
-    ProductsModule,
-    CommonModule,
-    CartModule,    
-    AuthModule,
-   RolesModule,
-   PublicModule,
-   PaymentsModule
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        TypeOrmModule.forRoot(PostgresDataSource.options),
+        ConfigModule.forRoot({ isGlobal: true }),
+        UserModule,
+        OrdersModule,
+        ProductsModule,
+        CommonModule,
+        CartModule,
+        AuthModule,
+        RolesModule,
+        PublicModule,
+        PaymentsModule,
+        DiscountsModule,
+        RatingModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}

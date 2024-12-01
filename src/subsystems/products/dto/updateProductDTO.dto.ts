@@ -54,7 +54,7 @@ export class  updateProductDTO  extends BaseDto{
     })
     @IsNotEmpty()
     @IsString()
-    shortDescription?: string;
+    short_description?: string;
 
     @ApiProperty({
         example: "Large Description",

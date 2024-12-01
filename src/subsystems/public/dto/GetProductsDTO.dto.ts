@@ -1,6 +1,7 @@
 // src/subsystems/public/dto/ProductDTO.ts
 import { ApiProperty } from "@nestjs/swagger";
 import { BaseDto } from "../../../common/dto/base.dto";
+import { OfferEntity } from "../../discounts/entity/discounts.entity";
 
 export class ProductDTO extends BaseDto {
     @ApiProperty({ example: 1, description: "Identifier" })
@@ -35,13 +36,29 @@ export class ProductDTO extends BaseDto {
         example: "Short Description",
         description: "Short description to show in cards",
     })
-    shortDescription: string;
+    short_description: string;
 
     @ApiProperty({
         example: "Large Description",
         description: "Short description to show in cards",
     })
     description: string;
+
+    @ApiProperty({
+        example: 26,
+        description: "Calificacion total del producto para calcularse con la" +
+            " cantidad de calificaciones."
+    })
+    qualification: number;
+
+    @ApiProperty({
+        example: 6,
+        description: "Cantidad de usuarios que calificaron el producto"
+    })
+    qualification_quantity: number;
+
+    @ApiProperty({})
+    offers: OfferEntity[];
 }
 
 export class GetFindsProductDTO {

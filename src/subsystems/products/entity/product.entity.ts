@@ -3,13 +3,15 @@ import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import {
     Entity,
     OneToMany,
-    Column
-} from 'typeorm';
+    Column,
+    OneToOne, JoinColumn
+} from "typeorm";
 import { ProductClass } from '../enums/products.class.enum';
+import { DiscountEntity, OfferEntity } from "../../discounts/entity/discounts.entity";
+import { RatingEntity } from "../../rating/entity/rating.entity";
 
 @Entity({ name:"tb_products"})
 export class ProductEntity extends BaseEntity {
-
     @Column({nullable: true})
     image: string;
 
@@ -23,7 +25,7 @@ export class ProductEntity extends BaseEntity {
     description: string;
 
     @Column()
-    shortDescription: string;
+    short_description: string;
 
     @Column()
     class: ProductClass;
@@ -34,5 +36,14 @@ export class ProductEntity extends BaseEntity {
     @OneToMany(() => CartEntity, (cart) => cart.item)
     cart: CartEntity[];
 
+    @OneToOne(() => OfferEntity, (offer) => offer.products)
+    @JoinColumn()
+    offers: OfferEntity;
+
+    @OneToOne(() => DiscountEntity, (offer) => offer.products)
+    @JoinColumn()
+    discounts: DiscountEntity;
+
+    @OneToMany(() => RatingEntity, (rating) => rating.product)
+    ratings: RatingEntity[];
 }
-  
