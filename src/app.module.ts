@@ -30,7 +30,7 @@ import { RatingModule } from './subsystems/rating/rating.module';
         PublicModule,
         PaymentsModule,
         DiscountsModule,
-        RatingModule,
+        //RatingModule,
     ],
     controllers: [AppController],
     providers: [AppService],
