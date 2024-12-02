@@ -7,8 +7,9 @@ import {
     OneToOne, JoinColumn
 } from "typeorm";
 import { ProductClass } from '../enums/products.class.enum';
-import { DiscountEntity, OfferEntity } from "../../discounts/entity/discounts.entity";
-import { RatingEntity } from "../../rating/entity/rating.entity";
+import { DiscountEntity} from "../../discounts/entity/discounts.entity";
+//import { RatingEntity } from "../../rating/entity/rating.entity";
+import { OfferEntity } from "../../discounts/entity/offers.entity";
 
 @Entity({ name:"tb_products"})
 export class ProductEntity extends BaseEntity {
@@ -44,6 +45,6 @@ export class ProductEntity extends BaseEntity {
     @JoinColumn()
     discounts: DiscountEntity;
 
-    @OneToMany(() => RatingEntity, (rating) => rating.product)
-    ratings: RatingEntity[];
+    /*@OneToMany(() => RatingEntity, (rating) => rating.product)
+    ratings: RatingEntity[];*/
 }

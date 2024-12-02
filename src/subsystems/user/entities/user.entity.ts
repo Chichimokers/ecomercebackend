@@ -1,7 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Column, Entity, OneToMany, JoinColumn } from 'typeorm';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
-import { RatingEntity } from "../../rating/entity/rating.entity";
+//import { RatingEntity } from "../../rating/entity/rating.entity";
 
 @Entity({ name: 'tb_user' })
 export class User extends BaseEntity {
@@ -30,7 +30,7 @@ export class User extends BaseEntity {
     @JoinColumn()
     cart: CartEntity[];
 
-    @OneToMany(() => RatingEntity, (rating) => rating.user)
-    ratings: RatingEntity[];
+    /*@OneToMany(() => RatingEntity, (rating) => rating.user)
+    ratings: RatingEntity[];*/
 }
 

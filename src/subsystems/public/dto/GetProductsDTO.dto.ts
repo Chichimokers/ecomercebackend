@@ -1,7 +1,7 @@
 // src/subsystems/public/dto/ProductDTO.ts
 import { ApiProperty } from "@nestjs/swagger";
 import { BaseDto } from "../../../common/dto/base.dto";
-import { OfferEntity } from "../../discounts/entity/discounts.entity";
+import { OfferEntity } from "../../discounts/entity/offers.entity";
 
 export class ProductDTO extends BaseDto {
     @ApiProperty({ example: 1, description: "Identifier" })
