@@ -37,11 +37,13 @@ export class ProductEntity extends BaseEntity {
     @OneToMany(() => CartEntity, (cart) => cart.item)
     cart: CartEntity[];
 
-    @OneToOne(() => OfferEntity, (offer) => offer.products)
+    @OneToOne(() => OfferEntity, (offer) => offer.products,
+        {nullable: true})
     @JoinColumn()
     offers: OfferEntity;
 
-    @OneToOne(() => DiscountEntity, (offer) => offer.products)
+    @OneToOne(() => DiscountEntity, (offer) => offer.products,
+        { nullable: true })
     @JoinColumn()
     discounts: DiscountEntity;
 
