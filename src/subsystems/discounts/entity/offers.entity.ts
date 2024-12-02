@@ -2,14 +2,17 @@ import { Column, Entity, OneToOne } from "typeorm";
 import { BaseEntity } from "../../../common/entities/base.entity";
 import { ProductEntity } from "../../products/entity/product.entity";
 
-@Entity({ name: "tb_discounts" })
-export class DiscountEntity extends BaseEntity {
+@Entity({ name: "tb_offer" })
+export class OfferEntity extends BaseEntity {
     @Column()
-    min: number;
+    percentage: number;
 
     @Column()
-    reduction: number;
+    description: string;
 
-    @OneToOne(() => ProductEntity, (product) => product.discounts)
+    @Column()
+    expire_at: Date;
+
+    @OneToOne(() => ProductEntity, (product) => product.offers)
     products: ProductEntity;
 }
