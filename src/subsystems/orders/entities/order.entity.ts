@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsPositive, IsString } from "class-validator";
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
@@ -6,33 +6,36 @@ import {
     Entity,
     OneToMany,
     Column,
-    ManyToOne,
-} from 'typeorm';
+    ManyToOne, Check
+} from "typeorm";
 
 @Entity({name:"tb_orders"})
+@Check(`"subtotal" >= 0`)
 export class OrderEntity  extends BaseEntity{
     @ManyToOne(() => User, (user) => user.id)
     user: User;
 
-    @Column()
+    @Column({ length: 15 })
     @IsString()
     phone :string
 
-    @Column()
+    @Column({ length: 255 })
     @IsString()
     address :string
 
-    @Column()
+    @Column({ length: 20 })
     @IsString()
     CI :string
 
     @Column()
-    subTotal: number;
+    @IsPositive()
+    subtotal: number;
 
     @Column({ default: true })
+    @IsBoolean()
     pending: boolean;
 
-    @Column({nullable: true, default: null})
+    @Column({length: 255, nullable: true, default: null})
     @IsString()
     stripe_id: string;
 

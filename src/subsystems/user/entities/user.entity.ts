@@ -1,23 +1,29 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { Column, Entity, OneToMany, JoinColumn } from 'typeorm';
+import { Column, Entity, OneToMany, JoinColumn, Check } from "typeorm";
 import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
+import { IsBoolean, IsEmail, IsString } from "class-validator";
 //import { RatingEntity } from "../../rating/entity/rating.entity";
 
 @Entity({ name: 'tb_user' })
+@Check(`"rol" > 0`)
 export class User extends BaseEntity {
     @Column({ type: 'varchar', length: 30 })
+    @IsString()
     name: string;
 
     @Column({ type: 'varchar', length: 40 })
+    @IsEmail()
     email: string;
     
-    @Column()
+    @Column({ type: 'smallint' })
     rol: number;
     
     @Column({ type: 'varchar', nullable: false})
+    @IsString()
     password: string;
 
     @Column({ type: 'boolean', default: true })
+    @IsBoolean()
     enabled: boolean;
 
     @Column({ name: 'last_login', type: 'timestamp', nullable: true })

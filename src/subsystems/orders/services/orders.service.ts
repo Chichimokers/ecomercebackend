@@ -72,7 +72,7 @@ export class OrderService extends BaseService<OrderEntity> {
             phone,
             address, // Asegúrate de que 'address' esté definido en OrderEntity
             CI, // Asegúrate de que 'CI' esté definido en OrderEntity
-            subTotal: subtotal, // Calcular el subtotal
+            subtotal: subtotal, // Calcular el subtotal
             pending: true, // Marcar como pendiente
             carts, // Asignar los productos del carrito
         });
