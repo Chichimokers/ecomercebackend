@@ -1,3 +1,7 @@
+import { ProductEntity } from "../../subsystems/products/entity/product.entity";
+import { DiscountEntity } from "../../subsystems/discounts/entity/discounts.entity";
+import { OfferEntity } from "../../subsystems/discounts/entity/offers.entity";
+import { Repository } from "typeorm";
 
 /**
  * Mapea un objeto fuente a un Data Transfer Object (DTO) de destino.
@@ -50,10 +54,16 @@ export function mapToDto<T, D>(
 /**
  * Calculate the discount of a product through an applied discount
  *
- * @param price Price of the product
- * @param discount Discount to apply to product, base 100%
  */
-export function calDiscount(price: number, discount: number): number {
-    return price - ( price * (discount/100) );
+export function calDiscount( product: ProductEntity ): number {
+    let totalDiscount = 0;
+
+    if(product.discounts !== null) {
+        totalDiscount = product.discounts.reduction;
+    }
+
+    // TODO Apply offers
+
+    return 0;
 }
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+/*import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { OfferEntity } from "../entity/offers.entity";
 import { Repository } from "typeorm";
@@ -36,4 +36,4 @@ export class OffersService {
         return this.offerRepository.save(offer);
     }
 
-}
+}*/

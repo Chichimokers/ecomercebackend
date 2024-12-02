@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, Check } from "typeorm";
+/*import { Column, Entity, OneToOne, Check } from "typeorm";
 import { BaseEntity } from "../../../common/entities/base.entity";
 import { ProductEntity } from "../../products/entity/product.entity";
 import { IsPositive } from "class-validator";
@@ -19,4 +19,4 @@ export class OfferEntity extends BaseEntity {
 
     @OneToOne(() => ProductEntity, (product) => product.offers)
     products: ProductEntity;
-}
+}*/

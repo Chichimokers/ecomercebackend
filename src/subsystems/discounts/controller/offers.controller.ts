@@ -1,4 +1,4 @@
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+/*import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Body, Controller, Post, UseGuards } from "@nestjs/common";
 import { LocalAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../../auth/guards/roles.guard";
@@ -26,4 +26,4 @@ export class OffersController {
 
     // Get Offers
 
-}
+}*/

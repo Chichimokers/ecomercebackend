@@ -9,7 +9,7 @@ import {
 import { ProductClass } from '../enums/products.class.enum';
 import { DiscountEntity} from "../../discounts/entity/discounts.entity";
 //import { RatingEntity } from "../../rating/entity/rating.entity";
-import { OfferEntity } from "../../discounts/entity/offers.entity";
+//import { OfferEntity } from "../../discounts/entity/offers.entity";
 import { IsPositive, IsString } from "class-validator";
 
 @Entity({ name:"tb_products"})
@@ -45,10 +45,10 @@ export class ProductEntity extends BaseEntity {
     @OneToMany(() => CartEntity, (cart) => cart.item)
     cart: CartEntity[];
 
-    @OneToOne(() => OfferEntity, (offer) => offer.products,
+    /*@OneToOne(() => OfferEntity, (offer) => offer.products,
         {nullable: true})
     @JoinColumn()
-    offers: OfferEntity;
+    offers: OfferEntity;*/
 
     @OneToOne(() => DiscountEntity, (offer) => offer.products,
         { nullable: true })
