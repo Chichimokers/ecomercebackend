@@ -9,6 +9,7 @@ import { OffersService } from "./service/offers.service";
 import { ProductService } from "../products/services/product.service";
 import { Repository } from "typeorm";
 import { ProductEntity } from "../products/entity/product.entity";
+import { DiscountsService } from "./service/discounts.service";
 
 @Module({
     imports:[
@@ -16,6 +17,6 @@ import { ProductEntity } from "../products/entity/product.entity";
         ConfigModule.forRoot({ isGlobal: true }),
     ],
     controllers: [OffersController, DiscountsController],
-    providers: [OffersService, ProductService, Repository],
+    providers: [OffersService, ProductService, DiscountsService, Repository],
 })
 export class DiscountsModule {}

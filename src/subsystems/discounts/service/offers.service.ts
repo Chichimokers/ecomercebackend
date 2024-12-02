@@ -15,7 +15,7 @@ export class OffersService {
     ) {
     }
 
-    public async setOfferToProduct(offerData: setOfferToProductDTO){
+    public async setOfferToProduct(offerData: setOfferToProductDTO): Promise<OfferEntity> {
         const product: ProductEntity = await this.productService.findOneById(offerData.product);
         if (!product) {
             throw new NotFoundException(`Product with ID ${offerData.product} not found`);
@@ -28,7 +28,7 @@ export class OffersService {
             expire_at: offerData.expire_at,
         });
 
-        product.offers = offer
+        product.offers = offer;
 
         await this.productService.update(product.id, product);
 
