@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { OrderService } from '../../orders/services/orders.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toNumber } from '../../../common/utils/cast.utils';
+import { CartEntity } from "../../cart/entity/cart.entity";
 
 @Injectable()
 export class StripeService {
@@ -62,8 +63,8 @@ export class StripeService {
             throw new Error('No se encontraron carts en la orden.'); // Manejo de error
         }
 
-        let subtotal = 0;
-        cart.carts.forEach((cartItem) => {
+        let subtotal: number = 0;
+        cart.carts.forEach((cartItem: CartEntity): void => {
             subtotal += cartItem.total;
         });
 

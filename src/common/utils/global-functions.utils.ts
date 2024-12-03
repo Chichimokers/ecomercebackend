@@ -1,6 +1,5 @@
 import { ProductEntity } from "../../subsystems/products/entity/product.entity";
 import { DiscountEntity } from "../../subsystems/discounts/entity/discounts.entity";
-import { OfferEntity } from "../../subsystems/discounts/entity/offers.entity";
 import { Repository } from "typeorm";
 
 /**
@@ -56,13 +55,13 @@ export function mapToDto<T, D>(
  *
  */
 export function calDiscount( product: ProductEntity ): number {
-    let totalDiscount = 0;
+    let totalDiscount: number = 0;
 
     if(product.discounts !== null) {
         totalDiscount = product.discounts.reduction;
     }
 
-    // TODO Apply offers
+    // TODO Apply offers logic
 
     return 0;
 }

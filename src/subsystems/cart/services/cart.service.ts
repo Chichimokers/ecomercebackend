@@ -7,6 +7,7 @@ import { UserService } from 'src/subsystems/user/service/user.service';
 import { ProductService } from 'src/subsystems/products/services/product.service';
 import { ProductEntity } from '../../products/entity/product.entity';
 import { addCartDTO } from '../dto/addCartDTO.dto';
+import { User } from "../../user/entities/user.entity";
 
 @Injectable()
 export class CartService extends BaseService<CartEntity> {
@@ -31,27 +32,40 @@ export class CartService extends BaseService<CartEntity> {
     }
 
     async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
-        const product = await this.productService.findOneById(cartDto.productId); // Asegúrate de tener acceso al repositorio de productos
+        const product: ProductEntity = await this.productService.findOneById(cartDto.productId); // Asegúrate de tener acceso al repositorio de productos
 
         if (!product) {
             throw new Error('Producto no encontrado');
         }
-        const user = await this.userService.findOneById(userid);
+
+        const user: User = await this.userService.findOneById(userid);
 
         if (!user) {
             throw new Error('user no encontrado');
         }
 
-        const carent = this.cartRepository.create({
+        const existingCart: CartEntity = await this.cartRepository.findOne({
+            where: { user: user, item: product }
+        });
+
+        // TODO Add discount calc
+        if(existingCart){
+            existingCart.quantity += product.quantity;
+            await this.cartRepository.update(existingCart, existingCart);
+            return await this.cartRepository.save(existingCart);
+        }
+
+        const carent: CartEntity = this.cartRepository.create({
             user: user,
             item: product,
             quantity: cartDto.quantity,
             total: this.calculartotal(product, cartDto),
             paid: false,
             order: null
-        })
+        });
 
         return await this.cartRepository.save(carent)
+
     }
 
 }
