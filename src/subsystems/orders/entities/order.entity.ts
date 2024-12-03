@@ -1,10 +1,8 @@
 import { IsBoolean, IsPositive, IsString } from "class-validator";
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
-import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import {
     Entity,
-    OneToMany,
     Column,
     ManyToOne, Check
 } from "typeorm";
@@ -38,8 +36,4 @@ export class OrderEntity  extends BaseEntity{
     @Column({length: 255, nullable: true, default: null})
     @IsString()
     stripe_id: string;
-
-    @OneToMany((): typeof CartEntity => CartEntity, (cart: CartEntity): OrderEntity => cart.order)
-    carts: CartEntity[];
-
 }

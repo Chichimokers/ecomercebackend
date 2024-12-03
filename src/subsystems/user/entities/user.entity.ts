@@ -1,6 +1,5 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Column, Entity, OneToMany, JoinColumn, Check } from "typeorm";
-import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { IsBoolean, IsEmail, IsString } from "class-validator";
 //import { RatingEntity } from "../../rating/entity/rating.entity";
 
@@ -31,10 +30,6 @@ export class User extends BaseEntity {
 
     @Column({ type: 'boolean', default: false })
     locked: boolean;
-
-    @OneToMany(() => CartEntity, (cart) => cart.id)
-    @JoinColumn()
-    cart: CartEntity[];
 
     /*@OneToMany(() => RatingEntity, (rating) => rating.user)
     ratings: RatingEntity[];*/

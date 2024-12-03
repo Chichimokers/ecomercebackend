@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { BaseDto } from "../../../common/dto/base.dto";
-import { CartEntity } from "../../cart/entity/cart.entity";
 
 export class GetOrderDTODto extends BaseDto {
     @ApiProperty({
@@ -57,10 +56,4 @@ export class GetOrderDTODto extends BaseDto {
         description: "Stripe ID to make payment"
     })
     stripe_id: string
-
-    @ApiProperty({
-        example: "Cart Structure",
-        description: "All products in cart to buy",
-    })
-    carts: CartEntity
 }

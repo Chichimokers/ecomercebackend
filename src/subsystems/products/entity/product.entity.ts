@@ -1,5 +1,4 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import {
     Entity,
     OneToMany,
@@ -41,9 +40,6 @@ export class ProductEntity extends BaseEntity {
     @Column()
     @IsPositive()
     quantity: number;
-
-    @OneToMany(() => CartEntity, (cart) => cart.item)
-    cart: CartEntity[];
 
     /*@OneToOne(() => OfferEntity, (offer) => offer.products,
         {nullable: true})

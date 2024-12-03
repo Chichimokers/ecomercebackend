@@ -1,7 +1,6 @@
 import { ProductEntity } from "../../subsystems/products/entity/product.entity";
 import { DiscountEntity } from "../../subsystems/discounts/entity/discounts.entity";
 import { Repository } from "typeorm";
-import { CartEntity } from "src/subsystems/cart/entity/cart.entity";
 
 /**
  * Mapea un objeto fuente a un Data Transfer Object (DTO) de destino.

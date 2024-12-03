@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { OrderService } from '../../orders/services/orders.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toNumber } from '../../../common/utils/cast.utils';
-import { CartEntity } from "../../cart/entity/cart.entity";
 
 @Injectable()
 export class StripeService {

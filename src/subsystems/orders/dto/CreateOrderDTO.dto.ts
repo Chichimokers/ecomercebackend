@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { BaseDto } from 'src/common/dto/base.dto';
-import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
 
 export class CreateOrderDTO extends BaseDto {
@@ -34,10 +33,4 @@ export class CreateOrderDTO extends BaseDto {
     @IsNotEmpty()
     @IsString()
     CI :string
-    @ApiProperty({
-        example: "Cart structure",
-        description: "a valid cuban id",
-    })
-    @IsNotEmpty()
-    carts: CartEntity[];
 }

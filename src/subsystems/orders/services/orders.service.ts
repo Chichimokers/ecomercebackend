@@ -2,10 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
-import { CartEntity } from 'src/subsystems/cart/entity/cart.entity';
 import { BaseService } from 'src/common/services/base.service';
 import { UserService } from 'src/subsystems/user/service/user.service';
-import { forEachResolvedProjectReference } from "ts-loader/dist/instances";
 import { ProductEntity } from "../../products/entity/product.entity";
 
 @Injectable()
@@ -18,8 +16,6 @@ export class OrderService extends BaseService<OrderEntity> {
     constructor(
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
-        @InjectRepository(CartEntity)
-        private readonly cartRepository: Repository<CartEntity>,
         @InjectRepository(ProductEntity)
         private readonly productRepository: Repository<ProductEntity>,
         @Inject(UserService)
@@ -43,7 +39,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
   
 }
-
+    // TODO FIXME Cambiar Metodo de creacion de orden
     async createOrder(userId: number, phone: string, address: string, CI: string): Promise<OrderEntity| any>  {
         // Obtener los productos del carrito que no han sido pagados
         const carts = await this.cartRepository.find({
