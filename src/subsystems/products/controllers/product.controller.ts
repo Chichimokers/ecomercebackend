@@ -36,6 +36,7 @@ import { ProductDTO } from "../../public/dto/GetProductsDTO.dto";
 @UseGuards(LocalAuthGuard,RolesGuard)
 
 export class ProductControllers {
+
     constructor(private readonly productservice: ProductService) { }
 
     @ApiCreatedResponse({ description: 'Los registros han sido creados exitosamente' })
@@ -63,6 +64,7 @@ export class ProductControllers {
     }
 
     //@UseGuards(JwtAuthGuard)
+    
     @Get()
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: [ProductDTO] })
