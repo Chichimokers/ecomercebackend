@@ -63,7 +63,7 @@ export function calDiscount( cart: CartEntity ): number {
         totalDiscount = cart.item.discounts.reduction;
 
 
-        let priceforproduct = cart.item.price - totalDiscount
+        let priceforproduct: number = cart.item.price - totalDiscount
 
         cart.total = priceforproduct * cart.item.quantity
 

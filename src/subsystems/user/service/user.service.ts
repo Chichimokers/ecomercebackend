@@ -1,11 +1,11 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto } from "../dto";
 import { BaseService } from 'src/common/services/base.service';
 import { User } from '../entities/user.entity';
-import { UserDto } from '../dto/user.dto';
+import { UserDto } from "../dto";
 import { mapToDto } from 'src/common/utils/global-functions.utils';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdateUserDto } from "../dto";
 
 export class UserService extends BaseService<User> {
 
@@ -28,7 +28,7 @@ export class UserService extends BaseService<User> {
 
         user = await this.repository.save(user);
         // Mapea el objeto User a UserDto
-        const userDto = mapToDto(user, UserDto);
+        const userDto: UserDto = mapToDto(user, UserDto);
         return userDto;
     }
 
@@ -38,14 +38,14 @@ export class UserService extends BaseService<User> {
 
     // FIXME HTTP ERROR 500, no existen en el usuario, los roles ni rol.
     async findUserById(id: number): Promise<UserDto> {
-        let user = await this.repository.findOne({
+        let user: User = await this.repository.findOne({
             where: { id: id, deleted_at: null },
             relations: ['roles', 'roles.permissions'],
         });
         //let user = await this.findOneById(id)
 
         // Mapea el objeto User a UserDto
-        const userDto = mapToDto(user, UserDto);
+        const userDto: UserDto = mapToDto(user, UserDto);
 
         return userDto;
     }
@@ -64,7 +64,7 @@ export class UserService extends BaseService<User> {
 
         const { ...restOfDto } = updateUserDto;
 
-        let updatedUser = await this.update(id, restOfDto as unknown as Partial<User>);
+        let updatedUser: Partial<User> = await this.update(id, restOfDto as unknown as Partial<User>);
         // Mapea el objeto User a UserDto
         return mapToDto(updatedUser, UserDto);
 
@@ -74,7 +74,7 @@ export class UserService extends BaseService<User> {
         return this.delete(id);
     }
 
-    findOneByEmailWithPassword(email: string) {
+    findOneByEmailWithPassword(email: string): Promise<User> {
         return this.repository.findOne({
             where: { email },
             select: ['id', 'name', 'email', 'password'],

@@ -12,7 +12,7 @@ import {
 @Entity({name:"tb_orders"})
 @Check(`"subtotal" >= 0`)
 export class OrderEntity  extends BaseEntity{
-    @ManyToOne(() => User, (user) => user.id)
+    @ManyToOne((): typeof User => User, (user: User): number => user.id)
     user: User;
 
     @Column({ length: 15 })
@@ -39,7 +39,7 @@ export class OrderEntity  extends BaseEntity{
     @IsString()
     stripe_id: string;
 
-    @OneToMany(() => CartEntity, (cart) => cart.order)
+    @OneToMany((): typeof CartEntity => CartEntity, (cart: CartEntity): OrderEntity => cart.order)
     carts: CartEntity[];
 
 }

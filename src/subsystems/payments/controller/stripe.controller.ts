@@ -26,7 +26,7 @@ export class StripeController{
     @Post("capture-payment")
     @ApiResponse({ status: 200, description: "Return success: true" })
     @ApiResponse({ status: 400, description: "Return success: false" })
-    async capturePayment(@Query('order_id') orderId: number) {
+    async capturePayment(@Query('order_id') orderId: number): Promise<{}> {
         console.log(orderId);
         const response = await this.stripeService.CaptureCheckoutSession(orderId);
         return response.checkout.status ? { success: true } : { success: false, errorCode: 400 };

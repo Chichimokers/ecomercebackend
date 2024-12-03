@@ -24,13 +24,13 @@ export class CartEntity extends BaseEntity  {
     @IsPositive()
     quantity: number;
     
-    @ManyToOne(() => OrderEntity, (order) => order.carts, { nullable: true })
+    @ManyToOne((): typeof OrderEntity => OrderEntity, (order: OrderEntity): CartEntity[] => order.carts, { nullable: true })
     order: OrderEntity;
 
-    @ManyToOne(() => ProductEntity, (product) => product.cart)
+    @ManyToOne((): typeof  ProductEntity => ProductEntity, (product: ProductEntity): CartEntity[] => product.cart)
     item: ProductEntity;
   
-    @ManyToOne(() => User, (user) => user.id)
+    @ManyToOne((): typeof User => User, (user: User): number => user.id)
     user: User;
 
     @IsBoolean()

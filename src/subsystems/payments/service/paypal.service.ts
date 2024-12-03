@@ -43,10 +43,10 @@ export class PaypalService {
         }
 
         const { v4: uuidv4 } = require('uuid');
-        let requestId = uuidv4(); // Genera un UUID
+        let requestId: any = uuidv4(); // Genera un UUID
 
         // Calcular el subtotal
-        let subtotal = 0;
+        let subtotal: number = 0;
         carts.carts.forEach(cart => {
             subtotal += cart.total; // Sumar el total de cada cart
         });

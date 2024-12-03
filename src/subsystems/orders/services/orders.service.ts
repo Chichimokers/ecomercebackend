@@ -67,7 +67,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
         const subtotal: number = this.calculateSubTotal(carts);
 
-        const newOrder = this.orderRepository.create({
+        const newOrder: OrderEntity = this.orderRepository.create({
             user: user, // Asignar el usuario
             phone,
             address, // Asegúrate de que 'address' esté definido en OrderEntity
@@ -78,12 +78,12 @@ export class OrderService extends BaseService<OrderEntity> {
         });
 
         // Guardar la nueva orden en la base de datos
-       const savedOrder = await this.orderRepository.save(newOrder);
+       const savedOrder: OrderEntity = await this.orderRepository.save(newOrder);
 
        
 
         // Actualizar los carts relacionados
-        await Promise.all(carts.map(async (cart) => {
+        await Promise.all(carts.map(async (cart: CartEntity): Promise<CartEntity> => {
             cart.order = savedOrder; // Asignar el ID de la orden al carrito
             cart.paid = true; // Marcar como ordenado
             return this.cartRepository.save(cart); // Guardar los cambios en el carrito
@@ -95,15 +95,15 @@ export class OrderService extends BaseService<OrderEntity> {
     private calculateSubTotal(carts: CartEntity[]): number {
         let totalprice: number = 0;
 
-        carts.forEach((item)=>{
+        carts.forEach((item: CartEntity): void=>{
             totalprice += item.total;
         })
 
         return totalprice;
     }
 
-    async processOrders(orderid: number) {
-        const order = await this.orderRepository.findOne(
+    async processOrders(orderid: number): Promise<void> {
+        const order: OrderEntity = await this.orderRepository.findOne(
             { where: { id: orderid } }
         );
 
@@ -111,7 +111,7 @@ export class OrderService extends BaseService<OrderEntity> {
             throw new Error('Order not found');
         }
 
-        let carts = await this.cartRepository.find({
+        let carts: CartEntity[] = await this.cartRepository.find({
             where: { order: { id: orderid } },
             relations: ['item'],
         });
@@ -120,7 +120,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
             await this.cartRepository.save(cart)
 
-            const productOnStock =
+            const productOnStock: ProductEntity =
                 await this.productRepository.findOne(
                     { where: { id: cart.item.id }}
                 );

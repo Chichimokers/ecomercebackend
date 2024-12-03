@@ -15,13 +15,13 @@ export class DiscountsService {
     ) {
     }
 
-    public async setDiscountToProduct(discountData: setDiscountToProductDTO) {
+    public async setDiscountToProduct(discountData: setDiscountToProductDTO): Promise<DiscountEntity> {
         const product: ProductEntity = await this.productService.findOneById(discountData.product);
         if (!product) {
             throw new NotFoundException(`Product with ID ${discountData.product} not found`);
         }
 
-        const discount = this.discountRepository.create({
+        const discount: DiscountEntity = this.discountRepository.create({
            min: discountData.min,
            reduction: discountData.reduction,
         });

@@ -16,8 +16,8 @@ export class PublicService {
 
     // Get products with pagination
     public async getProducts(page: number, limit: number) {
-        const offset = (page - 1) * limit;
-        const products = await this.productRepository.find({
+        const offset: number = (page - 1) * limit;
+        const products: ProductEntity[] = await this.productRepository.find({
             skip: offset,
             take: limit
         });
@@ -25,8 +25,8 @@ export class PublicService {
         const totalProducts: number = await this.productRepository.count();
         const totalPages: number = Math.ceil(totalProducts / limit);
 
-        const previousUrl = page - 1 <= 0 ? null : `/public/products?page=${page - 1}`;
-        const nextUrl = page + 1 > totalPages ? null : `/public/products?page=${page + 1}`;
+        const previousUrl: string = page - 1 <= 0 ? null : `/public/products?page=${page - 1}`;
+        const nextUrl: string = page + 1 > totalPages ? null : `/public/products?page=${page + 1}`;
 
         return {
             products,
@@ -35,7 +35,7 @@ export class PublicService {
         };
     }
     // Find product by name
-    public async getProductByName(name: string) {
+    public async getProductByName(name: string): Promise<ProductEntity[]> {
         return await this.productRepository.find({
             where: {
                 name: Like(`%${name}%`)
@@ -43,7 +43,7 @@ export class PublicService {
         });
     }
 
-    public async getProductInfo(id: number){
+    public async getProductInfo(id: number): Promise<ProductEntity>{
         return await this.productRepository.findOne({
             where: {
                 id
@@ -51,7 +51,7 @@ export class PublicService {
         });
     }
 
-    public async getPublicOrders(userId: number) :Promise<OrderEntity[]> {
+    public async getPublicOrders(userId: number): Promise<OrderEntity[]> {
         console.log(userId)
         return await this.orderRepository.find({
 

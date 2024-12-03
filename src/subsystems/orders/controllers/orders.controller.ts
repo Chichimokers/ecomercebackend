@@ -35,7 +35,7 @@ export class OrderControllers {
     @Post()
     @Roles(roles.Admin)
     @ApiResponse({status: 201, description: "Create an order to do a payment"})
-    create(@Body() createOrderDto: CreateOrderDTO) {
+    create(@Body() createOrderDto: CreateOrderDTO): Promise<any> {
         return this.orderService.createOrder(
             createOrderDto.id,
             createOrderDto.phone,
@@ -53,19 +53,19 @@ export class OrderControllers {
 
     @Get(':id')
     @Roles(roles.Admin)
-    getOrderById(@Param('id') id: string) {
+    getOrderById(@Param('id') id: string): Promise<OrderEntity> {
         return this.orderService.findOneById(+id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO) {
+    updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO): Promise<Partial<OrderEntity>> {
         return this.orderService.update(+id, updateorder);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteOrder(@Param('id') id: string) {
+    deleteOrder(@Param('id') id: string): Promise<void> {
         return this.orderService.softDelete(+id);
     }
 }

@@ -21,9 +21,9 @@ export class PaypalController {
     @UseGuards(LocalAuthGuard,RolesGuard)
     @Roles(roles.User)
     @Post("create-order")
-    async createOrder(@Body() body:any ,@Res() res: Response,@Req() req:any ) {
+    async createOrder(@Body() body:any ,@Res() res: Response,@Req() req:any ): Promise<void> {
          
-        const link = await this.servicePaypal.CreateOrder(body.id,req.user.Id);
+        const link: string = await this.servicePaypal.CreateOrder(body.id,req.user.Id);
 
         res.send(link)
     }
@@ -32,7 +32,7 @@ export class PaypalController {
     @HttpCode(HttpStatus.OK)
     async captureOrder(@Query('token') token: string, @Query('PayerID') payerId: string) {
         // Usa el token y payerId según sea necesario
-        const response = await this.servicePaypal.confirmorder(token);
+        const response: boolean = await this.servicePaypal.confirmorder(token);
         if(response == true){
           
             return{sucess:true}
@@ -46,7 +46,7 @@ export class PaypalController {
 
     @Roles(roles.User)
     @Post("cancel-order")
-    async cancelorder(){
+    async cancelorder(): Promise<void> {
         
     }
 }

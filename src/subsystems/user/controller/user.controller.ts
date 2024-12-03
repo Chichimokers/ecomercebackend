@@ -23,6 +23,7 @@ import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { GetUserDto } from "../dto/get-user.dto";
+import { UserDto } from "../dto";
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -35,7 +36,7 @@ export class UserController {
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @Post()
     @Roles(roles.Admin)
-    create(@Body() createUserDto: CreateUserDto) {
+    create(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
         return this.userService.createUser(createUserDto);
     }
 
@@ -48,19 +49,19 @@ export class UserController {
 
     @Get(':id')
     @Roles(roles.Admin)
-    getUserById(@Param('id') id: string) {
+    getUserById(@Param('id') id: string): Promise<UserDto> {
         return this.userService.findUserById(+id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserDto> {
         return this.userService.updateUser(+id, updateUserDto);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteUser(@Param('id') id: string) {
+    deleteUser(@Param('id') id: string): Promise<void> {
         //return this.userService.deleteUser(+id);
         return this.userService.softDelete(+id);
     }

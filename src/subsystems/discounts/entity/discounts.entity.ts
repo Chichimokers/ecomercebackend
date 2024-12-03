@@ -23,6 +23,6 @@ export class DiscountEntity extends BaseEntity {
     @IsPositive()
     reduction: number;
 
-    @OneToOne(() => ProductEntity, (product) => product.discounts)
+    @OneToOne((): typeof ProductEntity => ProductEntity, (product: ProductEntity): DiscountEntity => product.discounts)
     products: ProductEntity;
 }

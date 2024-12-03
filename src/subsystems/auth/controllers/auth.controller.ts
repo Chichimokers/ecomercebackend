@@ -5,6 +5,7 @@ import { LoginBody } from '../dto/loginDTO.dto';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { SingUpBody } from '../dto/signupDTO.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from "../../user/entities/user.entity";
 
 @ApiTags('login')
 @Controller("auth")
@@ -17,7 +18,7 @@ export class AuthController {
     async Login(@Body() logindata: LoginBody): Promise<string> {
         try {
 
-            const resultlogin = await this.authservice.validateUser(logindata.username, logindata.password);
+            const resultlogin: User = await this.authservice.validateUser(logindata.username, logindata.password);
 
             if (resultlogin != null) {
 
@@ -44,7 +45,7 @@ export class AuthController {
             newuser.email = logindata.email;
             newuser.rol = roles.User;
 
-            const signupresult = await this.authservice.signup(newuser);
+            const signupresult: User = await this.authservice.signup(newuser);
 
             if (signupresult != null) {
                 return JSON.stringify({ user: signupresult })

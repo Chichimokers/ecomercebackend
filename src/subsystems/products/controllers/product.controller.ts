@@ -47,15 +47,15 @@ export class ProductControllers {
     @UseInterceptors(FileInterceptor('image', {
         storage: diskStorage({
             destination: './images',
-            filename: (req, file, cb) => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            filename: (req, file, cb): void => {
+                const uniqueSuffix: string = Date.now() + '-' + Math.round(Math.random() * 1E9);
                 cb(null, uniqueSuffix + extname(file.originalname));
             }
         })
     }))
 
-    create(@Body() createProductDTO: createProductDTO, @UploadedFile() file?: Express.Multer.File) {
-        let imagePaths = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
+    create(@Body() createProductDTO: createProductDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
+        let imagePaths: string = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
 
         return this.productservice.create({
             ...createProductDTO,
@@ -75,19 +75,19 @@ export class ProductControllers {
     @Get(':id')
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: ProductDTO })
-    getProductById(@Param('id') id: string) {
+    getProductById(@Param('id') id: string): Promise<ProductEntity> {
         return this.productservice.findOneById(+id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateProduct(@Param('id') id: string, @Body() updateUserDto: updateProductDTO) {
+    updateProduct(@Param('id') id: string, @Body() updateUserDto: updateProductDTO): Promise<Partial<ProductEntity>> {
         return this.productservice.update(+id, updateUserDto);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteProduct(@Param('id') id: string) {
+    deleteProduct(@Param('id') id: string): Promise<void> {
         return this.productservice.softDelete(+id);
     }
 }

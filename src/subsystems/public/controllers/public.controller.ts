@@ -11,6 +11,8 @@ import { CreateOrderDTO } from "src/subsystems/orders/dto/CreateOrderDTO.dto";
 import { PublicService } from "../services/public.service";
 import { GetOrderDTODto } from "../dto/GetOrderDTO.dto";
 import { GetFindsProductDTO, GetProductDTO, ProductDTO } from "../dto/GetProductsDTO.dto";
+import { OrderEntity } from "../../orders/entities/order.entity";
+import { ProductEntity } from "../../products/entity/product.entity";
 
 // Controller
 @ApiTags('public')
@@ -31,7 +33,7 @@ export class PublicController {
         description: "User's personal orders.",
         type: GetOrderDTODto,
     })
-    public getOrders(@Req() request) {
+    public getOrders(@Req() request: any): Promise<OrderEntity[]> {
         return this.publicService.getPublicOrders(request.user.Id);
     }
 
@@ -40,12 +42,12 @@ export class PublicController {
     @Roles(roles.User)
     @ApiBody({ type: CreateOrderDTO })
     @ApiResponse({status: 201, description: "Create an order to do a payment"})
-    public async createOrder(@Req() request) {
+    public async createOrder(@Req() request: any): Promise<any> {
         // Get the info of the order
-        const userId = request.user.Id;
-        const phone = request.body.phone;
-        const address = request.body.address;
-        const CI = request.body.CI;
+        const userId: any = request.user.Id;
+        const phone: any = request.body.phone;
+        const address: any = request.body.address;
+        const CI: any = request.body.CI;
 
         // Create the order
         if (!isValidCi(CI)) {
@@ -87,7 +89,7 @@ export class PublicController {
     @Roles(roles.User)
     @ApiQuery({ name: 'search', required: false, type: String })
     @ApiResponse({ description: "Products with the search name" ,type: GetFindsProductDTO })
-    public getProductByName(@Query('search') search: string) {
+    public getProductByName(@Query('search') search: string): Promise<ProductEntity[]> {
         return this.publicService.getProductByName(search);
     }
 
@@ -96,7 +98,7 @@ export class PublicController {
     @Roles(roles.User)
     @ApiQuery({ name: 'id', required: true, type: Number })
     @ApiResponse({ description: "Description of a product by id", type: ProductDTO })
-    public getProductInfo(@Query('id') id: number) {
+    public getProductInfo(@Query('id') id: number): Promise<ProductEntity> {
         return this.publicService.getProductInfo(id);
     }
 }

@@ -33,7 +33,7 @@ export class StripeService {
 
         const session = await this.stripe.checkout.sessions.create(order);
 
-        const order_find = await this.orderRepository.findOne({where: {id: orderid}});
+        const order_find: OrderEntity = await this.orderRepository.findOne({where: {id: orderid}});
 
         order_find.stripe_id = session.id;
 
@@ -42,7 +42,7 @@ export class StripeService {
         return await this.createJSONResponse(session);
     }
 
-    private async createJSONResponse(session) {
+    private async createJSONResponse(session: any) {
         return {
             id: session.id,
             amount_total: session.amount_total,
@@ -77,7 +77,7 @@ export class StripeService {
                 order_id: cart.id.toString(),
                 user_id: cart.user.id.toString(),
             },
-            line_items: cart.carts.map((cartItem) => ({
+            line_items: cart.carts.map((cartItem: CartEntity) => ({
                 price_data: {
                     currency: currency,
                     product_data: {

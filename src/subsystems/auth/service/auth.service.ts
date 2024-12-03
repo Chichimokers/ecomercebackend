@@ -18,9 +18,9 @@ export class AuthService {
 
     async signup(userdto: CreateUserDto): Promise<User> {
 
-        const salt = await bcrypt.genSalt();
+        const salt: any = await bcrypt.genSalt();
 
-        const hash = await bcrypt.hash(userdto.password, salt);
+        const hash: any = await bcrypt.hash(userdto.password, salt);
 
         userdto.password = hash;
 
@@ -35,7 +35,7 @@ export class AuthService {
     }
 
     async validateUser(username: string, password: string): Promise<User> {
-        const foundUser = await this.userRepository.findOne({
+        const foundUser: User = await this.userRepository.findOne({
             where: { name: username },
         });
 
@@ -50,7 +50,7 @@ export class AuthService {
         return null;
     }
 
-    async login(user: User) {
+    async login(user: User): Promise<{access_token: string}> {
 
         const payload = { username: user.name, sub: user.id, role: user.rol };
 

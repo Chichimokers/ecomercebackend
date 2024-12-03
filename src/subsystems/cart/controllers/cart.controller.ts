@@ -36,7 +36,7 @@ export class CartController {
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @Post()
     @Roles(roles.User)
-    create(@Body() addCarDTO: addCartDTO, @Req() req:any) {
+    create(@Body() addCarDTO: addCartDTO, @Req() req:any): Promise<CartEntity> {
         return this.productservice.addToCart(addCarDTO,req.user.Id);
     }
 
@@ -51,19 +51,19 @@ export class CartController {
     @Get(':id')
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: GetCartDTO })
-    getCartById(@Param('id') id: string) {
+    getCartById(@Param('id') id: string): Promise<CartEntity> {
         return this.productservice.findOneById(+id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateCart(@Param('id') id: string, @Body() updateCartDto: updateCartDto) {
+    updateCart(@Param('id') id: string, @Body() updateCartDto: updateCartDto):Promise<Partial<CartEntity>> {
         return this.productservice.update(+id, updateCartDto);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteCart(@Param('id') id: string) {
+    deleteCart(@Param('id') id: string): Promise<void> {
         return this.productservice.softDelete(+id);
     }
 }
