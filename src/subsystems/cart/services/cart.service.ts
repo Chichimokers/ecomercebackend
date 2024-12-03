@@ -8,6 +8,7 @@ import { ProductService } from 'src/subsystems/products/services/product.service
 import { ProductEntity } from '../../products/entity/product.entity';
 import { addCartDTO } from '../dto/addCartDTO.dto';
 import { User } from "../../user/entities/user.entity";
+import { calDiscount } from 'src/common/utils/global-functions.utils';
 
 @Injectable()
 export class CartService extends BaseService<CartEntity> {
@@ -32,6 +33,7 @@ export class CartService extends BaseService<CartEntity> {
     }
 
     async addToCart(cartDto: addCartDTO, userid: string): Promise<CartEntity> {
+
         const product: ProductEntity = await this.productService.findOneById(cartDto.productId); // Asegúrate de tener acceso al repositorio de productos
 
         if (!product) {
@@ -52,7 +54,11 @@ export class CartService extends BaseService<CartEntity> {
         if(existingCart){
             existingCart.quantity += product.quantity;
             await this.cartRepository.update(existingCart, existingCart);
-            return await this.cartRepository.save(existingCart);
+            await this.cartRepository.save(existingCart);
+
+            existingCart.total = calDiscount(existingCart);
+            return await this.cartRepository.save(existingCart)
+
         }
 
         const carent: CartEntity = this.cartRepository.create({
