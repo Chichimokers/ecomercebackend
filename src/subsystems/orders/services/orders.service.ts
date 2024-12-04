@@ -1,23 +1,25 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Any, In, Repository } from "typeorm";
-import { OrderEntity } from "../entities/order.entity";
-import { BaseService } from "src/common/services/base.service";
-import { UserService } from "src/subsystems/user/service/user.service";
-import { ProductEntity } from "../../products/entity/product.entity";
-import { BuildOrderDTO, ProductOrderDTO } from "../../public/dto/frontsDTO/ordersDTO/buildorder.dto";
-import { User } from "../../user/entities/user.entity";
-import { calculateDiscount } from "../../../common/utils/global-functions.utils";
-import { OrderProductEntity } from "../entities/order_products.entity";
-import { response } from "express";
+import { Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+import { OrderEntity } from '../entities/order.entity';
+import { BaseService } from 'src/common/services/base.service';
+import { UserService } from 'src/subsystems/user/service/user.service';
+import { ProductEntity } from '../../products/entity/product.entity';
+import {
+    BuildOrderDTO,
+    ProductOrderDTO,
+} from '../../public/dto/frontsDTO/ordersDTO/buildorder.dto';
+import { User } from '../../user/entities/user.entity';
+import { calculateDiscount } from '../../../common/utils/global-functions.utils';
+import { OrderProductEntity } from '../entities/order_products.entity';
+import { OrderStatus } from '../enums/orderStatus.enum';
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
-
     protected getRepositoryName(): string {
-        return "tb_orders"
+        return 'tb_orders';
     }
-    
+
     constructor(
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
@@ -26,58 +28,58 @@ export class OrderService extends BaseService<OrderEntity> {
         @InjectRepository(OrderProductEntity)
         private readonly orderProductRepository: Repository<OrderProductEntity>,
         @Inject(UserService)
-        private userService : UserService
+        private userService: UserService,
     ) {
         super(orderRepository);
     }
-    async getallORderProc(){
+    async getallORderProc() {
         return await this.orderRepository.find({
             relations: ['orderItems', 'orderItems.product'],
         });
-
-      
     }
 
-    async getHistory(userId: number) :Promise<OrderEntity[]> {
-    console.log(userId)
-    return await this.orderRepository.find({
-
-        where: {
-
-           user:{ id: userId },
-      
-        },
-        relations: ['user']
-    });
-
-  
-}
+    async getHistory(userId: number): Promise<OrderEntity[]> {
+        console.log(userId);
+        return await this.orderRepository.find({
+            where: {
+                user: { id: userId },
+            },
+            relations: ['user'],
+        });
+    }
     // TODO FIXME Cambiar Metodo de creacion de orden
     async createOrderService(userId: number, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
         const user: User = await this.userService.findOneById(userId);
 
-        if(!user){
+        if (!user) {
             throw Error('User not found');
         }
 
-        const foundProducts: ProductEntity[] = await this.validateProducts(data.products);
+        const foundProducts: ProductEntity[] = await this.validateProducts(
+            data.products,
+        );
 
-        if(!foundProducts){
+        if (!foundProducts) {
             throw Error('Products are not valid');
         }
 
         // Mapeo para construir un array con los productos encontrados y sus quantitys
-        const productsWithQuantities = data.products.map(productOrder => {
-            const product = foundProducts.find(p => p.id === productOrder.product_id);
+        const productsWithQuantities = data.products.map((productOrder) => {
+            const product = foundProducts.find(
+                (p) => p.id === productOrder.product_id,
+            );
             return { product, quantity: productOrder.quantity };
         });
 
         // Calcular subtotal
-        const subtotal: number = productsWithQuantities.reduce((total, { product, quantity }) => {
-            return total + calculateDiscount(product, quantity);
-        }, 0);
+        const subtotal: number = productsWithQuantities.reduce(
+            (total, { product, quantity }) => {
+                return total + calculateDiscount(product, quantity);
+            },
+            0,
+        );
 
         //Crear Orden
         const order: OrderEntity = this.orderRepository.create({
@@ -93,72 +95,69 @@ export class OrderService extends BaseService<OrderEntity> {
         await this.orderRepository.save(order);
 
         //Crear Order_Products
-        const orderProducts = productsWithQuantities.map(({ product, quantity }) => {
-            return this.orderProductRepository.create({
-                order: order,
-                product: product,
-                quantity: quantity,
-            });
-        });
+        const orderProducts = productsWithQuantities.map(
+            ({ product, quantity }) => {
+                return this.orderProductRepository.create({
+                    order: order,
+                    product: product,
+                    quantity: quantity,
+                });
+            },
+        );
 
         await this.orderProductRepository.save(orderProducts);
 
         return order;
     }
 
-    private async validateProducts(products: ProductOrderDTO[]): Promise<ProductEntity[]> | null {
+    private async validateProducts(
+        products: ProductOrderDTO[],
+    ): Promise<ProductEntity[]> | null {
+        let ids: number[] = await products.map((elemnt) => elemnt.product_id);
+        const foundProducts: ProductEntity[] =
+            await this.productRepository.findBy({ id: In(ids) });
 
-        let ids : number[] = await products.map(elemnt=> elemnt.product_id);
-        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(ids) })
-
-        if(ids.length === foundProducts.length){
+        if (ids.length === foundProducts.length) {
             return foundProducts;
         }
 
         return null;
     }
 
-    async processOrders(orderid: number): Promise<void> {
+    async processOrders(orderid: number) :Promise<OrderEntity> {
         // Verificar si la Orden existe
-        const order: OrderProductEntity = await this.orderProductRepository.findOne(
-
-            { where: { order:{ id:orderid} } }
-
-        );
+        const order: OrderEntity = await this.orderRepository.findOne({
+            where: { id: orderid },
+        });
 
         if (!order) {
             throw new Error('Order not found');
         }
 
-        // Encontrar todos los productos relacionados con la orden
+        if (order.status !== OrderStatus.Accepted) {
+            throw new Error('Status order is not pending');
+        }
 
-        let productos: OrderProductEntity[] = await this.orderProductRepository.find({
+        let productOrderRelation: OrderProductEntity[] =
+            await this.orderProductRepository.find({
+                where: { order: { id: orderid } },
+                relations: ['product'],
+            });
 
-            where:{order: {id:orderid}},
-            relations:["product"]
-       
-        });
-        console.log(productos)
-        /*for (const cart of carts) {
-
-            await this.cartRepository.save(cart)
-
-            const productOnStock: ProductEntity =
-                await this.productRepository.findOne(
-                    { where: { id: cart.item.id }}
-                );
-
-            if(productOnStock.quantity < cart.quantity) {
+        // Go through all the products related to the order to verify if there is still enough stock
+        for (const relation of productOrderRelation) {
+            if (relation.quantity > relation.product.quantity) {
                 throw new Error('There is not enough stock');
             }
 
-            productOnStock.quantity -= cart.quantity;
+            relation.product.quantity -= relation.quantity;
 
-            await this.productRepository.save(productOnStock);
+            await this.productRepository.save(relation.product);
+        }
 
-        }*/
+        // Change order status upon completion
+        order.status = OrderStatus.Paid;
 
-    
-        await this.orderRepository.save(order);
+        return await this.orderRepository.save(order);
     }
 }

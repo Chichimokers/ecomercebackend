@@ -7,6 +7,7 @@ import {
     ManyToOne, Check, OneToMany
 } from "typeorm";
 import { OrderProductEntity } from "./order_products.entity";
+import { OrderStatus } from "../enums/orderStatus.enum";
 
 @Entity({name:"tb_orders"})
 @Check(`"subtotal" >= 0`)
@@ -38,9 +39,12 @@ export class OrderEntity  extends BaseEntity{
     @IsPositive()
     subtotal: number;
 
-    @Column({ default: true })
-    @IsBoolean()
-    pending: boolean;
+    @Column({
+        type: "enum",
+        enum: OrderStatus,
+        default: OrderStatus.Pending,
+    })
+    status: OrderStatus;
 
     @Column({length: 255, nullable: true, default: null})
     @IsString()

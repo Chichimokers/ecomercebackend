@@ -51,8 +51,13 @@ export class OrderControllers {
     @Get()
     @Roles(roles.Admin)
     async getallorders_prodcts(): Promise<OrderEntity[]> {
-     
         return  this.orderService.getallORderProc()
+    }
+
+    @Post('process_order')
+    @Roles(roles.Admin)
+    async process_order(@Body('order') order: number){
+        return this.orderService.processOrders(order);
     }
 
     @Get(':id')
