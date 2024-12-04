@@ -34,7 +34,7 @@ export class OrderEntity  extends BaseEntity{
     @IsString()
     CI :string
 
-    @Column()
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     @IsPositive()
     subtotal: number;
 

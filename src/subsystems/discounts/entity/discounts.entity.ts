@@ -18,7 +18,7 @@ export class DiscountEntity extends BaseEntity {
     /**
      * Price reduction per unit, once the discount is applied
      */
-    @Column()
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     @IsNumber()
     @IsPositive()
     reduction: number;

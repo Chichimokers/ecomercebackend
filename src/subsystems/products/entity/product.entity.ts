@@ -22,7 +22,7 @@ export class ProductEntity extends BaseEntity {
     @IsString()
     name: string;
 
-    @Column()
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     @IsPositive()
     price: number;
 
