@@ -25,6 +25,7 @@ export class ProductOrderDTO {
     quantity: number;
 }
 
+
 export class BuildOrderDTO {
     @ApiProperty({
         description: 'List of products to be ordered',
@@ -83,17 +84,4 @@ export class BuildOrderDTO {
     @IsString()
     @Length(1, 15)
     phone: string;
-}
-
-export class ProductOrderDTO {
-
-    @IsNotEmpty()
-    @IsNumber()
-    @IsPositive()
-    product_id: number;
-
-    @IsNotEmpty()
-    @IsNumber()
-    @IsPositive()
-    quantity: number;
 }

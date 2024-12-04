@@ -48,7 +48,7 @@ export class OrderEntity  extends BaseEntity{
 
     @OneToMany(
         (): typeof OrderProductEntity => OrderProductEntity,
-        orderProduct => orderProduct.order,
+        orderProduct => orderProduct.product,
         { nullable: true }
     )
     orderProducts: OrderProductEntity[];

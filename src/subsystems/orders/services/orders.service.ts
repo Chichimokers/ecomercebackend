@@ -29,8 +29,9 @@ export class OrderService extends BaseService<OrderEntity> {
     ) {
         super(orderRepository);
     }
-
-
+    async getallORderProc(){
+return await this.orderProductRepository.find({relations:["product","order"]})
+    }
     async getHistory(userId: number) :Promise<OrderEntity[]> {
     console.log(userId)
     return await this.orderRepository.find({
@@ -80,7 +81,7 @@ export class OrderService extends BaseService<OrderEntity> {
             receiver_name: data.receiver_name,
             CI: data.ci,
             subtotal: subtotal,
-            user: user
+            user: user,
         });
 
         await this.orderRepository.save(order);
@@ -94,13 +95,15 @@ export class OrderService extends BaseService<OrderEntity> {
             });
         });
 
-        await this.orderRepository.save(orderProducts);
+        await this.orderProductRepository.save(orderProducts);
+
+        return order;
     }
 
     private async validateProducts(products: ProductOrderDTO[]): Promise<ProductEntity[]> | null {
 
         let ids : number[] = await products.map(elemnt=> elemnt.product_id);
-        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(products) })
+        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(ids) })
 
         if(ids.length === foundProducts.length){
             return foundProducts;
@@ -120,10 +123,13 @@ export class OrderService extends BaseService<OrderEntity> {
         }
 
         // Encontrar todos los productos relacionados con la orden
-        /*let carts: CartEntity[] = await this.cartRepository.find({
-            where: { order: { id: orderid } },
-            relations: ['item'],
-        });*/
+
+        let productos: OrderProductEntity[] = await this.orderProductRepository.find({
+            
+            where:{order: {id:orderid}},
+            relations:["products"]
+       
+        });
 
         /*for (const cart of carts) {
 
