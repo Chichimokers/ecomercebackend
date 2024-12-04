@@ -45,11 +45,8 @@ export class OrderEntity  extends BaseEntity{
     @Column({length: 255, nullable: true, default: null})
     @IsString()
     stripe_id: string;
+    
+    @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.order)
+    orderItems: OrderProductEntity[];
 
-    @OneToMany(
-        (): typeof OrderProductEntity => OrderProductEntity,
-        orderProduct => orderProduct.order,
-        { nullable: true }
-    )
-    orderProducts: OrderProductEntity[];
 }

@@ -25,6 +25,7 @@ export class ProductOrderDTO {
     quantity: number;
 }
 
+
 export class BuildOrderDTO {
     @ApiProperty({
         description: 'List of products to be ordered',
@@ -84,4 +85,3 @@ export class BuildOrderDTO {
     @Length(1, 15)
     phone: string;
 }
-

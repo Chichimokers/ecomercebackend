@@ -22,6 +22,7 @@ import { OrderService } from '../services/orders.service';
 import { CreateOrderDTO } from '../dto/CreateOrderDTO.dto';
 import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
+import { OrderProductEntity } from '../entities/order_products.entity';
 
 @ApiTags('orders')
 @ApiBearerAuth()
@@ -45,10 +46,13 @@ export class OrderControllers {
     }*/
 
     //@UseGuards(JwtAuthGuard)
+
+
     @Get()
     @Roles(roles.Admin)
-    public getOrders(): Promise<OrderEntity[]> {
-        return this.orderService.findAll();
+    async getallorders_prodcts(): Promise<OrderEntity[]> {
+     
+        return  this.orderService.getallORderProc()
     }
 
     @Get(':id')

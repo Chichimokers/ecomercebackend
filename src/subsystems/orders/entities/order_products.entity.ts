@@ -7,12 +7,12 @@ export class OrderProductEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => OrderEntity, order => order.orderProducts)
+    @ManyToOne(() => OrderEntity, (order) => order)
     order: OrderEntity;
-
-    @ManyToOne(() => ProductEntity)
-    @JoinColumn({ name: 'product_id' })
+  
+    @ManyToOne(() => ProductEntity, (product) => product)
     product: ProductEntity;
+
 
     @Column()
     quantity: number;

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, Repository } from "typeorm";
+import { Any, In, Repository } from "typeorm";
 import { OrderEntity } from "../entities/order.entity";
 import { BaseService } from "src/common/services/base.service";
 import { UserService } from "src/subsystems/user/service/user.service";
@@ -9,6 +9,7 @@ import { BuildOrderDTO, ProductOrderDTO } from "../../public/dto/frontsDTO/order
 import { User } from "../../user/entities/user.entity";
 import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 import { OrderProductEntity } from "../entities/order_products.entity";
+import { response } from "express";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -29,7 +30,13 @@ export class OrderService extends BaseService<OrderEntity> {
     ) {
         super(orderRepository);
     }
+    async getallORderProc(){
+        return await this.orderRepository.find({
+            relations: ['orderItems', 'orderItems.product'],
+        });
 
+      
+    }
 
     async getHistory(userId: number) :Promise<OrderEntity[]> {
     console.log(userId)
@@ -45,7 +52,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
   
 }
-
+    // TODO FIXME Cambiar Metodo de creacion de orden
     async createOrderService(userId: number, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
@@ -80,7 +87,7 @@ export class OrderService extends BaseService<OrderEntity> {
             receiver_name: data.receiver_name,
             CI: data.ci,
             subtotal: subtotal,
-            user: user
+            user: user,
         });
 
         await this.orderRepository.save(order);
@@ -95,13 +102,16 @@ export class OrderService extends BaseService<OrderEntity> {
         });
 
         await this.orderProductRepository.save(orderProducts);
+
+        return order;
     }
 
     private async validateProducts(products: ProductOrderDTO[]): Promise<ProductEntity[]> | null {
-        const productIds: number[] = products.map(product => product.product_id);
-        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(productIds) })
 
-        if(productIds.length === foundProducts.length){
+        let ids : number[] = await products.map(elemnt=> elemnt.product_id);
+        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(ids) })
+
+        if(ids.length === foundProducts.length){
             return foundProducts;
         }
 
@@ -110,8 +120,10 @@ export class OrderService extends BaseService<OrderEntity> {
 
     async processOrders(orderid: number): Promise<void> {
         // Verificar si la Orden existe
-        const order: OrderEntity = await this.orderRepository.findOne(
-            { where: { id: orderid } }
+        const order: OrderProductEntity = await this.orderProductRepository.findOne(
+
+            { where: { order:{ id:orderid} } }
+
         );
 
         if (!order) {
@@ -119,11 +131,14 @@ export class OrderService extends BaseService<OrderEntity> {
         }
 
         // Encontrar todos los productos relacionados con la orden
-        /*let carts: CartEntity[] = await this.cartRepository.find({
-            where: { order: { id: orderid } },
-            relations: ['item'],
-        });*/
 
+        let productos: OrderProductEntity[] = await this.orderProductRepository.find({
+
+            where:{order: {id:orderid}},
+            relations:["product"]
+       
+        });
+        console.log(productos)
         /*for (const cart of carts) {
 
             await this.cartRepository.save(cart)
@@ -143,7 +158,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
         }*/
 
-        order.pending = false;
+    
         await this.orderRepository.save(order);
     }
 }
