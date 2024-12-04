@@ -5,6 +5,7 @@ import { OrderEntity } from '../entities/order.entity';
 import { BaseService } from 'src/common/services/base.service';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { ProductEntity } from "../../products/entity/product.entity";
+import { BuildOrderDTO } from "../../public/dto/frontsDTO/ordersDTO/buildorder.dto";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -34,71 +35,22 @@ export class OrderService extends BaseService<OrderEntity> {
            user:{ id: userId },
       
         },
-        relations: ['carts','carts.item','user']
+        relations: ['user']
     });
 
   
 }
     // TODO FIXME Cambiar Metodo de creacion de orden
-    async createOrder(userId: number, phone: string, address: string, CI: string): Promise<OrderEntity| any>  {
-        // Obtener los productos del carrito que no han sido pagados
-        const carts = await this.cartRepository.find({
-
-            where: {
-                user: { id: userId },
-                paid: false,
-            },
-
-        });
-
-        if(carts.length == 0){
-            return null
-        }
-
-        const user = await this.userService.findOneById(userId);
-
-        if (!user) {
-            throw new Error('user no encontrado');
-        }
-
-        const subtotal: number = this.calculateSubTotal(carts);
-
-        const newOrder: OrderEntity = this.orderRepository.create({
-            user: user, // Asignar el usuario
-            phone,
-            address, // Asegúrate de que 'address' esté definido en OrderEntity
-            CI, // Asegúrate de que 'CI' esté definido en OrderEntity
-            subtotal: subtotal, // Calcular el subtotal
-            pending: true, // Marcar como pendiente
-            carts, // Asignar los productos del carrito
-        });
-
-        // Guardar la nueva orden en la base de datos
-       const savedOrder: OrderEntity = await this.orderRepository.save(newOrder);
-
-       
-
-        // Actualizar los carts relacionados
-        await Promise.all(carts.map(async (cart: CartEntity): Promise<CartEntity> => {
-            cart.order = savedOrder; // Asignar el ID de la orden al carrito
-            cart.paid = true; // Marcar como ordenado
-            return this.cartRepository.save(cart); // Guardar los cambios en el carrito
-        }));
-    
-        return savedOrder;
-    }
-
-    private calculateSubTotal(carts: CartEntity[]): number {
-        let totalprice: number = 0;
-
-        carts.forEach((item: CartEntity): void=>{
-            totalprice += item.total;
-        })
-
-        return totalprice;
+    async createOrder(userId: number, data: BuildOrderDTO) {
+        //PASOS
+        //Capturar USER (Validacion)
+        //Capturar Productos (Validacion)
+        //Crear Orden
+        //Crear Order_Products
     }
 
     async processOrders(orderid: number): Promise<void> {
+        // Verificar si la Orden existe
         const order: OrderEntity = await this.orderRepository.findOne(
             { where: { id: orderid } }
         );
@@ -107,12 +59,13 @@ export class OrderService extends BaseService<OrderEntity> {
             throw new Error('Order not found');
         }
 
-        let carts: CartEntity[] = await this.cartRepository.find({
+        // Encontrar todos los productos relacionados con la orden
+        /*let carts: CartEntity[] = await this.cartRepository.find({
             where: { order: { id: orderid } },
             relations: ['item'],
-        });
+        });*/
 
-        for (const cart of carts) {
+        /*for (const cart of carts) {
 
             await this.cartRepository.save(cart)
 
@@ -129,7 +82,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
             await this.productRepository.save(productOnStock);
 
-        }
+        }*/
 
         order.pending = false;
         await this.orderRepository.save(order);

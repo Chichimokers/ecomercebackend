@@ -4,8 +4,9 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 import {
     Entity,
     Column,
-    ManyToOne, Check
+    ManyToOne, Check, OneToMany
 } from "typeorm";
+import { OrderProductEntity } from "./order_products.entity";
 
 @Entity({name:"tb_orders"})
 @Check(`"subtotal" >= 0`)
@@ -13,9 +14,17 @@ export class OrderEntity  extends BaseEntity{
     @ManyToOne((): typeof User => User, (user: User): number => user.id)
     user: User;
 
+    @Column({ length: 70 })
+    @IsString()
+    receiver_name: string;
+
     @Column({ length: 15 })
     @IsString()
     phone :string
+
+    @Column({ length: 20 })
+    @IsString()
+    province :string
 
     @Column({ length: 255 })
     @IsString()
@@ -36,4 +45,11 @@ export class OrderEntity  extends BaseEntity{
     @Column({length: 255, nullable: true, default: null})
     @IsString()
     stripe_id: string;
+
+    @OneToMany(
+        (): typeof OrderProductEntity => OrderProductEntity,
+        orderProduct => orderProduct.order,
+        { nullable: true }
+    )
+    orderProducts: OrderProductEntity[];
 }

@@ -28,7 +28,6 @@ import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ProductDTO } from "../../public/dto/GetProductsDTO.dto";
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -65,7 +64,7 @@ export class ProductControllers {
 
     //@UseGuards(JwtAuthGuard)
     
-    @Get()
+    /*@Get()
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: [ProductDTO] })
     public getProducts(): Promise<ProductEntity[]> {
@@ -77,7 +76,7 @@ export class ProductControllers {
     @ApiResponse({ status: 200, type: ProductDTO })
     getProductById(@Param('id') id: string): Promise<ProductEntity> {
         return this.productservice.findOneById(+id);
-    }
+    }*/
 
     @Patch(':id')
     @Roles(roles.Admin)

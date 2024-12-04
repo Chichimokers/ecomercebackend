@@ -49,28 +49,3 @@ export function mapToDto<T, D>(
 
     return dto;
 }
-
-/**
- * Calculate the discount of a product through an applied discount
- *
- */
-export function calDiscount( cart: CartEntity ): number {
-
-    let totalDiscount: number = 0;
-
-    if(cart.item.discounts !== null) {
-        totalDiscount = cart.item.discounts.reduction;
-
-
-        let priceforproduct: number = cart.item.price - totalDiscount
-
-        cart.total = priceforproduct * cart.item.quantity
-
-        return cart.total
-    }
-
-    // TODO Apply offers logic
-
-    return 0;
-}
-

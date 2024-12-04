@@ -54,18 +54,20 @@ export class StripeService {
         };
     }
 
-    private async createJSONOrder(
+   private async createJSONOrder(
         cart: OrderEntity,
         currency: string = 'usd',
     ): Promise<any> {
-        if (!cart || !cart.carts) {
+        // Comprobar si la orden existe...
+        /*if (!cart || !cart.carts) {
             throw new Error('No se encontraron carts en la orden.'); // Manejo de error
-        }
+        }*/
 
         let subtotal: number = 0;
-        cart.carts.forEach((cartItem: CartEntity): void => {
+        // Calcular subtotal
+        /*cart.carts.forEach((cartItem: CartEntity): void => {
             subtotal += cartItem.total;
-        });
+        });*/
 
         return {
             success_url: `http://localhost:3000/visa-mastercard/capture-payment?order_id=${cart.id.toString()}`,
@@ -76,7 +78,8 @@ export class StripeService {
                 order_id: cart.id.toString(),
                 user_id: cart.user.id.toString(),
             },
-            line_items: cart.carts.map((cartItem: CartEntity) => ({
+            // Items del carrito
+            /*line_items: cart.carts.map((cartItem: CartEntity) => ({
                 price_data: {
                     currency: currency,
                     product_data: {
@@ -85,7 +88,7 @@ export class StripeService {
                     unit_amount: cartItem.item.price * 100,
                 },
                 quantity: cartItem.quantity,
-            })),
+            })),*/
         };
     }
 

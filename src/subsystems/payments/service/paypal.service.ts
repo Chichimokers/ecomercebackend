@@ -38,23 +38,24 @@ export class PaypalService {
     }
 
     async CreateJSONOrder(carts: OrderEntity, moneda: string): Promise<any> {
-        if (!carts || !carts.carts) {
+        // Verificar si la orden existe
+        /*if (!carts || !carts.carts) {
             throw new Error("No se encontraron carts en la orden."); // Manejo de error
-        }
+        }*/
 
         const { v4: uuidv4 } = require('uuid');
         let requestId: any = uuidv4(); // Genera un UUID
 
         // Calcular el subtotal
         let subtotal: number = 0;
-        carts.carts.forEach(cart => {
+        /*carts.carts.forEach(cart => {
             subtotal += cart.total; // Sumar el total de cada cart
-        });
+        });*/
 
         const order = {
             intent: "CAPTURE",
            
-            purchase_units: [
+            /*purchase_units: [
                 {
                     custom_id: carts.id.toString(),
                     reference_id: requestId, // Usar el UUID generado
@@ -69,6 +70,7 @@ export class PaypalService {
                             }
                         }
                     },
+                    //TODO Items
                     items: carts.carts.map(cart => ({
                         name: cart.item.name, // Asumiendo que cada cart tiene un atributo 'productName'
                         unit_amount: {
@@ -78,7 +80,7 @@ export class PaypalService {
                         quantity: cart.quantity.toString() // Asumiendo que cada cart tiene un atributo 'quantity'
                     }))
                 },
-            ],
+            ],*/
             payment_source: {
                 paypal: {
                     experience_context: {

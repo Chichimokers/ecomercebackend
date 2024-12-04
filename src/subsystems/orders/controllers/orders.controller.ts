@@ -30,7 +30,7 @@ import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
 export class OrderControllers {
     constructor(private readonly orderService: OrderService) { }
 
-    @ApiCreatedResponse({ description: 'The record has been created successfully created' })
+    /*@ApiCreatedResponse({ description: 'The record has been created successfully created' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @Post()
     @Roles(roles.Admin)
@@ -42,7 +42,7 @@ export class OrderControllers {
             createOrderDto.address,
             createOrderDto.CI
         );
-    }
+    }*/
 
     //@UseGuards(JwtAuthGuard)
     @Get()
