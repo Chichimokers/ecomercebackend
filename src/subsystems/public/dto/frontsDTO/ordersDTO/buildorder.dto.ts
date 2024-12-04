@@ -41,11 +41,9 @@ export class ProductOrderDTO {
 
     @IsNotEmpty()
     @IsNumber()
-    @IsPositive()
     product_id: number;
 
     @IsNotEmpty()
     @IsNumber()
-    @IsPositive()
     quantity: number;
 }

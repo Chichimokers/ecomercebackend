@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, Repository } from "typeorm";
+import { Any, In, Repository } from "typeorm";
 import { OrderEntity } from "../entities/order.entity";
 import { BaseService } from "src/common/services/base.service";
 import { UserService } from "src/subsystems/user/service/user.service";
@@ -98,10 +98,11 @@ export class OrderService extends BaseService<OrderEntity> {
     }
 
     private async validateProducts(products: ProductOrderDTO[]): Promise<ProductEntity[]> | null {
-        const productIds: number[] = products.map(product => product.product_id);
-        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(productIds) })
 
-        if(productIds.length === foundProducts.length){
+        let ids : number[] = await products.map(elemnt=> elemnt.product_id);
+        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(products) })
+
+        if(ids.length === foundProducts.length){
             return foundProducts;
         }
 
