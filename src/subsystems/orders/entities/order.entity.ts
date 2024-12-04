@@ -14,7 +14,7 @@ export class OrderEntity  extends BaseEntity{
     @ManyToOne((): typeof User => User, (user: User): number => user.id)
     user: User;
 
-    @Column({ length: 70 })
+    @Column({ length: 70, nullable: false })
     @IsString()
     receiver_name: string;
 

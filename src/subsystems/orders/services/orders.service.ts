@@ -48,6 +48,7 @@ export class OrderService extends BaseService<OrderEntity> {
     // TODO FIXME Cambiar Metodo de creacion de orden
     async createOrderService(userId: number, data: BuildOrderDTO) {
         //PASOS
+        console.log(data);
         //Capturar USER (Validacion)
         const user: User = await this.userService.findOneById(userId);
 
@@ -66,25 +67,30 @@ export class OrderService extends BaseService<OrderEntity> {
             const product = foundProducts.find(p => p.id === productOrder.product_id);
             return { product, quantity: productOrder.quantity };
         });
-
+        console.log(productsWithQuantities);
         // Calcular subtotal
         const subtotal: number = productsWithQuantities.reduce((total, { product, quantity }) => {
             return total + calculateDiscount(product, quantity);
         }, 0);
 
+        if(!data.receiver_name){
+            return
+        }
+
         //Crear Orden
         const order = this.orderRepository.create({
-            receiver_name: data.receiver_name,
             phone: data.phone,
             province: data.province,
             address: data.address,
+            receiver_name: data.receiver_name,
             CI: data.ci,
             subtotal: subtotal,
             user: user,
-            pending: true,
+            pending: true
         });
 
-        await this.orderRepository.save(order);
+        //await this.orderRepository.save(order);
+
         //Crear Order_Products
         const orderProducts = productsWithQuantities.map(({ product, quantity }) => {
             return this.orderProductRepository.create({

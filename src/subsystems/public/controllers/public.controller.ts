@@ -16,6 +16,8 @@ export class PublicController{
     @Post()
     createOrder(@Body() orderdto: BuildOrderDTO, @Req() request: any){
         const userid = request.user.Id;
+        console.log(userid);
+        console.log(orderdto);
         return this.orderService.createOrderService(userid, orderdto);
     }
 }
