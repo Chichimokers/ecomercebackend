@@ -45,7 +45,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
   
 }
-    // TODO FIXME Cambiar Metodo de creacion de orden
+
     async createOrderService(userId: number, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
@@ -94,7 +94,7 @@ export class OrderService extends BaseService<OrderEntity> {
             });
         });
 
-        await this.orderRepository.save(orderProducts);
+        await this.orderProductRepository.save(orderProducts);
     }
 
     private async validateProducts(products: ProductOrderDTO[]): Promise<ProductEntity[]> | null {
