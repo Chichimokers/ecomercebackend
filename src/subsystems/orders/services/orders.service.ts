@@ -1,11 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { OrderEntity } from '../entities/order.entity';
-import { BaseService } from 'src/common/services/base.service';
-import { UserService } from 'src/subsystems/user/service/user.service';
+import { Inject, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { In, Repository } from "typeorm";
+import { OrderEntity } from "../entities/order.entity";
+import { BaseService } from "src/common/services/base.service";
+import { UserService } from "src/subsystems/user/service/user.service";
 import { ProductEntity } from "../../products/entity/product.entity";
-import { BuildOrderDTO } from "../../public/dto/frontsDTO/ordersDTO/buildorder.dto";
+import { BuildOrderDTO, ProductOrderDTO } from "../../public/dto/frontsDTO/ordersDTO/buildorder.dto";
+import { User } from "../../user/entities/user.entity";
+import { calculateDiscount } from "../../../common/utils/global-functions.utils";
+import { OrderProductEntity } from "../entities/order_products.entity";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -19,6 +22,8 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly orderRepository: Repository<OrderEntity>,
         @InjectRepository(ProductEntity)
         private readonly productRepository: Repository<ProductEntity>,
+        @InjectRepository(OrderProductEntity)
+        private readonly orderProductRepository: Repository<OrderProductEntity>,
         @Inject(UserService)
         private userService : UserService
     ) {
@@ -41,12 +46,66 @@ export class OrderService extends BaseService<OrderEntity> {
   
 }
     // TODO FIXME Cambiar Metodo de creacion de orden
-    async createOrder(userId: number, data: BuildOrderDTO) {
+    async createOrderService(userId: number, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
-        //Capturar Productos (Validacion)
+        const user: User = await this.userService.findOneById(userId);
+
+        if(!user){
+            throw Error('User not found');
+        }
+
+        const foundProducts: ProductEntity[] = await this.validateProducts(data.products);
+
+        if(foundProducts === null){
+            throw Error('Products are not valid');
+        }
+
+        // Mapeo para construir un array con los productos encontrados y sus quantitys
+        const productsWithQuantities = data.products.map(productOrder => {
+            const product = foundProducts.find(p => p.id === productOrder.product_id);
+            return { product, quantity: productOrder.quantity };
+        });
+
+        // Calcular subtotal
+        const subtotal: number = productsWithQuantities.reduce((total, { product, quantity }) => {
+            return total + calculateDiscount(product, quantity);
+        }, 0);
+
         //Crear Orden
+        const order = this.orderRepository.create({
+            receiver_name: data.receiver_name,
+            phone: data.phone,
+            province: data.province,
+            address: data.address,
+            CI: data.ci,
+            subtotal: subtotal,
+            user: user,
+            pending: true,
+        });
+
+        await this.orderRepository.save(order);
         //Crear Order_Products
+        const orderProducts = productsWithQuantities.map(({ product, quantity }) => {
+            return this.orderProductRepository.create({
+                order: order,
+                product: product,
+                quantity: quantity,
+            });
+        });
+
+        await this.orderRepository.save(orderProducts);
+    }
+
+    private async validateProducts(products: ProductOrderDTO[]): Promise<ProductEntity[]> | null {
+        const productIds: number[] = products.map(product => product.product_id);
+        const foundProducts: ProductEntity[] = await this.productRepository.findBy({ id: In(productIds) })
+
+        if(productIds.length === foundProducts.length){
+            return foundProducts;
+        }
+
+        return null;
     }
 
     async processOrders(orderid: number): Promise<void> {

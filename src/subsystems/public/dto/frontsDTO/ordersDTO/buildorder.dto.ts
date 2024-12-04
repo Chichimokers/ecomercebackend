@@ -37,7 +37,7 @@ export class BuildOrderDTO {
     phone: string;
 }
 
-class ProductOrderDTO {
+export class ProductOrderDTO {
 
     @IsNotEmpty()
     @IsNumber()

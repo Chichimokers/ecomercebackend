@@ -49,3 +49,10 @@ export function mapToDto<T, D>(
 
     return dto;
 }
+
+export function calculateDiscount(product: ProductEntity, quantity: number){
+    if(product.discounts === null) return product.price;
+    if(product.discounts.min > quantity) return product.price;
+
+    return quantity * (product.price - product.discounts.reduction);
+}
