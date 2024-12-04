@@ -57,7 +57,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
         const foundProducts: ProductEntity[] = await this.validateProducts(data.products);
 
-        if(foundProducts === null){
+        if(!foundProducts){
             throw Error('Products are not valid');
         }
 
@@ -73,18 +73,18 @@ export class OrderService extends BaseService<OrderEntity> {
         }, 0);
 
         //Crear Orden
-        const order = this.orderRepository.create({
-            receiver_name: data.receiver_name,
+        const order: OrderEntity = this.orderRepository.create({
             phone: data.phone,
             province: data.province,
             address: data.address,
+            receiver_name: data.receiver_name,
             CI: data.ci,
             subtotal: subtotal,
-            user: user,
-            pending: true,
+            user: user
         });
 
         await this.orderRepository.save(order);
+
         //Crear Order_Products
         const orderProducts = productsWithQuantities.map(({ product, quantity }) => {
             return this.orderProductRepository.create({

@@ -13,10 +13,18 @@ export class PublicController{
     constructor(private orderService: OrderService) {
     }
 
+<<<<<<< HEAD
     @Post("order")
     createOrder(@Body() orderdto: BuildOrderDTO, @Req() request: any){
         const userid = request.user.Id;
         console.log(orderdto)
+=======
+    @Post()
+    createOrder(@Req() request: any, @Body() orderdto: BuildOrderDTO){
+        const userid = request.user.Id;
+        console.log(userid);
+        console.log(orderdto);
+>>>>>>> 7c98f0f831ff96ef69dc570b9b8fb7d5080f5500
         return this.orderService.createOrderService(userid, orderdto);
     }
 }
