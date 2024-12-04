@@ -10,6 +10,7 @@ import { DiscountEntity} from "../../discounts/entity/discounts.entity";
 //import { RatingEntity } from "../../rating/entity/rating.entity";
 //import { OfferEntity } from "../../discounts/entity/offers.entity";
 import { IsPositive, IsString } from "class-validator";
+import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
 
 @Entity({ name:"tb_products"})
 @Check(`"price" > 0`)
@@ -40,6 +41,9 @@ export class ProductEntity extends BaseEntity {
     @Column()
     @IsPositive()
     quantity: number;
+
+    @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.product)
+    orderItems: OrderProductEntity[];
 
     /*@OneToOne(() => OfferEntity, (offer) => offer.products,
         {nullable: true})

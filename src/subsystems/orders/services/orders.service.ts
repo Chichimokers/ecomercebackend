@@ -9,6 +9,7 @@ import { BuildOrderDTO, ProductOrderDTO } from "../../public/dto/frontsDTO/order
 import { User } from "../../user/entities/user.entity";
 import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 import { OrderProductEntity } from "../entities/order_products.entity";
+import { response } from "express";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -30,8 +31,13 @@ export class OrderService extends BaseService<OrderEntity> {
         super(orderRepository);
     }
     async getallORderProc(){
-return await this.orderProductRepository.find({relations:["product","order"]})
+        return await this.orderRepository.find({
+            relations: ['orderItems', 'orderItems.product'],
+        });
+
+      
     }
+
     async getHistory(userId: number) :Promise<OrderEntity[]> {
     console.log(userId)
     return await this.orderRepository.find({
@@ -114,8 +120,10 @@ return await this.orderProductRepository.find({relations:["product","order"]})
 
     async processOrders(orderid: number): Promise<void> {
         // Verificar si la Orden existe
-        const order: OrderEntity = await this.orderRepository.findOne(
-            { where: { id: orderid } }
+        const order: OrderProductEntity = await this.orderProductRepository.findOne(
+
+            { where: { order:{ id:orderid} } }
+
         );
 
         if (!order) {
@@ -125,12 +133,12 @@ return await this.orderProductRepository.find({relations:["product","order"]})
         // Encontrar todos los productos relacionados con la orden
 
         let productos: OrderProductEntity[] = await this.orderProductRepository.find({
-            
+
             where:{order: {id:orderid}},
-            relations:["products"]
+            relations:["product"]
        
         });
-
+        console.log(productos)
         /*for (const cart of carts) {
 
             await this.cartRepository.save(cart)
@@ -150,7 +158,7 @@ return await this.orderProductRepository.find({relations:["product","order"]})
 
         }*/
 
-        order.pending = false;
+    
         await this.orderRepository.save(order);
     }
 }
