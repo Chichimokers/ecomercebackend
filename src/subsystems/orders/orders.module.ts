@@ -7,13 +7,15 @@ import { OrderService } from './services/orders.service';
 import { UserService } from '../user/service/user.service';
 import { User } from '../user/entities/user.entity';
 import { ProductEntity } from "../products/entity/product.entity";
+import { OrderProductEntity } from "./entities/order_products.entity";
+import { Repository } from "typeorm";
 
 @Module({
     imports:[
-        TypeOrmModule.forFeature([OrderEntity,ProductEntity,User]),
+        TypeOrmModule.forFeature([OrderEntity,OrderProductEntity,ProductEntity,User]),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
-    providers:[OrderService,UserService],
+    providers:[OrderService, UserService],
     controllers:[OrderControllers],
   
 })

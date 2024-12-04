@@ -10,9 +10,10 @@ import { StripeController } from "./controller/stripe.controller";
 import { StripeService } from "./service/stripe.service";
 import { Repository } from "typeorm";
 import { ProductEntity } from "../products/entity/product.entity";
+import { OrderProductEntity } from "../orders/entities/order_products.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([OrderEntity, ProductEntity,User])],
+    imports: [TypeOrmModule.forFeature([OrderEntity, ProductEntity, OrderProductEntity,User])],
     providers:[PaypalService, StripeService, OrderService, UserService, Repository],
     controllers:[PaypalController, StripeController]
 })
