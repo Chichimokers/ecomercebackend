@@ -5,6 +5,7 @@ import { CLIENTID, HOST, PAYPAL_HOST, SECRET_KEY } from '../config.payments';
 import axios from 'axios';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { OrderService } from 'src/subsystems/orders/services/orders.service';
+import { calculateDiscount, getPrice } from 'src/common/utils/global-functions.utils';
 
 @Injectable()
 export class PaypalService {
@@ -39,23 +40,25 @@ export class PaypalService {
 
     async CreateJSONOrder(carts: OrderEntity, moneda: string): Promise<any> {
         // Verificar si la orden existe
-        /*if (!carts || !carts.carts) {
+
+        if (!carts || !carts.orderItems) {
             throw new Error("No se encontraron carts en la orden."); // Manejo de error
-        }*/
+        }
 
         const { v4: uuidv4 } = require('uuid');
         let requestId: any = uuidv4(); // Genera un UUID
 
         // Calcular el subtotal
         let subtotal: number = 0;
-        /*carts.carts.forEach(cart => {
-            subtotal += cart.total; // Sumar el total de cada cart
-        });*/
+        carts.orderItems.forEach(cart => {
+            
+            subtotal += calculateDiscount(cart.product, cart.quantity);; // Sumar el total de cada cart
+
+        });
 
         const order = {
             intent: "CAPTURE",
-           
-            /*purchase_units: [
+            purchase_units: [
                 {
                     custom_id: carts.id.toString(),
                     reference_id: requestId, // Usar el UUID generado
@@ -71,16 +74,16 @@ export class PaypalService {
                         }
                     },
                     //TODO Items
-                    items: carts.carts.map(cart => ({
-                        name: cart.item.name, // Asumiendo que cada cart tiene un atributo 'productName'
+                    items: carts.orderItems.map(item => ({
+                        name: item.product.name, // Asumiendo que cada cart tiene un atributo 'productName'
                         unit_amount: {
                             currency_code: moneda,
-                            value: cart.item.price.toFixed(2) // Asumiendo que cada cart tiene un atributo 'price'
+                            value: getPrice(item.product,item.quantity).toFixed(2) // Asumiendo que cada cart tiene un atributo 'price'
                         },
-                        quantity: cart.quantity.toString() // Asumiendo que cada cart tiene un atributo 'quantity'
+                        quantity: item.quantity.toString() // Asumiendo que cada cart tiene un atributo 'quantity'
                     }))
                 },
-            ],*/
+            ],
             payment_source: {
                 paypal: {
                     experience_context: {
@@ -102,8 +105,9 @@ export class PaypalService {
 
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['carts', 'carts.item', 'user'], // Asegúrate de incluir la relación 'carts'
+            relations: ['orderItems', 'orderItem.product', ''], // Asegúrate de incluir la relación 'carts'
         });
+
 
         let order: string = "";
 
@@ -117,7 +121,9 @@ export class PaypalService {
         
         //Obteniendo Token
         const paramas = new URLSearchParams();
+
         paramas.append("grant_type", "client_credentials");
+
         const auth = {
             username: CLIENTID,
             password: SECRET_KEY

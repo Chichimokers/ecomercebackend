@@ -1,6 +1,6 @@
 import { ProductEntity } from "../../subsystems/products/entity/product.entity";
 import { DiscountEntity } from "../../subsystems/discounts/entity/discounts.entity";
-import { Repository } from "typeorm";
+import { Repository, PrimaryGeneratedColumn } from 'typeorm';
 
 /**
  * Mapea un objeto fuente a un Data Transfer Object (DTO) de destino.
@@ -60,4 +60,15 @@ export function calculateDiscount(product: ProductEntity, quantity: number) {
     }
 
     return quantity * (product.price - product.discounts.reduction);
+}
+export function getPrice(product: ProductEntity, quantity: number) {
+    if (!product.discounts) {
+        return product.price
+    }
+
+    if (product.discounts.min > quantity) {
+        return product.price
+    }
+
+    return product.price - product.discounts.reduction
 }

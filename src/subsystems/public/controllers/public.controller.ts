@@ -14,7 +14,7 @@ import { roles } from '../../roles/enum/roles.enum';
 export class PublicController {
     constructor(private orderService: OrderService) {}
 
-    @Post()
+    @Post('create-order')
     @Roles(roles.User)
     createOrder(@Req() request: any, @Body() orderdto: BuildOrderDTO) {
         const userid = request.user.Id;
