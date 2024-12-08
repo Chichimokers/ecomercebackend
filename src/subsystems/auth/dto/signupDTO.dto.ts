@@ -17,7 +17,7 @@ export class SingUpBody  extends BaseDto {
 
     @IsNotEmpty()
     @ApiProperty({
-        example: "0312334R4.",
+        example: "123233",
         description: "password",
     })
     readonly password: string;

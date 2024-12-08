@@ -144,6 +144,7 @@ export class OrderService extends BaseService<OrderEntity> {
                 relations: ['product'],
             });
 
+
         // Go through all the products related to the order to verify if there is still enough stock
         for (const relation of productOrderRelation) {
             if (relation.quantity > relation.product.quantity) {

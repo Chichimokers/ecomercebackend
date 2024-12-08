@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { OrderService } from '../../orders/services/orders.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toNumber } from '../../../common/utils/cast.utils';
+import { OrderProductEntity } from "../../orders/entities/order_products.entity";
+import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 
 @Injectable()
 export class StripeService {
@@ -23,7 +25,7 @@ export class StripeService {
     async createCheckoutSession(orderid: number, currency: string = 'usd') {
         const cart: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['carts', 'carts.item', 'user'], // Asegúrate de incluir la relación 'carts'
+            relations: ['user'], // Asegúrate de incluir la relación 'carts'
         });
 
         const order = await this.createJSONOrder(cart, currency);
@@ -55,41 +57,41 @@ export class StripeService {
     }
 
    private async createJSONOrder(
-        cart: OrderEntity,
+        order: OrderEntity,
         currency: string = 'usd',
     ): Promise<any> {
         // Comprobar si la orden existe...
-        /*if (!cart || !cart.carts) {
-            throw new Error('No se encontraron carts en la orden.'); // Manejo de error
-        }*/
+        if (!order || !order.orderItems) {
+            throw new Error('No se encontraron productos en la orden.'); // Manejo de error
+        }
 
         let subtotal: number = 0;
         // Calcular subtotal
-        /*cart.carts.forEach((cartItem: CartEntity): void => {
-            subtotal += cartItem.total;
-        });*/
+       order.orderItems.forEach((orderItem: OrderProductEntity): void => {
+           subtotal += calculateDiscount(orderItem.product, orderItem.quantity);
+       });
 
         return {
-            success_url: `http://localhost:3000/visa-mastercard/capture-payment?order_id=${cart.id.toString()}`,
+            success_url: `http://localhost:3000/visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
             mode: 'payment',
             currency: currency,
             payment_method_types: ['card'],
             metadata: {
-                order_id: cart.id.toString(),
-                user_id: cart.user.id.toString(),
+                order_id: order.id.toString(),
+                user_id: order.user.id.toString(),
             },
             // Items del carrito
-            /*line_items: cart.carts.map((cartItem: CartEntity) => ({
+            line_items: order.orderItems.map((orderItem: OrderProductEntity) => ({
                 price_data: {
                     currency: currency,
                     product_data: {
-                        name: cartItem.item.name,
+                        name: orderItem.product.name,
                     },
-                    unit_amount: cartItem.item.price * 100,
+                    unit_amount: calculateDiscount(orderItem.product, orderItem.quantity) * 100,
                 },
-                quantity: cartItem.quantity,
-            })),*/
-        };
+                quantity: orderItem.quantity,
+            })),
+        }
     }
 
     async CaptureCheckoutSession(order_id: number) {
