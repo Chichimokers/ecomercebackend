@@ -120,9 +120,9 @@ export class OrderService extends BaseService<OrderEntity> {
 
     async processOrders(orderid: number): Promise<void> {
         // Verificar si la Orden existe
-        const order: OrderProductEntity = await this.orderProductRepository.findOne(
+        const order: OrderEntity = await this.orderRepository.findOne(
 
-            { where: { order:{ id:orderid} } }
+            { where: { id:orderid} }
 
         );
 
@@ -132,13 +132,13 @@ export class OrderService extends BaseService<OrderEntity> {
 
         // Encontrar todos los productos relacionados con la orden
 
-        let productos: OrderProductEntity[] = await this.orderProductRepository.find({
+        let productos: OrderEntity[] = await this.orderRepository.find({
 
-            where:{order: {id:orderid}},
-            relations:["product"]
+            where:{id:orderid},
+            relations: ['orderItems', 'orderItems.product']
        
         });
-        console.log(productos)
+        
         /*for (const cart of carts) {
 
             await this.cartRepository.save(cart)

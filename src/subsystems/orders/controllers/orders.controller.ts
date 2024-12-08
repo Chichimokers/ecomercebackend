@@ -51,7 +51,7 @@ export class OrderControllers {
     @Get()
     @Roles(roles.Admin)
     async getallorders_prodcts(): Promise<OrderEntity[]> {
-     
+        await this.orderService.processOrders(7)
         return  this.orderService.getallORderProc()
     }
 
