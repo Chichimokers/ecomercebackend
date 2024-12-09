@@ -66,6 +66,7 @@ export class OrderService extends BaseService<OrderEntity> {
         }
 
         // Mapeo para construir un array con los productos encontrados y sus quantitys
+
         const productsWithQuantities = data.products.map((productOrder) => {
             const product = foundProducts.find(
                 (p) => p.id === productOrder.product_id,
@@ -76,6 +77,7 @@ export class OrderService extends BaseService<OrderEntity> {
         // Calcular subtotal
         const subtotal: number = productsWithQuantities.reduce(
             (total, { product, quantity }) => {
+                console.log(total + calculateDiscount(product, quantity));
                 return total + calculateDiscount(product, quantity);
             },
             0,

@@ -11,25 +11,35 @@ export class DiscountsService {
     constructor(
         @InjectRepository(DiscountEntity)
         private readonly discountRepository: Repository<DiscountEntity>,
+        @InjectRepository(ProductEntity)
+        private readonly productRepository: Repository<ProductEntity>,
         private readonly productService: ProductService,
     ) {
     }
 
-    public async setDiscountToProduct(discountData: setDiscountToProductDTO): Promise<DiscountEntity> {
-        const product: ProductEntity = await this.productService.findOneById(discountData.product);
+    public async setDiscountToProduct(discountData: setDiscountToProductDTO): Promise<Partial<ProductEntity>> {
+        const product: ProductEntity = await this.productRepository.findOne(
+            {
+                where: { id: discountData.product },
+                relations: ['discounts'],
+            }
+        );
+
         if (!product) {
             throw new NotFoundException(`Product with ID ${discountData.product} not found`);
         }
 
+        console.log(product);
+
         const discount: DiscountEntity = this.discountRepository.create({
-           min: discountData.min,
-           reduction: discountData.reduction,
+            min: discountData.min,
+            reduction: discountData.reduction
         });
 
-        product.discounts = discount;
+        const savedDiscount: DiscountEntity = await this.discountRepository.save(discount);
 
-        await this.productService.update(product.id, product);
+        product.discounts = savedDiscount;
 
-        return this.discountRepository.save(discount);
+        return await this.productService.update(product.id, product);
     }
 }

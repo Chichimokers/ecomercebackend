@@ -13,7 +13,6 @@ export class OrderProductEntity {
     @ManyToOne(() => ProductEntity, (product) => product)
     product: ProductEntity;
 
-
     @Column()
     quantity: number;
 }

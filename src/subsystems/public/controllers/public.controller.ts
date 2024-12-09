@@ -15,7 +15,7 @@ export class PublicController {
     constructor(private orderService: OrderService) {}
 
     @Post('create-order')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     createOrder(@Req() request: any, @Body() orderdto: BuildOrderDTO) {
         const userid = request.user.Id;
         return this.orderService.createOrderService(userid, orderdto);

@@ -50,7 +50,7 @@ export class ProductEntity extends BaseEntity {
     @JoinColumn()
     offers: OfferEntity;*/
 
-    @OneToOne(() => DiscountEntity, (offer) => offer.products,
+    @OneToOne(() => DiscountEntity, (discount) => discount.products,
         { nullable: true })
     @JoinColumn()
     discounts: DiscountEntity;

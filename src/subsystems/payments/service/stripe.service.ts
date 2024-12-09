@@ -7,7 +7,7 @@ import { OrderService } from '../../orders/services/orders.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toNumber } from '../../../common/utils/cast.utils';
 import { OrderProductEntity } from "../../orders/entities/order_products.entity";
-import { calculateDiscount } from "../../../common/utils/global-functions.utils";
+import { calculateDiscount, getPrice } from "../../../common/utils/global-functions.utils";
 
 @Injectable()
 export class StripeService {
@@ -25,7 +25,7 @@ export class StripeService {
     async createCheckoutSession(orderid: number, currency: string = 'usd') {
         const cart: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['user'], // Asegúrate de incluir la relación 'carts'
+            relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.discounts'], // Asegúrate de incluir la relación 'carts'
         });
 
         const order = await this.createJSONOrder(cart, currency);
@@ -61,6 +61,8 @@ export class StripeService {
         currency: string = 'usd',
     ): Promise<any> {
         // Comprobar si la orden existe...
+       console.log(order);
+       console.log(order.orderItems);
         if (!order || !order.orderItems) {
             throw new Error('No se encontraron productos en la orden.'); // Manejo de error
         }
@@ -87,7 +89,7 @@ export class StripeService {
                     product_data: {
                         name: orderItem.product.name,
                     },
-                    unit_amount: calculateDiscount(orderItem.product, orderItem.quantity) * 100,
+                    unit_amount: getPrice(orderItem.product, orderItem.quantity) * 100,
                 },
                 quantity: orderItem.quantity,
             })),

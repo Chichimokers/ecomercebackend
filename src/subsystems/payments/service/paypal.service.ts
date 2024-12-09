@@ -105,7 +105,7 @@ export class PaypalService {
 
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['orderItems', 'orderItem.product', ''], // Asegúrate de incluir la relación 'carts'
+            relations: ['orderItems', 'orderItem.product', 'orderItem.product.discounts'], // Asegúrate de incluir la relación 'carts'
         });
 
 

@@ -22,7 +22,7 @@ export class StripeController{
         return await this.stripeService.createCheckoutSession(order.id);
     }
 
-    // @Roles(roles.User)
+    @Roles(roles.User)
     @Post("capture-payment")
     @ApiResponse({ status: 200, description: "Return success: true" })
     @ApiResponse({ status: 400, description: "Return success: false" })
