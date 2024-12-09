@@ -30,7 +30,6 @@ export class StripeService {
 
         const order = await this.createJSONOrder(cart, currency);
 
-        console.log(order);
 
         const session = await this.stripe.checkout.sessions.create(order);
 
@@ -61,8 +60,6 @@ export class StripeService {
         currency: string = 'usd',
     ): Promise<any> {
         // Comprobar si la orden existe...
-       console.log(order);
-       console.log(order.orderItems);
         if (!order || !order.orderItems) {
             throw new Error('No se encontraron productos en la orden.'); // Manejo de error
         }
@@ -116,8 +113,6 @@ export class StripeService {
 
         // Aqui va para procesar la orden!
         const captured_id = toNumber(session.metadata.order_id);
-
-        console.log(captured_id);
 
         await this.orderService.processOrders(captured_id);
 

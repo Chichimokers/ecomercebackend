@@ -77,7 +77,6 @@ export class OrderService extends BaseService<OrderEntity> {
         // Calcular subtotal
         const subtotal: number = productsWithQuantities.reduce(
             (total, { product, quantity }) => {
-                console.log(total + calculateDiscount(product, quantity));
                 return total + calculateDiscount(product, quantity);
             },
             0,
@@ -115,9 +114,12 @@ export class OrderService extends BaseService<OrderEntity> {
     private async validateProducts(
         products: ProductOrderDTO[],
     ): Promise<ProductEntity[]> | null {
-        let ids: number[] = await products.map((elemnt) => elemnt.product_id);
+        let ids: number[] = products.map((elemnt) => elemnt.product_id);
         const foundProducts: ProductEntity[] =
-            await this.productRepository.findBy({ id: In(ids) });
+            await this.productRepository.find({
+                where: { id: In(ids) },
+                relations: ['discounts'],
+            });
 
         if (ids.length === foundProducts.length) {
             return foundProducts;

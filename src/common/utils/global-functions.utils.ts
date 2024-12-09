@@ -50,6 +50,12 @@ export function mapToDto<T, D>(
     return dto;
 }
 
+/**
+ * Param Product requires that it contain the relationship with discounts otherwise it will ignore the restrictions
+ * This function is to calculate large quantities of products
+ * @param product ProductEntity with the relationship with discounts
+ * @param quantity Quantity of the product
+ */
 export function calculateDiscount(product: ProductEntity, quantity: number) {
     if (!product.discounts) {
         return product.price * quantity;
@@ -62,6 +68,12 @@ export function calculateDiscount(product: ProductEntity, quantity: number) {
     return quantity * (product.price - product.discounts.reduction);
 }
 
+/**
+ * Param Product requires that it contain the relationship with discounts otherwise it will ignore the restrictions.
+ * This function is to calculate the price of a single product.
+ * @param product ProductEntity with the relationship with discounts
+ * @param quantity Quantity of the product
+ */
 export function getPrice(product: ProductEntity, quantity: number) {
     if (!product.discounts) {
         return product.price
@@ -70,10 +82,6 @@ export function getPrice(product: ProductEntity, quantity: number) {
     if (product.discounts.min > quantity) {
         return product.price
     }
-
-    console.log('DESCUENTO!')
-    console.log(product.discounts.min);
-    console.log(product.discounts.reduction);
 
     return product.price - product.discounts.reduction
 }
