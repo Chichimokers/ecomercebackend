@@ -160,6 +160,6 @@ export class OrderService extends BaseService<OrderEntity> {
         order.status = OrderStatus.Paid;
 
         return await this.orderRepository.save(order);
-    }*/
+    }
 }
-}
+
