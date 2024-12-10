@@ -1,4 +1,4 @@
-/*import { Column, Entity, ManyToOne, Unique, Check } from "typeorm";
+import { Column, Entity, ManyToOne, Unique, Check } from "typeorm";
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { User } from '../../user/entities/user.entity';
 import { ProductEntity } from '../../products/entity/product.entity';
@@ -15,4 +15,4 @@ export class RatingEntity extends BaseEntity {
 
     @ManyToOne(() => ProductEntity, (product) => product.ratings)
     product: ProductEntity;
-}*/
+}

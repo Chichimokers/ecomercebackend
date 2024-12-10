@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber, IsPositive, IsString, Length, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
+import { IsValidCI } from "../../../../orders/decorators/orders.decorator";
+
 
 /**
  * DTO To take and validate data sent from the frontend to create an order
@@ -73,6 +75,7 @@ export class BuildOrderDTO {
     })
     @IsNotEmpty()
     @IsString()
+    @IsValidCI() // TODO test this!
     @Length(11, 20)
     ci: string;
 

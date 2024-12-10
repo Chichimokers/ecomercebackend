@@ -1,7 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Column, Entity, OneToMany, JoinColumn, Check } from "typeorm";
 import { IsBoolean, IsEmail, IsString } from "class-validator";
-//import { RatingEntity } from "../../rating/entity/rating.entity";
+import { RatingEntity } from "../../rating/entity/rating.entity";
 
 @Entity({ name: 'tb_user' })
 @Check(`"rol" > 0`)
@@ -31,7 +31,7 @@ export class User extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     locked: boolean;
 
-    /*@OneToMany(() => RatingEntity, (rating) => rating.user)
-    ratings: RatingEntity[];*/
+    @OneToMany(() => RatingEntity, (rating) => rating.user)
+    ratings: RatingEntity[];
 }
 

@@ -7,7 +7,7 @@ import {
 } from "typeorm";
 import { ProductClass } from '../enums/products.class.enum';
 import { DiscountEntity} from "../../discounts/entity/discounts.entity";
-//import { RatingEntity } from "../../rating/entity/rating.entity";
+import { RatingEntity } from "../../rating/entity/rating.entity";
 //import { OfferEntity } from "../../discounts/entity/offers.entity";
 import { IsPositive, IsString } from "class-validator";
 import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
@@ -55,6 +55,6 @@ export class ProductEntity extends BaseEntity {
     @JoinColumn()
     discounts: DiscountEntity;
 
-    /*@OneToMany(() => RatingEntity, (rating) => rating.product)
-    ratings: RatingEntity[];*/
+    @OneToMany(() => RatingEntity, (rating) => rating.product)
+    ratings: RatingEntity[];
 }

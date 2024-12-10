@@ -1,0 +1,78 @@
+// src/subsystems/public/dto/ProductDTO.ts
+import { ApiProperty } from "@nestjs/swagger";
+import { BaseDto } from "../../../../../common/dto/base.dto";
+//import { OfferEntity } from "../../discounts/entity/offers.entity";
+
+export class ProductDTO extends BaseDto {
+    @ApiProperty({ example: 1, description: "Identifier" })
+    id: number;
+
+    // REVIEW Is this necessary for the user?
+    /* @ApiProperty({ example: "2024-11-16T23:15:49.753Z", description: "Creation date" })
+    created_at: string;
+
+    @ApiProperty({ example: "2024-11-25T15:32:02.922Z", description: "Last update date" })
+    updated_at: string;
+
+    @ApiProperty({ example: null, description: "Deletion date", nullable: true })
+    deleted_at: string | null; */
+
+    @ApiProperty({ example: null, description: "Product image", nullable: true })
+    image: string | null;
+
+    @ApiProperty({ example: "Meat", description: "Product name" })
+    name: string;
+
+    @ApiProperty({ example: 123, description: "Product price" })
+    price: number;
+
+    @ApiProperty({ example: 1, description: "Product class" })
+    class: number;
+
+    @ApiProperty({ example: 122, description: "Product quantity" })
+    quantity: number;
+
+    @ApiProperty({
+        example: "Short Description",
+        description: "Short description to show in cards",
+    })
+    short_description: string;
+
+    @ApiProperty({
+        example: "Large Description",
+        description: "Short description to show in cards",
+    })
+    description: string;
+
+    @ApiProperty({
+        example: 26,
+        description: "Calificacion total del producto para calcularse con la" +
+            " cantidad de calificaciones."
+    })
+    qualification: number;
+
+    @ApiProperty({
+        example: 6,
+        description: "Cantidad de usuarios que calificaron el producto"
+    })
+    qualification_quantity: number;
+
+    /*@ApiProperty({})
+    offers: OfferEntity[];*/
+}
+
+export class GetFindsProductDTO {
+    @ApiProperty({ description: "List of finds products", type: [ProductDTO]})
+    products: ProductDTO[];
+}
+
+export class GetProductDTO {
+    @ApiProperty({ description: "List of products", type: [ProductDTO] })
+    products: ProductDTO[];
+
+    @ApiProperty({ example: null, description: "URL for the previous page", nullable: true })
+    previousUrl: string | null;
+
+    @ApiProperty({ example: null, description: "URL for the next page", nullable: true })
+    nextUrl: string | null;
+}
