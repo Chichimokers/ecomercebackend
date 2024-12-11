@@ -47,7 +47,7 @@ export class PublicService {
             quantity: item.product_quantity,
             averageRating: parseFloat(item.averageRating),
             discount: (item.discount_min === null && item.discount_reduction === null)
-                ? null
+                ? undefined
                 : {
                     min: item.discount_min,
                     reduction: item.discount_reduction

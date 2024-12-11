@@ -11,7 +11,6 @@ import { CreatedCheckoutDTO, StripeDTO } from "../dto/stripedto.dto";
 @ApiBearerAuth()
 @Controller('visa-mastercard')
 @UseGuards(LocalAuthGuard, RolesGuard)
-
 export class StripeController{
     constructor(private readonly stripeService: StripeService) { }
 

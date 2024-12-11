@@ -5,16 +5,23 @@ import { Repository } from "typeorm";
 import { setDiscountToProductDTO } from "../dto/discountsdto/setDiscountToProduct.dto";
 import { ProductEntity } from "../../products/entity/product.entity";
 import { ProductService } from "../../products/services/product.service";
+import { BaseService } from "../../../common/services/base.service";
 
 @Injectable()
-export class DiscountsService {
+export class DiscountsService extends BaseService<DiscountEntity> {
+    protected getRepositoryName(): string {
+        return "tb_category"
+    }
+
     constructor(
         @InjectRepository(DiscountEntity)
         private readonly discountRepository: Repository<DiscountEntity>,
         @InjectRepository(ProductEntity)
         private readonly productRepository: Repository<ProductEntity>,
         private readonly productService: ProductService,
-    ) {
+    )
+    {
+        super(discountRepository);
     }
 
     public async setDiscountToProduct(discountData: setDiscountToProductDTO): Promise<Partial<ProductEntity>> {

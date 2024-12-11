@@ -14,6 +14,7 @@ import { PublicModule } from './subsystems/public/public.module';
 import { PaymentsModule } from './subsystems/payments/payments.module';
 import { DiscountsModule } from "./subsystems/discounts/discounts.module";
 import { RatingModule } from './subsystems/rating/rating.module';
+import { CategoryModule } from './subsystems/category/category.module';
 
 @Module({
     imports: [
@@ -29,6 +30,7 @@ import { RatingModule } from './subsystems/rating/rating.module';
         PaymentsModule,
         DiscountsModule,
         RatingModule,
+        CategoryModule,
     ],
     controllers: [AppController],
     providers: [AppService],
