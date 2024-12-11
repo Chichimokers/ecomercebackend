@@ -59,9 +59,15 @@ export class ProductEntity extends BaseEntity {
     @OneToMany(() => RatingEntity, (rating) => rating.product)
     ratings: RatingEntity[];
 
-    @ManyToOne(() => CategoryEntity, (category) => category.products)
+    @ManyToOne(
+        () => CategoryEntity, (category) => category.products,
+        { nullable: true }
+    )
     category: CategoryEntity
 
-    @ManyToOne(() => SubCategoryEntity, (subCategory) => subCategory.products)
+    @ManyToOne(
+        () => SubCategoryEntity, (subCategory) => subCategory.products,
+        { nullable: true }
+    )
     subCategory: SubCategoryEntity;
 }

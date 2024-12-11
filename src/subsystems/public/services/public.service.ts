@@ -24,12 +24,17 @@ export class PublicService {
         const query = this.productRepository.createQueryBuilder('product')
             .leftJoin('product.ratings', 'rating')
             .leftJoin('product.discounts', 'discount')
+            .leftJoin('product.category', 'category')
+            .leftJoin('product.subCategory', 'subCategory')
             .addSelect('AVG(rating.rate)', 'averageRating')
             .addSelect(['discount.min', 'discount.reduction'])
+            .addSelect(['category.name', 'subCategory.name'])
             .skip(offset)
             .take(limit)
             .groupBy('product.id')
-            .addGroupBy('discount.id');
+            .addGroupBy('discount.id')
+            .addGroupBy('category.id')
+            .addGroupBy('subCategory.id');
 
         let rawItems = await query.getRawMany();
         const totalProducts: number = await query.getCount();
@@ -46,12 +51,14 @@ export class PublicService {
             class: item.product_class,
             quantity: item.product_quantity,
             averageRating: parseFloat(item.averageRating),
+            category: item.category_name,
+            subCategory: item.subCategory_name,
             discount: (item.discount_min === null && item.discount_reduction === null)
                 ? undefined
                 : {
                     min: item.discount_min,
                     reduction: item.discount_reduction
-                }
+                },
         }));
 
         const totalPages: number = Math.ceil(totalProducts / limit);
