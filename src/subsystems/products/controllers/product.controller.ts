@@ -1,7 +1,6 @@
 import {
     UseGuards,
     Controller,
-    Get,
     Post,
     Body,
     Patch,
@@ -15,7 +14,7 @@ import {
     ApiBearerAuth,
     ApiCreatedResponse,
     ApiForbiddenResponse,
-    ApiConsumes, ApiResponse
+    ApiConsumes,
 } from "@nestjs/swagger";
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';

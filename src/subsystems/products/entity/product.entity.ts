@@ -3,7 +3,7 @@ import {
     Entity,
     OneToMany,
     Column,
-    OneToOne, JoinColumn, Check
+    OneToOne, JoinColumn, Check, ManyToOne
 } from "typeorm";
 import { ProductClass } from '../enums/products.class.enum';
 import { DiscountEntity} from "../../discounts/entity/discounts.entity";
@@ -11,6 +11,7 @@ import { RatingEntity } from "../../rating/entity/rating.entity";
 //import { OfferEntity } from "../../discounts/entity/offers.entity";
 import { IsPositive, IsString } from "class-validator";
 import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
+import { CategoryEntity, SubCategoryEntity } from "../../category/entity/category.entity";
 
 @Entity({ name:"tb_products"})
 @Check(`"price" > 0`)
@@ -57,4 +58,16 @@ export class ProductEntity extends BaseEntity {
 
     @OneToMany(() => RatingEntity, (rating) => rating.product)
     ratings: RatingEntity[];
+
+    @ManyToOne(
+        () => CategoryEntity, (category) => category.products,
+        { nullable: true }
+    )
+    category: CategoryEntity
+
+    @ManyToOne(
+        () => SubCategoryEntity, (subCategory) => subCategory.products,
+        { nullable: true }
+    )
+    subCategory: SubCategoryEntity;
 }
