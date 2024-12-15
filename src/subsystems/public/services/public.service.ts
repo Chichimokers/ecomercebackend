@@ -2,23 +2,34 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ProductEntity } from "../../products/entity/product.entity";
 import { Repository } from "typeorm";
+import { CategoryEntity, SubCategoryEntity } from "../../category/entity/category.entity";
 
 @Injectable()
 export class PublicService {
     constructor(
         @InjectRepository(ProductEntity)
         private readonly productRepository: Repository<ProductEntity>,
+        @InjectRepository(CategoryEntity)
+        private readonly categoryRepository: Repository<CategoryEntity>,
+        @InjectRepository(SubCategoryEntity)
+        private readonly subCategoryRepository: Repository<SubCategoryEntity>,
     ) {
     }
 
     public async getProductsPage(page: number, limit: number){
-        const products = this.getProducts(page, limit);
+        const [products, categories] = await Promise.all([
+            this.getProducts(page, limit),
+            this.getCategories()
+        ]);
 
-        return products;
+        return {
+            products,
+            categories,
+        };
     }
 
     // Modular get products function to public services.
-    private async getProducts(page: number, limit: number) {
+    private async getProducts(page: number, limit: number){
         const offset: number = (page - 1) * limit;
 
         const query = this.productRepository.createQueryBuilder('product')
@@ -41,18 +52,17 @@ export class PublicService {
 
         rawItems = rawItems.slice(offset, offset + limit);
 
-        const items = rawItems.map(item => ({
+        const products = rawItems.map(item => ({
             id: item.product_id,
-            image: item.product_image,
+            image: item.product_image || undefined,
             name: item.product_name,
             price: item.product_price,
             description: item.product_description,
             short_description: item.product_short_description,
-            class: item.product_class,
             quantity: item.product_quantity,
-            averageRating: parseFloat(item.averageRating),
-            category: item.category_name,
-            subCategory: item.subCategory_name,
+            averageRating: parseFloat(item.averageRating) || undefined,
+            category: item.category_name || undefined,
+            subCategory: item.subCategory_name || undefined,
             discount: (item.discount_min === null && item.discount_reduction === null)
                 ? undefined
                 : {
@@ -63,13 +73,32 @@ export class PublicService {
 
         const totalPages: number = Math.ceil(totalProducts / limit);
 
-        const previousUrl: string = page - 1 <= 0 ? null : `/public/products?page=${page - 1}`;
-        const nextUrl: string = page + 1 > totalPages ? null : `/public/products?page=${page + 1}`;
+        const previousUrl: string = page - 1 <= 0 ? undefined : `/public/products?page=${page - 1}`;
+        const nextUrl: string = page + 1 > totalPages ? undefined : `/public/products?page=${page + 1}`;
 
         return {
-            items,
+            products,
             previousUrl,
             nextUrl
         };
+    }
+
+    // TODO Missing filter of categories without products
+    private async getCategories(){
+        const categories = await this.categoryRepository.createQueryBuilder('category')
+            .leftJoinAndSelect('category.subCategories', 'subCategory')
+            .leftJoinAndSelect('category.products', 'product')
+            .leftJoinAndSelect('subCategory.products', 'subProduct')
+            .where('product.id IS NOT NULL')
+            .orWhere('subProduct.id IS NOT NULL')
+            .select([
+                'category.id',
+                'category.name',
+                'subCategory.id',
+                'subCategory.name'
+            ])
+            .getMany();
+
+        return categories;
     }
 }

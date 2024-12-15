@@ -18,9 +18,6 @@ export class ProductDTO {
     @ApiProperty({ example: 1, description: "Product class" })
     class: number;
 
-    @ApiProperty({ example: 122, description: "Product quantity" })
-    quantity: number;
-
     @ApiProperty({
         example: "Short Description",
         description: "Short description to show in cards",

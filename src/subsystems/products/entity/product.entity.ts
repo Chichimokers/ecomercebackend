@@ -3,9 +3,8 @@ import {
     Entity,
     OneToMany,
     Column,
-    OneToOne, JoinColumn, Check, ManyToOne
+    OneToOne, JoinColumn, Check, ManyToOne, Index
 } from "typeorm";
-import { ProductClass } from '../enums/products.class.enum';
 import { DiscountEntity} from "../../discounts/entity/discounts.entity";
 import { RatingEntity } from "../../rating/entity/rating.entity";
 //import { OfferEntity } from "../../discounts/entity/offers.entity";
@@ -36,9 +35,6 @@ export class ProductEntity extends BaseEntity {
     @IsString()
     short_description: string;
 
-    @Column({type: 'smallint'})
-    class: ProductClass;
-
     @Column()
     @IsPositive()
     quantity: number;
@@ -63,11 +59,13 @@ export class ProductEntity extends BaseEntity {
         () => CategoryEntity, (category) => category.products,
         { nullable: true }
     )
+    @Index()
     category: CategoryEntity
 
     @ManyToOne(
         () => SubCategoryEntity, (subCategory) => subCategory.products,
         { nullable: true }
     )
+    @Index()
     subCategory: SubCategoryEntity;
 }
