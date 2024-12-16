@@ -7,6 +7,7 @@ import { SingUpBody } from '../dto/signupDTO.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from "../../user/entities/user.entity";
 import { CodeService } from '../service/code.service';
+import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
 
 @ApiTags('login')
 @Controller("auth")
@@ -14,16 +15,16 @@ export class AuthController {
     constructor(private authservice: AuthService,  @Inject(CodeService) private CodeServices: CodeService,) {
 
     }
-  // Endpoint para enviar el código de verificación
-  @Post('send-verification')
-  async sendVerification(@Body('email') email: string) {
-    console.log(email)
-    
-    const code = await this.CodeServices.sendVerificationEmail(email);
-    
-    return { message: 'Verification code sent' };
+    // Endpoint para enviar el código de verificación
+    @Post('send-verification')
+    async sendVerification(@Body('email') email: string) {
+      console.log(email)
+      
+      const code = await this.CodeServices.sendVerificationEmail(email);
+      
+      return { message: 'Verification code sent' };
 
-  }
+    }
 
 
 
@@ -73,11 +74,10 @@ export class AuthController {
 // Endpoint para verificar el registro
   @Post('verify-code-signup')
   async verifyCode(
-    @Body() logindata: SingUpBody,
-    @Body('code') code: string,
+  logindata:SingUpBodyVerifcation
   ) {
 
-    const isVerified = await this.CodeServices.verifyCode(logindata.email, code);
+    const isVerified = await this.CodeServices.verifyCode(logindata.email, logindata.code);
             try {
             const newuser = new CreateUserDto()
             newuser.name = logindata.username;
