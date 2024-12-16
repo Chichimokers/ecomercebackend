@@ -1,0 +1,9 @@
+app = "esaki-backend"
+
+[build]
+  dockerfile = "Dockerfile.render"
+
+[[services]]
+  internal_port = 8080
+  external_port = 80
+  protocol = "tcp"
