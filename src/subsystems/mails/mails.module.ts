@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { MailsService } from "./services/mails.service";
 import { MailerModule } from "@nestjs-modules/mailer";
+import { CodeService } from "../auth/service/code.service";
 
 @Module({
     imports: [
@@ -10,14 +11,16 @@ import { MailerModule } from "@nestjs-modules/mailer";
             port: 465,
             secure: true, // true para SSL/TLS
             auth: {
-              user: 'tu-correo@gmail.com', // Tu correo
-              pass: 'contraseña-de-aplicación', // Contraseña de aplicación
+              user: 'developer1575@gmail.com', // Tu correo
+              pass: 'nfuv gdlp paja jzpo', // Contraseña de aplicación
             },
           },
           defaults: {
-            from: '"Tu Nombre" <tu-correo@gmail.com>', // Remitente por defecto
+            from: '"Esaki-Shop" <developer1575@gmail.com@gmail.com>', // Remitente por defecto
           },
         }),
       ],
+    providers:[MailsService]
 })
+
 export class MailsModule {}

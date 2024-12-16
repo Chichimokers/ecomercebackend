@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { roles } from '../../roles/enum/roles.enum';
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';
@@ -6,13 +6,26 @@ import { CreateUserDto } from 'src/subsystems/user/dto';
 import { SingUpBody } from '../dto/signupDTO.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from "../../user/entities/user.entity";
+import { CodeService } from '../service/code.service';
 
 @ApiTags('login')
 @Controller("auth")
 export class AuthController {
-    constructor(private authservice: AuthService) {
+    constructor(private authservice: AuthService,  @Inject(CodeService) private CodeServices: CodeService,) {
 
     }
+  // Endpoint para enviar el código de verificación
+  @Post('send-verification')
+  async sendVerification(@Body('email') email: string) {
+    console.log(email)
+    
+    const code = await this.CodeServices.sendVerificationEmail(email);
+    
+    return { message: 'Verification code sent' };
+
+  }
+
+
 
     @Post("/login")
     async Login(@Body() logindata: LoginBody): Promise<string> {
@@ -45,7 +58,7 @@ export class AuthController {
             newuser.email = logindata.email;
             newuser.rol = roles.User;
 
-            const signupresult: User = await this.authservice.signup(newuser);
+            const signupresult: User = await this.authservice.signup1(newuser);
 
             if (signupresult != null) {
                 return JSON.stringify({ user: signupresult })
@@ -57,4 +70,32 @@ export class AuthController {
             return JSON.stringify({ "error": UnauthorizedException })
         }
     }
+// Endpoint para verificar el registro
+  @Post('verify-code-signup')
+  async verifyCode(
+    @Body() logindata: SingUpBody,
+    @Body('code') code: string,
+  ) {
+
+    const isVerified = await this.CodeServices.verifyCode(logindata.email, code);
+            try {
+            const newuser = new CreateUserDto()
+            newuser.name = logindata.username;
+            newuser.password = logindata.password;
+            newuser.email = logindata.email;
+            newuser.rol = roles.User;
+
+            const signupresult: User = await this.authservice.signup(newuser);
+
+            if (signupresult != null) {
+                return JSON.stringify({ user: signupresult })
+
+            } else {
+                return JSON.stringify({ error: "Error creating the user" })
+            }
+        } catch (UnauthorizedException) {
+            return JSON.stringify({ "error": UnauthorizedException })
+        }
+
+  }
 }

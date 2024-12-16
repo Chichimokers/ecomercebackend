@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Body, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -7,14 +7,24 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
+import { CodeService } from './code.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @Inject(UserService) private userService: UserService,
+        @Inject(CodeService) private CodeServices: CodeService,
         private jwt: JwtService,
     ) { }
+
+    async signup1(userdto: CreateUserDto): Promise<any> {
+
+
+        const code = await this.CodeServices.sendVerificationEmail(userdto.email);
+    
+        return {message:"succesfully mail code send","next":"/verify-code-signup"}
+    }
 
     async signup(userdto: CreateUserDto): Promise<User> {
 
