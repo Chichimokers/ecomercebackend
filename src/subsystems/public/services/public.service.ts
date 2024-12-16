@@ -17,13 +17,15 @@ export class PublicService {
     }
 
     public async getProductsPage(page: number, limit: number){
-        const [products, categories] = await Promise.all([
+        const [productsData, categories] = await Promise.all([
             this.getProducts(page, limit),
-            this.getCategories()
+            this.getCategoriesWithSubCategories()
         ]);
 
         return {
-            products,
+            products: productsData.products,
+            previousUrl: productsData.previousUrl,
+            nextUrl: productsData.nextUrl,
             categories,
         };
     }
@@ -84,21 +86,24 @@ export class PublicService {
     }
 
     // TODO Missing filter of categories without products
-    private async getCategories(){
-        const categories = await this.categoryRepository.createQueryBuilder('category')
-            .leftJoinAndSelect('category.subCategories', 'subCategory')
-            .leftJoinAndSelect('category.products', 'product')
-            .leftJoinAndSelect('subCategory.products', 'subProduct')
-            .where('product.id IS NOT NULL')
-            .orWhere('subProduct.id IS NOT NULL')
-            .select([
-                'category.id',
-                'category.name',
-                'subCategory.id',
-                'subCategory.name'
-            ])
-            .getMany();
+    private async getCategoriesWithSubCategories() {
+        const categories = await this.categoryRepository.find({
+            relations: ['subCategories', 'subCategories.products', 'products']
+        });
 
-        return categories;
+        return categories
+            .filter(category => category.products.length > 0 || category.subCategories.some(subCategory => subCategory.products.length > 0))
+            .map(category => ({
+                id: category.id,
+                name: category.name,
+                subCategories: category.subCategories
+                    .filter(subCategory => subCategory.products.length > 0)
+                    .map(subCategory => ({
+                        id: subCategory.id,
+                        name: subCategory.name
+                    }))
+            }));
     }
+
+
 }
