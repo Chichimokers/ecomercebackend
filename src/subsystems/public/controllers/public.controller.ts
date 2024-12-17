@@ -1,11 +1,7 @@
-import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Body, Controller, Get, ParseIntPipe, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { BuildOrderDTO } from '../dto/frontsDTO/ordersDTO/buildorder.dto';
 import { OrderService } from '../../orders/services/orders.service';
-import { Roles } from '../../roles/decorators/roles.decorator';
-import { roles } from '../../roles/enum/roles.enum';
 import { PublicService } from "../services/public.service";
 import { GetProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
 

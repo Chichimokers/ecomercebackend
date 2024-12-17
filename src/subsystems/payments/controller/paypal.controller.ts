@@ -33,15 +33,8 @@ export class PaypalController {
     async captureOrder(@Query('token') token: string, @Query('PayerID') payerId: string) {
         // Usa el token y payerId según sea necesario
         const response: boolean = await this.servicePaypal.confirmorder(token);
-        if(response == true){
-          
-            return{sucess:true}
-        
-        }   
 
-    return { success: false, errorCode: 400 }
-        
-
+        return response ? { success: true } : { success: false, errorCode: 400 };
     }
 
     @Roles(roles.User)
