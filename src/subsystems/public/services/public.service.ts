@@ -10,6 +10,12 @@ export class PublicService {
     ) {
     }
 
+    // *--- For Home View ---* //
+    public async getHomeView() {
+        return await this.productService.getProductsHome();
+    }
+
+    // *--- For Products View ---* //
     public async getProductsPage(page: number, limit: number){
         const [productsData, categories] = await Promise.all([
             this.productService.getProducts(page, limit),

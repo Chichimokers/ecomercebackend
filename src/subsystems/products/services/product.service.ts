@@ -6,25 +6,23 @@ import { ProductEntity } from '../entity/product.entity';
 
 @Injectable()
 export class ProductService extends BaseService<ProductEntity> {
-
     protected getRepositoryName(): string {
-        return "tb_products"
-    }   
+        return 'tb_products';
+    }
     constructor(
-      
         @InjectRepository(ProductEntity)
         private readonly productRepository: Repository<ProductEntity>,
-    )
-    {
+    ) {
         super(productRepository);
     }
 
-    //          *--- Services for public's Endpoints ---*
+    //      *--- Services for public's Endpoints ---*
     //      *--- Get Products Pagination ---*
-    public async getProducts(page: number, limit: number){
+    public async getProducts(page: number, limit: number) {
         const offset: number = (page - 1) * limit;
 
-        const query = this.productRepository.createQueryBuilder('product')
+        const query = this.productRepository
+            .createQueryBuilder('product')
             .leftJoin('product.ratings', 'rating')
             .leftJoin('product.discounts', 'discount')
             .leftJoin('product.category', 'category')
@@ -44,7 +42,7 @@ export class ProductService extends BaseService<ProductEntity> {
 
         rawItems = rawItems.slice(offset, offset + limit);
 
-        const products = rawItems.map(item => ({
+        const products = rawItems.map((item) => ({
             id: item.product_id,
             image: item.product_image || undefined,
             name: item.product_name,
@@ -55,24 +53,64 @@ export class ProductService extends BaseService<ProductEntity> {
             averageRating: parseFloat(item.averageRating) || undefined,
             category: item.category_name || undefined,
             subCategory: item.subCategory_name || undefined,
-            discount: (item.discount_min === null && item.discount_reduction === null)
-                ? undefined
-                : {
-                    min: item.discount_min,
-                    reduction: item.discount_reduction
-                },
+            discount:
+                item.discount_min === null && item.discount_reduction === null
+                    ? undefined
+                    : {
+                          min: item.discount_min,
+                          reduction: item.discount_reduction,
+                      },
         }));
 
         const totalPages: number = Math.ceil(totalProducts / limit);
 
-        const previousUrl: string = page - 1 <= 0 ? undefined : `/public/products?page=${page - 1}`;
-        const nextUrl: string = page + 1 > totalPages ? undefined : `/public/products?page=${page + 1}`;
+        const previousUrl: string =
+            page - 1 <= 0 ? undefined : `/public/products?page=${page - 1}`;
+        const nextUrl: string =
+            page + 1 > totalPages
+                ? undefined
+                : `/public/products?page=${page + 1}`;
 
         return {
             products,
             previousUrl,
-            nextUrl
+            nextUrl,
         };
     }
 
+    //      *--- Get Products Home ---*
+    public async getProductsHome() {
+        const query = this.productRepository
+            .createQueryBuilder('product')
+            .leftJoin('product.ratings', 'rating')
+            .leftJoin('product.discounts', 'discount')
+            .addSelect('AVG(rating.rate)', 'averageRating')
+            .addSelect(['discount.min', 'discount.reduction'])
+            .groupBy('product.id')
+            .addGroupBy('discount.id')
+            .having('COUNT(rating.id) > 0')
+            .orderBy('"averageRating"', 'DESC');
+
+        const products = await query.getRawMany();
+
+        return products.map((item) => ({
+            id: item.product_id,
+            image: item.product_image || undefined,
+            price: item.product_price,
+            description: item.product_description,
+            short_description: item.product_short_description,
+            quantity: item.product_quantity,
+            category: item.product_categoryId || undefined,
+            subCategory: item.product_subCategoryId || undefined,
+            name: item.product_name,
+            averageRating: parseFloat(item.averageRating),
+            discount:
+                item.discount_min === null && item.discount_reduction === null
+                    ? undefined
+                    : {
+                        min: item.discount_min,
+                        reduction: item.discount_reduction,
+                    },
+        }));
+    }
 }

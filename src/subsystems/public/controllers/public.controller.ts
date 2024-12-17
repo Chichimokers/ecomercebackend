@@ -8,11 +8,13 @@ import { Roles } from "../../roles/decorators/roles.decorator";
 import { roles } from "../../roles/enum/roles.enum";
 import { LocalAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../../auth/guards/roles.guard";
+import { HomeViewDTO } from "../dto/frontsDTO/views/homeView.dto";
+
 
 @ApiTags('public')
 @ApiBearerAuth()
 @Controller('public')
-@UseGuards(LocalAuthGuard, RolesGuard)
+//@UseGuards(LocalAuthGuard, RolesGuard)
 export class PublicController {
     constructor(private orderService: OrderService,
                 private publicService: PublicService,
@@ -25,8 +27,17 @@ export class PublicController {
         return this.orderService.createOrderService(userid, orderdto);
     }
 
+    // *--- For Home View ---* //
+    @Get('/home')
+    //@Roles(roles.User)
+    @ApiResponse({ status: 200, type: HomeViewDTO })
+    public getHomeView() {
+        return this.publicService.getHomeView();
+    }
+
+    // *--- For Products View ---* //
     @Get('/products')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiResponse({ status: 200 ,type: ProductsViewDTO })

@@ -5,55 +5,53 @@ import { LoginBody } from '../dto/loginDTO.dto';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { SingUpBody } from '../dto/signupDTO.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from "../../user/entities/user.entity";
+import { User } from '../../user/entities/user.entity';
 import { CodeService } from '../service/code.service';
 import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
 
 @ApiTags('login')
-@Controller("auth")
+@Controller('auth')
 export class AuthController {
-    constructor(private authservice: AuthService,  @Inject(CodeService) private CodeServices: CodeService,) {
-
-    }
+    constructor(
+        private authservice: AuthService,
+        @Inject(CodeService) private CodeServices: CodeService,
+    ) {}
     // Endpoint para enviar el código de verificación
     @Post('send-verification')
     async sendVerification(@Body('email') email: string) {
-      console.log(email)
-      
-      const code = await this.CodeServices.sendVerificationEmail(email);
-      
-      return { message: 'Verification code sent' };
+        console.log(email);
 
+        const code = await this.CodeServices.sendVerificationEmail(email);
+
+        return { message: 'Verification code sent' };
     }
 
-
-
-    @Post("/login")
+    @Post('/login')
     async Login(@Body() logindata: LoginBody): Promise<string> {
         try {
-
-            const resultlogin: User = await this.authservice.validateUser(logindata.username, logindata.password);
+            const resultlogin: User = await this.authservice.validateUser(
+                logindata.username,
+                logindata.password,
+            );
 
             if (resultlogin != null) {
-
-                return JSON.stringify(await this.authservice.login(resultlogin));
-
+                return JSON.stringify(
+                    await this.authservice.login(resultlogin),
+                );
             } else {
-
-                return JSON.stringify({ error: "login error some parameter are incorrects" });
-
+                return JSON.stringify({
+                    error: 'login error some parameter are incorrects',
+                });
             }
-
         } catch (UnauthorizedException) {
-            return JSON.stringify({ "error": UnauthorizedException })
+            return JSON.stringify({ error: UnauthorizedException });
         }
     }
 
-
-    @Post("/singup")
+    @Post('/singup')
     async SingUp(@Body() logindata: SingUpBody): Promise<string> {
         try {
-            const newuser = new CreateUserDto()
+            const newuser = new CreateUserDto();
             newuser.name = logindata.username;
             newuser.password = logindata.password;
             newuser.email = logindata.email;
@@ -62,24 +60,23 @@ export class AuthController {
             const signupresult: User = await this.authservice.signup1(newuser);
 
             if (signupresult != null) {
-                return JSON.stringify({ user: signupresult })
-
+                return JSON.stringify({ user: signupresult });
             } else {
-                return JSON.stringify({ error: "Error creating the user" })
+                return JSON.stringify({ error: 'Error creating the user' });
             }
         } catch (UnauthorizedException) {
-            return JSON.stringify({ "error": UnauthorizedException })
+            return JSON.stringify({ error: UnauthorizedException });
         }
     }
-// Endpoint para verificar el registro
-  @Post('verify-code-signup')
-  async verifyCode(
-  logindata:SingUpBodyVerifcation
-  ) {
-
-    const isVerified = await this.CodeServices.verifyCode(logindata.email, logindata.code);
-            try {
-            const newuser = new CreateUserDto()
+    // Endpoint para verificar el registro
+    @Post('verify-code-signup')
+    async verifyCode(@Body() logindata: SingUpBodyVerifcation) {
+        const isVerified = await this.CodeServices.verifyCode(
+            logindata.email,
+            logindata.code,
+        );
+        try {
+            const newuser = new CreateUserDto();
             newuser.name = logindata.username;
             newuser.password = logindata.password;
             newuser.email = logindata.email;
@@ -88,14 +85,12 @@ export class AuthController {
             const signupresult: User = await this.authservice.signup(newuser);
 
             if (signupresult != null) {
-                return JSON.stringify({ user: signupresult })
-
+                return JSON.stringify({ user: signupresult });
             } else {
-                return JSON.stringify({ error: "Error creating the user" })
+                return JSON.stringify({ error: 'Error creating the user' });
             }
         } catch (UnauthorizedException) {
-            return JSON.stringify({ "error": UnauthorizedException })
+            return JSON.stringify({ error: UnauthorizedException });
         }
-
-  }
+    }
 }
