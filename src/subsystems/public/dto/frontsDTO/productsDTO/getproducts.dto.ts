@@ -2,6 +2,14 @@
 import { ApiProperty } from "@nestjs/swagger";
 //import { OfferEntity } from "../../discounts/entity/offers.entity";
 
+export class DiscountDTO {
+    @ApiProperty({ example: 10, description: "Discount min" })
+    min: number;
+
+    @ApiProperty({ example: 1, description: "Discount reduction" })
+    reduction: number;
+}
+
 export class ProductDTO {
     @ApiProperty({ example: 1, description: "Identifier" })
     id: number;
@@ -14,9 +22,6 @@ export class ProductDTO {
 
     @ApiProperty({ example: 123, description: "Product price" })
     price: number;
-
-    @ApiProperty({ example: 1, description: "Product class" })
-    class: number;
 
     @ApiProperty({
         example: "Short Description",
@@ -35,7 +40,7 @@ export class ProductDTO {
         description: "Calificacion total del producto para calcularse con la" +
             " cantidad de calificaciones."
     })
-    qualification: number;
+    average_rating: number;
 
     @ApiProperty({
         example: 6,
@@ -57,6 +62,12 @@ export class ProductDTO {
         description: "Product subcategory"
     })
     product_subcategory: string;
+
+    @ApiProperty({
+        type: DiscountDTO,
+        description: "Product discount"
+    })
+    discount: DiscountDTO;
 }
 
 export class GetFindsProductDTO {

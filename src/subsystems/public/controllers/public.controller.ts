@@ -1,32 +1,36 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { BuildOrderDTO } from '../dto/frontsDTO/ordersDTO/buildorder.dto';
 import { OrderService } from '../../orders/services/orders.service';
 import { PublicService } from "../services/public.service";
-import { GetProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
+import { ProductsViewDTO } from "../dto/frontsDTO/views/productsView.dto";
+import { Roles } from "../../roles/decorators/roles.decorator";
+import { roles } from "../../roles/enum/roles.enum";
+import { LocalAuthGuard } from "../../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
 
 @ApiTags('public')
 @ApiBearerAuth()
 @Controller('public')
-//@UseGuards(LocalAuthGuard, RolesGuard)
+@UseGuards(LocalAuthGuard, RolesGuard)
 export class PublicController {
     constructor(private orderService: OrderService,
                 private publicService: PublicService,
                 ) {}
 
     @Post('create-order')
-    //@Roles(roles.User)
+    @Roles(roles.User)
     createOrder(@Req() request: any, @Body() orderdto: BuildOrderDTO) {
         const userid = request.user.Id;
         return this.orderService.createOrderService(userid, orderdto);
     }
 
     @Get('/products')
-    //@Roles(roles.User)
+    @Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    @ApiResponse({ status: 200 ,type: GetProductDTO })
-    public getProducts(
+    @ApiResponse({ status: 200 ,type: ProductsViewDTO })
+    public getProductView (
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
     ) {
