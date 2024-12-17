@@ -40,10 +40,12 @@ export class PublicController {
     //@Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
+    @ApiQuery({ name: 'filter', required: false })
     @ApiResponse({ status: 200 ,type: ProductsViewDTO })
     public getProductView (
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
+        @Query('filter') filter = undefined,
     ) {
         page = Number(page);
         limit = Number(limit);

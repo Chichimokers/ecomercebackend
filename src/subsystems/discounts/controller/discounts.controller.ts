@@ -6,7 +6,7 @@ import { Roles } from '../../roles/decorators/roles.decorator';
 import { roles } from '../../roles/enum/roles.enum';
 import { DiscountsService } from '../service/discounts.service';
 import { setDiscountToProductDTO } from '../dto/discountsdto/setDiscountToProduct.dto';
-import { ProductEntity } from "../../products/entity/product.entity";
+import { ProductEntity } from '../../products/entity/product.entity';
 
 @ApiTags('discounts')
 @ApiBearerAuth()
@@ -19,7 +19,9 @@ export class DiscountsController {
     @Roles(roles.Admin)
     @ApiBody({ type: setDiscountToProductDTO })
     @ApiResponse({ status: 201, description: 'Created discount successfully' })
-    public async createOffer(@Body() data: setDiscountToProductDTO): Promise<Partial<ProductEntity>> {
+    public async createOffer(
+        @Body() data: setDiscountToProductDTO,
+    ): Promise<Partial<ProductEntity>> {
         return this.discountService.setDiscountToProduct(data);
     }
 }

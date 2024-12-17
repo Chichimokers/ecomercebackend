@@ -16,6 +16,30 @@ export class ProductService extends BaseService<ProductEntity> {
         super(productRepository);
     }
 
+    // TODO INTEGRAR CON MAPEOS DE PRODUCTOS || UNDEFINED ERRORS
+    /*private async mapProduct(item) {
+        return {
+            id: item.product_id,
+            image: item.product_image || undefined,
+            name: item.product_name,
+            price: item.product_price,
+            description: item.product_description,
+            short_description: item.product_short_description,
+            quantity: item.product_quantity,
+            averageRating: parseFloat(item.averageRating) || undefined,
+            category: item.category_name || item.product_categoryId || undefined,
+            subCategory: item.subCategory_name || item.product_subCategoryId || undefined,
+            discount:
+                item.discount_min === null && item.discount_reduction === null
+                    ? undefined
+                    : {
+                        min: item.discount_min,
+                        reduction: item.discount_reduction,
+                    },
+        };
+    }*/
+
+
     //      *--- Services for public's Endpoints ---*
     //      *--- Get Products Pagination ---*
     public async getProducts(page: number, limit: number) {
@@ -42,6 +66,7 @@ export class ProductService extends BaseService<ProductEntity> {
 
         rawItems = rawItems.slice(offset, offset + limit);
 
+        // TODO INTEGRAR CON FUNCION mapPRODUCT
         const products = rawItems.map((item) => ({
             id: item.product_id,
             image: item.product_image || undefined,
@@ -93,17 +118,18 @@ export class ProductService extends BaseService<ProductEntity> {
 
         const products = await query.getRawMany();
 
+        // TODO INTEGRAR CON FUNCION mapPRODUCT
         return products.map((item) => ({
             id: item.product_id,
             image: item.product_image || undefined,
+            name: item.product_name,
             price: item.product_price,
             description: item.product_description,
             short_description: item.product_short_description,
             quantity: item.product_quantity,
+            averageRating: parseFloat(item.averageRating) || undefined,
             category: item.product_categoryId || undefined,
             subCategory: item.product_subCategoryId || undefined,
-            name: item.product_name,
-            averageRating: parseFloat(item.averageRating),
             discount:
                 item.discount_min === null && item.discount_reduction === null
                     ? undefined
