@@ -16,7 +16,6 @@ export class ProductService extends BaseService<ProductEntity> {
         super(productRepository);
     }
 
-    // TODO INTEGRAR CON MAPEOS DE PRODUCTOS || UNDEFINED ERRORS
     private async mapProduct(query, slice=false, offset=0, limit=0) {
         let item = await query.getRawMany();
 
