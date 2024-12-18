@@ -17,8 +17,14 @@ export class ProductService extends BaseService<ProductEntity> {
     }
 
     // TODO INTEGRAR CON MAPEOS DE PRODUCTOS || UNDEFINED ERRORS
-    /*private async mapProduct(item) {
-        return {
+    private async mapProduct(query, slice=false, offset=0, limit=0) {
+        let item = await query.getRawMany();
+
+        if (slice) {
+            item = item.slice(offset, offset + limit);
+        }
+
+        return item.map((item) => ({
             id: item.product_id,
             image: item.product_image || undefined,
             name: item.product_name,
@@ -36,8 +42,8 @@ export class ProductService extends BaseService<ProductEntity> {
                         min: item.discount_min,
                         reduction: item.discount_reduction,
                     },
-        };
-    }*/
+        }));
+    }
 
 
     //      *--- Services for public's Endpoints ---*
@@ -61,32 +67,9 @@ export class ProductService extends BaseService<ProductEntity> {
             .addGroupBy('category.id')
             .addGroupBy('subCategory.id');
 
-        let rawItems = await query.getRawMany();
+        const products = await this.mapProduct(query, true, offset, limit);
         const totalProducts: number = await query.getCount();
-
-        rawItems = rawItems.slice(offset, offset + limit);
-
-        // TODO INTEGRAR CON FUNCION mapPRODUCT
-        const products = rawItems.map((item) => ({
-            id: item.product_id,
-            image: item.product_image || undefined,
-            name: item.product_name,
-            price: item.product_price,
-            description: item.product_description,
-            short_description: item.product_short_description,
-            quantity: item.product_quantity,
-            averageRating: parseFloat(item.averageRating) || undefined,
-            category: item.category_name || undefined,
-            subCategory: item.subCategory_name || undefined,
-            discount:
-                item.discount_min === null && item.discount_reduction === null
-                    ? undefined
-                    : {
-                          min: item.discount_min,
-                          reduction: item.discount_reduction,
-                      },
-        }));
-
+        
         const totalPages: number = Math.ceil(totalProducts / limit);
 
         const previousUrl: string =
@@ -115,28 +98,7 @@ export class ProductService extends BaseService<ProductEntity> {
             .addGroupBy('discount.id')
             .having('COUNT(rating.id) > 0')
             .orderBy('"averageRating"', 'DESC');
-
-        const products = await query.getRawMany();
-
-        // TODO INTEGRAR CON FUNCION mapPRODUCT
-        return products.map((item) => ({
-            id: item.product_id,
-            image: item.product_image || undefined,
-            name: item.product_name,
-            price: item.product_price,
-            description: item.product_description,
-            short_description: item.product_short_description,
-            quantity: item.product_quantity,
-            averageRating: parseFloat(item.averageRating) || undefined,
-            category: item.product_categoryId || undefined,
-            subCategory: item.product_subCategoryId || undefined,
-            discount:
-                item.discount_min === null && item.discount_reduction === null
-                    ? undefined
-                    : {
-                        min: item.discount_min,
-                        reduction: item.discount_reduction,
-                    },
-        }));
+        
+        return this.mapProduct(query);
     }
 }
