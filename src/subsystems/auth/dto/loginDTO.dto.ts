@@ -11,9 +11,9 @@ export class LoginBody  extends BaseDto {
     @IsNotEmpty()
     @ApiProperty({
         example: "ernest",
-        description: "userame used in signup",
+        description: "mail used in signup",
     })
-    readonly username: string;
+    readonly mail: string;
 
     @ApiProperty({
         example: "123233",
