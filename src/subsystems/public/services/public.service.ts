@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { ProductService } from '../../products/services/product.service';
 import { CategoryService } from '../../category/services/category.service';
 
@@ -26,6 +26,10 @@ export class PublicService {
                 : await this.productService.getProducts(page, limit);
         const categories =
             await this.categoryService.getCategoriesWithSubCategories();
+
+        if (productsData.products.length === 0) {
+            throw new NotFoundException('Not found products!');
+        }
 
         return {
             products: productsData.products,
