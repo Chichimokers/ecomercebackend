@@ -8,7 +8,7 @@ export class SubCategoryDTO {
     name: string;
 }
 
-export class CategoryDTO {
+export class GetCategoriesDTO {
     @ApiProperty({ example: 1, description: "Category identifier" })
     id: number;
 
@@ -19,7 +19,3 @@ export class CategoryDTO {
     subcategories: SubCategoryDTO[];
 }
 
-export class GetCategoriesDTO {
-    @ApiProperty({ description: "List of categories", type: [CategoryDTO] })
-    categories: CategoryDTO[];
-}

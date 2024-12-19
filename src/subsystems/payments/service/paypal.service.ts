@@ -31,7 +31,7 @@ export class PaypalService {
 
         })
         if(response.data.status === "COMPLETED"){
-            this.orderService.processOrders(response.data.purchase_units[0].payments.captures[0].custom_id)
+            await this.orderService.processOrders(response.data.purchase_units[0].payments.captures[0].custom_id)
         }
 
 
@@ -52,7 +52,7 @@ export class PaypalService {
         let subtotal: number = 0;
         carts.orderItems.forEach(cart => {
             
-            subtotal += calculateDiscount(cart.product, cart.quantity);; // Sumar el total de cada cart
+            subtotal += calculateDiscount(cart.product, cart.quantity); // Sumar el total de cada cart
 
         });
 

@@ -1,4 +1,4 @@
-import { IsBoolean, IsPositive, IsString } from "class-validator";
+import { IsPositive, IsString } from "class-validator";
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { User } from 'src/subsystems/user/entities/user.entity';
 import {

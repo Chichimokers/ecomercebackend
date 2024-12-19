@@ -12,7 +12,7 @@ import { IBaseService } from '../interfaces/base-service.interface';
  */
 @Injectable()
 export abstract class BaseService<BaseEntity extends ObjectLiteral> implements IBaseService<BaseEntity> {
-    constructor(
+    protected constructor(
         @InjectRepository(BaseEntity)
         protected readonly repository: Repository<BaseEntity>, // Repositorio de la entidad.
     ) { }

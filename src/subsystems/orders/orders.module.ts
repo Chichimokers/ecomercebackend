@@ -8,7 +8,6 @@ import { UserService } from '../user/service/user.service';
 import { User } from '../user/entities/user.entity';
 import { ProductEntity } from "../products/entity/product.entity";
 import { OrderProductEntity } from "./entities/order_products.entity";
-import { Repository } from "typeorm";
 
 @Module({
     imports:[

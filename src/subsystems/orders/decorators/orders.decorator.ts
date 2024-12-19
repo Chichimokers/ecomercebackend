@@ -1,4 +1,4 @@
-import { registerDecorator, ValidationArguments, ValidationOptions } from "class-validator";
+import { registerDecorator, ValidationOptions } from "class-validator";
 
 export function IsValidCI(validationOptions?: ValidationOptions){
     return function (object: Object, propertyName: string): void {
@@ -8,7 +8,7 @@ export function IsValidCI(validationOptions?: ValidationOptions){
             propertyName: propertyName,
             options: validationOptions,
             validator: {
-                validate(value: string, args: ValidationArguments): boolean {
+                validate(value: string): boolean {
                     if(value.length !== 11) {
                         return false;
                     }
@@ -22,7 +22,7 @@ export function IsValidCI(validationOptions?: ValidationOptions){
 
                     return !(days < 1 || days > 31);
                 },
-                defaultMessage(args: ValidationArguments): string {
+                defaultMessage(): string {
                     return 'CI is incorrect';
                 }
             },

@@ -1,4 +1,4 @@
-import { Injectable, Inject, Body, Post } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -19,10 +19,7 @@ export class AuthService {
     ) { }
 
     async signup1(userdto: CreateUserDto): Promise<any> {
-
-
-        const code = await this.CodeServices.sendVerificationEmail(userdto.email);
-    
+        await this.CodeServices.sendVerificationEmail(userdto.email);
         return {message:"succesfully mail code send","next":"/verify-code-signup"}
     }
 

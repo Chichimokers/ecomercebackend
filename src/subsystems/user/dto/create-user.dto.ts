@@ -10,10 +10,6 @@ import {
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
-
-const passwordRegEx =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
-
 export class CreateUserDto extends BaseDto {
     @ApiProperty({
         example: "User name",

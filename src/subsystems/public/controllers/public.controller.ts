@@ -1,24 +1,32 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BuildOrderDTO } from '../dto/frontsDTO/ordersDTO/buildorder.dto';
 import { OrderService } from '../../orders/services/orders.service';
-import { PublicService } from "../services/public.service";
-import { ProductsViewDTO } from "../dto/frontsDTO/views/productsView.dto";
-import { Roles } from "../../roles/decorators/roles.decorator";
-import { roles } from "../../roles/enum/roles.enum";
-import { LocalAuthGuard } from "../../auth/guards/jwt-auth.guard";
-import { RolesGuard } from "../../auth/guards/roles.guard";
-import { HomeViewDTO } from "../dto/frontsDTO/views/homeView.dto";
-
+import { PublicService } from '../services/public.service';
+import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
+import { Roles } from '../../roles/decorators/roles.decorator';
+import { roles } from '../../roles/enum/roles.enum';
+import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
 
 @ApiTags('public')
 @ApiBearerAuth()
 @Controller('public')
-//@UseGuards(LocalAuthGuard, RolesGuard)
+@UseGuards(LocalAuthGuard, RolesGuard)
 export class PublicController {
-    constructor(private orderService: OrderService,
-                private publicService: PublicService,
-                ) {}
+    constructor(
+        private orderService: OrderService,
+        private publicService: PublicService,
+    ) {}
 
     @Post('create-order')
     @Roles(roles.User)
@@ -29,7 +37,7 @@ export class PublicController {
 
     // *--- For Home View ---* //
     @Get('/home')
-    //@Roles(roles.User)
+    @Roles(roles.User)
     @ApiResponse({ status: 200, type: HomeViewDTO })
     public getHomeView() {
         return this.publicService.getHomeView();
@@ -37,19 +45,36 @@ export class PublicController {
 
     // *--- For Products View ---* //
     @Get('/products')
-    //@Roles(roles.User)
+    @Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    @ApiQuery({ name: 'filter', required: false })
-    @ApiResponse({ status: 200 ,type: ProductsViewDTO })
-    public getProductView (
+    @ApiQuery({
+        name: 'categoryIds',
+        required: false,
+        isArray: true,
+        type: Number,
+    })
+    @ApiQuery({
+        name: 'subCategoryIds',
+        required: false,
+        isArray: true,
+        type: Number,
+    })
+    @ApiResponse({ status: 200, type: ProductsViewDTO })
+    public getProductView(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
-        @Query('filter') filter = undefined,
+        @Query('categoryIds') categoryIds?: number[],
+        @Query('subCategoryIds') subCategoryIds?: number[],
     ) {
         page = Number(page);
         limit = Number(limit);
 
-        return this.publicService.getProductsPage(page, limit);
+        const filters = {
+            categoryIds,
+            subCategoryIds,
+        };
+
+        return this.publicService.getProductsPage(page, limit, filters);
     }
 }

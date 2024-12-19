@@ -21,7 +21,7 @@ export class AuthController {
     async sendVerification(@Body('email') email: string) {
         console.log(email);
 
-        const code = await this.CodeServices.sendVerificationEmail(email);
+        await this.CodeServices.sendVerificationEmail(email);
 
         return { message: 'Verification code sent' };
     }
@@ -71,7 +71,7 @@ export class AuthController {
     // Endpoint para verificar el registro
     @Post('verify-code-signup')
     async verifyCode(@Body() logindata: SingUpBodyVerifcation) {
-        const isVerified = await this.CodeServices.verifyCode(
+        await this.CodeServices.verifyCode(
             logindata.email,
             logindata.code,
         );

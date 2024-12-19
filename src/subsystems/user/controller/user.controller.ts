@@ -15,8 +15,8 @@ import {
     ApiForbiddenResponse, ApiResponse
 } from "@nestjs/swagger";
 import { User } from '../entities/user.entity';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from "../dto";
+import { UpdateUserDto } from "../dto";
 import { UserService } from '../service/user.service';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';

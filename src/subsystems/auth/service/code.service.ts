@@ -45,7 +45,7 @@ export class CodeService {
         const coded: any = this.getcode(email);
 
         if (coded == code) {
-            this.removecode(email);
+            await this.removecode(email);
             return true;
         }
 
