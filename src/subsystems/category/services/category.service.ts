@@ -18,23 +18,36 @@ export class CategoryService extends BaseService<CategoryEntity>{
     }
 
     //          *--- Services for public's Endpoints ---*
-    //      *--- Get Categories with SubCategories ---*
-    public async getCategoriesWithSubCategories() {
+    //      *--- Get Categories ---*
+    public async getCategories() {
         const categories = await this.categoryRepository.find({
-            relations: ['subCategories', 'subCategories.products', 'products']
+            relations: ['products']
         });
 
         return categories
-            .filter(category => category.products.length > 0 || category.subCategories.some(subCategory => subCategory.products.length > 0))
+            .filter(category => category.products.length > 0)
             .map(category => ({
                 id: category.id,
                 name: category.name,
-                subCategories: category.subCategories
-                    .filter(subCategory => subCategory.products.length > 0)
-                    .map(subCategory => ({
-                        id: subCategory.id,
-                        name: subCategory.name
-                    }))
             }));
+    }
+    //      *--- Get Categories with SubCategories ---*
+    public async getCategoriesWithSubCategories(categoryIds: number[]) {
+        // Obtener todas las categorías con sus relaciones necesarias
+        const categories = await this.categoryRepository.find({
+            relations: ['subCategories', 'subCategories.products', 'products'],
+        });
+
+        // Mapear las categorías y filtrar las subcategorías según los IDs proporcionados
+        return categories.map(category => ({
+            id: category.id,
+            name: category.name,
+            subCategories: categoryIds.includes(category.id)
+                ? category.subCategories.map(subCategory => ({
+                    id: subCategory.id,
+                    name: subCategory.name,
+                }))
+                : undefined, // Si la categoría no está en los IDs, subcategorías vacías
+        }));
     }
 }

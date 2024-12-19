@@ -20,12 +20,19 @@ export class PublicService {
         limit: number,
         filters: { categoryIds?: number[]; subCategoryIds?: number[] } = {},
     ) {
+        const hasFilters: boolean = !!(filters.categoryIds?.length || filters.subCategoryIds?.length);
+
         const productsData =
-            filters.categoryIds?.length || filters.subCategoryIds?.length
+            hasFilters
                 ? await this.productService.getFilteredProducts(filters)
                 : await this.productService.getProducts(page, limit);
+
         const categories =
-            await this.categoryService.getCategoriesWithSubCategories();
+            hasFilters
+                // TODO - Check if it is necessary to get categories with subcategories
+                ? await this.categoryService.getCategoriesWithSubCategories(filters.categoryIds)
+                : await this.categoryService.getCategories();
+
 
         if (productsData.products.length === 0) {
             throw new NotFoundException('Not found products!');
