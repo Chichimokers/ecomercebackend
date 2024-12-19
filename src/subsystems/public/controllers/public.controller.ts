@@ -23,7 +23,7 @@ import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
 @ApiTags('public')
 @ApiBearerAuth()
 @Controller('public')
-//@UseGuards(LocalAuthGuard, RolesGuard)
+@UseGuards(LocalAuthGuard, RolesGuard)
 export class PublicController {
     constructor(
         private orderService: OrderService,
@@ -39,7 +39,7 @@ export class PublicController {
 
     // *--- For Home View ---* //
     @Get('/home')
-    //@Roles(roles.User)
+    @Roles(roles.User)
     @ApiResponse({ status: 200, type: HomeViewDTO })
     public getHomeView() {
         return this.publicService.getHomeView();
@@ -47,20 +47,22 @@ export class PublicController {
 
     // *--- For Products View ---* //
     @Get('/products')
-    //@Roles(roles.User)
+    @Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiQuery({
-        name: 'categoryIds',
+        name: 'category',
         required: false,
         isArray: true,
         type: Number,
+        description: 'Category IDs separated by commas',
     })
     @ApiQuery({
-        name: 'subCategoryIds',
+        name: 'subcategory',
         required: false,
         isArray: true,
         type: Number,
+        description: 'Subcategory IDs separated by commas',
     })
     @ApiResponse({ status: 200, type: ProductsViewDTO })
     @ApiResponse({ status: 404, description: 'In case there is no product searched' })

@@ -29,7 +29,6 @@ export class PublicService {
 
         const categories =
             hasFilters
-                // TODO - Check if it is necessary to get categories with subcategories
                 ? await this.categoryService.getCategoriesWithSubCategories(filters.categoryIds)
                 : await this.categoryService.getCategories();
 
