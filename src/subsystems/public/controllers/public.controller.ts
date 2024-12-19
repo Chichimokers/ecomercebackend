@@ -63,6 +63,7 @@ export class PublicController {
         type: Number,
     })
     @ApiResponse({ status: 200, type: ProductsViewDTO })
+    @ApiResponse({ status: 404, description: 'In case there is no product searched' })
     public getProductView(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
