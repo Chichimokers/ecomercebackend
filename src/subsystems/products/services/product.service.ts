@@ -121,8 +121,6 @@ export class ProductService extends BaseService<ProductEntity> {
             .addGroupBy('category.id')
             .addGroupBy('subCategory.id');
 
-        console.log('Filtros!!!: ' + filters);
-
         if (filters.categoryIds && filters.categoryIds.length > 0) {
             query.andWhere('category.id IN (:...categoryIds)', {
                 categoryIds: filters.categoryIds,
@@ -135,6 +133,10 @@ export class ProductService extends BaseService<ProductEntity> {
             });
         }
 
-        return this.mapProduct(query);
+        return {
+            products: await this.mapProduct(query),
+            previousUrl: undefined,
+            nextUrl: undefined,
+        };
     }
 }

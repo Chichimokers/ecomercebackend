@@ -1,12 +1,14 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Get,
+    ParseArrayPipe,
     Post,
     Query,
     Req,
-    UseGuards,
-} from '@nestjs/common';
+    UseGuards
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BuildOrderDTO } from '../dto/frontsDTO/ordersDTO/buildorder.dto';
 import { OrderService } from '../../orders/services/orders.service';
@@ -21,7 +23,7 @@ import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
 @ApiTags('public')
 @ApiBearerAuth()
 @Controller('public')
-@UseGuards(LocalAuthGuard, RolesGuard)
+//@UseGuards(LocalAuthGuard, RolesGuard)
 export class PublicController {
     constructor(
         private orderService: OrderService,
@@ -37,7 +39,7 @@ export class PublicController {
 
     // *--- For Home View ---* //
     @Get('/home')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     @ApiResponse({ status: 200, type: HomeViewDTO })
     public getHomeView() {
         return this.publicService.getHomeView();
@@ -45,7 +47,7 @@ export class PublicController {
 
     // *--- For Products View ---* //
     @Get('/products')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiQuery({
@@ -64,11 +66,27 @@ export class PublicController {
     public getProductView(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
-        @Query('categoryIds') categoryIds?: number[],
-        @Query('subCategoryIds') subCategoryIds?: number[],
+        @Query(
+            'categoryIds',
+            new ParseArrayPipe({ items: Number, separator: ',' }),
+        )
+        categoryIds?: number[],
+        @Query(
+            'subCategoryIds',
+            new ParseArrayPipe({ items: Number, separator: ',' }),
+        )
+        subCategoryIds?: number[],
     ) {
         page = Number(page);
         limit = Number(limit);
+
+        if (categoryIds && categoryIds.length === 0) {
+            throw new BadRequestException('categoryIds must not be empty');
+        }
+
+        if (subCategoryIds && subCategoryIds.length === 0) {
+            throw new BadRequestException('subCategoryIds must not be empty');
+        }
 
         const filters = {
             categoryIds,

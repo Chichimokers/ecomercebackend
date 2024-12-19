@@ -59,3 +59,4 @@ environments/*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /environments/
 frontendexamples/
+qodana.yaml
