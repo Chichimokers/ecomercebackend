@@ -64,6 +64,7 @@ export class PublicController {
     })
     @ApiResponse({ status: 200, type: ProductsViewDTO })
     @ApiResponse({ status: 404, description: 'In case there is no product searched' })
+    @ApiResponse({ status: 400, description: 'In case you send a query without inserting valid data' })
     public getProductView(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
