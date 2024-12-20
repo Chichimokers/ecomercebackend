@@ -106,6 +106,8 @@ export class ProductService extends BaseService<ProductEntity> {
     public async getFilteredProducts(filters: {
         categoryIds?: number[];
         subCategoryIds?: number[];
+        prices?: number[];
+        rate?: number;
     }) {
         const query = this.productRepository
             .createQueryBuilder('product')
@@ -130,6 +132,19 @@ export class ProductService extends BaseService<ProductEntity> {
         if (filters.subCategoryIds && filters.subCategoryIds.length > 0) {
             query.andWhere('subCategory.id IN (:...subCategoryIds)', {
                 subCategoryIds: filters.subCategoryIds,
+            });
+        }
+
+        if (filters.prices && filters.prices.length > 0) {
+            query.andWhere('product.price BETWEEN :min AND :max', {
+                min: filters.prices[0],
+                max: filters.prices[1],
+            });
+        }
+
+        if (filters.rate) {
+            query.andHaving('AVG(rating.rate) >= :rate', {
+                rate: filters.rate,
             });
         }
 

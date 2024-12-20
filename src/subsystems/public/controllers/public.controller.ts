@@ -7,8 +7,8 @@ import {
     Post,
     Query,
     Req,
-    UseGuards
-} from "@nestjs/common";
+    UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BuildOrderDTO } from '../dto/frontsDTO/ordersDTO/buildorder.dto';
 import { OrderService } from '../../orders/services/orders.service';
@@ -64,25 +64,64 @@ export class PublicController {
         type: Number,
         description: 'Subcategory IDs separated by commas',
     })
+    @ApiQuery({
+        name: 'pricerange',
+        required: false,
+        isArray: true,
+        type: Number,
+        description: 'Price range separated by hyphen',
+    })
+    @ApiQuery({
+        name: 'rate',
+        required: false,
+        type: Number,
+        description: 'Rate of the product',
+    })
     @ApiResponse({ status: 200, type: ProductsViewDTO })
-    @ApiResponse({ status: 404, description: 'In case there is no product searched' })
-    @ApiResponse({ status: 400, description: 'In case you send a query without inserting valid data' })
+    @ApiResponse({
+        status: 404,
+        description: 'In case there is no product searched',
+    })
+    @ApiResponse({
+        status: 400,
+        description: 'In case you send a query without inserting valid data',
+    })
     public getProductView(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
         @Query(
             'category',
-            new ParseArrayPipe({ items: Number, separator: ',', optional: true }),
+            new ParseArrayPipe({
+                items: Number,
+                separator: ',',
+                optional: true,
+            }),
         )
         categoryIds?: number[],
         @Query(
             'subcategory',
-            new ParseArrayPipe({ items: Number, separator: ',', optional: true}),
+            new ParseArrayPipe({
+                items: Number,
+                separator: ',',
+                optional: true,
+            }),
         )
         subCategoryIds?: number[],
+        @Query(
+            'pricerange',
+            new ParseArrayPipe({
+                items: Number,
+                separator: '-',
+                optional: true,
+            }),
+        )
+        prices?: number[],
+        @Query('rate')
+        rate?: number,
     ) {
         page = Number(page);
         limit = Number(limit);
+        rate = Number(rate);
 
         if (categoryIds && categoryIds.length === 0) {
             throw new BadRequestException('categoryIds must not be empty');
@@ -92,9 +131,15 @@ export class PublicController {
             throw new BadRequestException('subCategoryIds must not be empty');
         }
 
+        if (prices && prices.length === 0) {
+            throw new BadRequestException('prices must not be empty');
+        }
+
         const filters = {
             categoryIds,
             subCategoryIds,
+            prices,
+            rate,
         };
 
         return this.publicService.getProductsPage(page, limit, filters);
