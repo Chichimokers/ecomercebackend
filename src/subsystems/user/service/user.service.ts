@@ -6,6 +6,7 @@ import { User } from '../entities/user.entity';
 import { UserDto } from "../dto";
 import { mapToDto } from 'src/common/utils/global-functions.utils';
 import { UpdateUserDto } from "../dto";
+import * as bcrypt from 'bcrypt';
 
 export class UserService extends BaseService<User> {
 
@@ -21,6 +22,9 @@ export class UserService extends BaseService<User> {
     }
 
     async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
+        const salt: any = await bcrypt.genSalt();
+        createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
+
         const { ...restOfDto } = createUserDto;
         let user: User = this.repository.create({
             ...restOfDto,
