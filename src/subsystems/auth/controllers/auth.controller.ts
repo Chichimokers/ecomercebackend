@@ -30,7 +30,7 @@ export class AuthController {
     async Login(@Body() logindata: LoginBody): Promise<string> {
         try {
             const resultlogin: User = await this.authservice.validateUser(
-                logindata.username,
+                logindata.mail,
                 logindata.password,
             );
 
