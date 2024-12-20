@@ -45,6 +45,13 @@ export class PublicController {
         return this.publicService.getHomeView();
     }
 
+    // *--- For Home View ---* //
+    @Get('/search')
+    @Roles(roles.User)
+    public searchProduct(@Body('name') name: string) {
+        return this.publicService.getProductByName(name);
+    }
+
     // *--- For Products View ---* //
     @Get('/products')
     @Roles(roles.User)
@@ -144,4 +151,13 @@ export class PublicController {
 
         return this.publicService.getProductsPage(page, limit, filters);
     }
+
+    // *--- For Order View ---* //
+    @Get('/orders')
+    @Roles(roles.User)
+    public getUserOrder(@Req() request: any) {
+        const userid = request.user.Id;
+        return this.orderService.getOrderByUser(userid);
+    }
+
 }

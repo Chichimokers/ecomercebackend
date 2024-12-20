@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { ProductService } from '../../products/services/product.service';
 import { CategoryService } from '../../category/services/category.service';
 
@@ -52,5 +52,20 @@ export class PublicService {
             nextUrl: productsData.nextUrl,
             categories,
         };
+    }
+
+    // *--- Search Product By Name ---* //
+    public async getProductByName(name: string) {
+        if (!name) {
+            throw new BadRequestException('Name is required');
+        }
+
+        const products = await this.productService.searchProductByName(name);
+
+        if (products.length === 0) {
+            throw new NotFoundException('Product not found');
+        }
+
+        return products;
     }
 }

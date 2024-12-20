@@ -165,5 +165,17 @@ export class OrderService extends BaseService<OrderEntity> {
 
         return await this.orderRepository.save(order);
     }
+
+    // *--- For Public Services ---* //
+    public async getOrderByUser(userId: number) {
+        const orders = await this.orderRepository.find({
+            where: { user: { id: userId } },
+            relations: ['orderItems', 'orderItems.product'],
+        })
+
+        // TODO Build a MAPPER
+
+        return orders;
+    }
 }
 

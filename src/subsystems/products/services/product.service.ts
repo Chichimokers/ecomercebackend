@@ -154,4 +154,24 @@ export class ProductService extends BaseService<ProductEntity> {
             nextUrl: undefined,
         };
     }
+
+    //      *--- Search Product by Name ---*
+    public async searchProductByName(name: string) {
+        const query = this.productRepository
+            .createQueryBuilder('product')
+            .leftJoin('product.ratings', 'rating')
+            .leftJoin('product.discounts', 'discount')
+            .leftJoin('product.category', 'category')
+            .leftJoin('product.subCategory', 'subCategory')
+            .addSelect('AVG(rating.rate)', 'averageRating')
+            .addSelect(['discount.min', 'discount.reduction'])
+            .addSelect(['category.name', 'subCategory.name'])
+            .where('product.name LIKE :name', { name: `%${name}%` })
+            .groupBy('product.id')
+            .addGroupBy('discount.id')
+            .addGroupBy('category.id')
+            .addGroupBy('subCategory.id');
+
+        return this.mapProduct(query);
+    }
 }
