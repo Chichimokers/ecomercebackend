@@ -20,7 +20,7 @@ export class AuthService {
 
     async signup1(userdto: CreateUserDto): Promise<any> {
         await this.CodeServices.sendVerificationEmail(userdto.email);
-        return {message:"succesfully mail code send","next":"/verify-code-signup"}
+        return { message: "succesfully mail code send","next":"/verify-code-signup" }
     }
 
     async signup(userdto: CreateUserDto): Promise<User> {
@@ -32,12 +32,10 @@ export class AuthService {
         userdto.password = hash;
 
         return await this.userService.create({
-
             rol: roles.User,
             email: userdto.email,
             name: userdto.name,
             password: userdto.password,
-
         })
     }
 

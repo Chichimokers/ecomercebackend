@@ -48,6 +48,7 @@ export class PublicController {
     // *--- For Home View ---* //
     @Get('/search')
     @Roles(roles.User)
+    //FIXME No aceptar entradas vacias!
     public searchProduct(@Body('name') name: string) {
         return this.publicService.getProductByName(name);
     }

@@ -166,7 +166,7 @@ export class ProductService extends BaseService<ProductEntity> {
             .addSelect('AVG(rating.rate)', 'averageRating')
             .addSelect(['discount.min', 'discount.reduction'])
             .addSelect(['category.name', 'subCategory.name'])
-            .where('product.name LIKE :name', { name: `%${name}%` })
+            .where('LOWER(product.name) LIKE LOWER(:name)', { name: `%${name}%` })
             .groupBy('product.id')
             .addGroupBy('discount.id')
             .addGroupBy('category.id')
