@@ -48,7 +48,7 @@ export class AuthController {
         }
     }
 
-    @Post('/singup')
+    @Post('/signup')
     async SingUp(@Body() logindata: SingUpBody): Promise<string> {
         try {
             const newuser = new CreateUserDto();
