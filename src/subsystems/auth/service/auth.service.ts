@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -12,31 +12,32 @@ import { CodeService } from './code.service';
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
         @Inject(UserService) private userService: UserService,
         @Inject(CodeService) private CodeServices: CodeService,
         private jwt: JwtService,
-    ) { }
+    ) {}
 
     async sendVerificationEmailSignUp(userdto: CreateUserDto): Promise<any> {
         await this.CodeServices.sendVerificationEmail(userdto.email);
-        return { message: "succesfully mail code send","next":"/verify-code-signup" }
+        return {
+            message: 'succesfully mail code send',
+            next: '/verify-code-signup',
+        };
     }
 
     async signup(userdto: CreateUserDto): Promise<User> {
-
         const salt: any = await bcrypt.genSalt();
 
-        const hash: any = await bcrypt.hash(userdto.password, salt);
-
-        userdto.password = hash;
+        userdto.password = await bcrypt.hash(userdto.password, salt);
 
         return await this.userService.create({
             rol: roles.User,
             email: userdto.email,
             name: userdto.name,
             password: userdto.password,
-        })
+        });
     }
 
     async validateUser(mail: string, password: string): Promise<User> {
@@ -55,8 +56,7 @@ export class AuthService {
         return null;
     }
 
-    async login(user: User): Promise<{access_token: string}> {
-
+    async login(user: User): Promise<{ access_token: string }> {
         const payload = { username: user.name, sub: user.id, role: user.rol };
 
         return {

@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { BaseService } from "../../../common/services/base.service";
-import { CategoryEntity } from "../entity/category.entity";
-import { Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
+import { Injectable } from '@nestjs/common';
+import { BaseService } from '../../../common/services/base.service';
+import { CategoryEntity } from '../entity/category.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
-export class CategoryService extends BaseService<CategoryEntity>{
+export class CategoryService extends BaseService<CategoryEntity> {
     protected getRepositoryName(): string {
-        return "tb_category";
+        return 'tb_category';
     }
 
     constructor(
@@ -21,12 +21,12 @@ export class CategoryService extends BaseService<CategoryEntity>{
     //      *--- Get Categories ---*
     public async getCategories() {
         const categories = await this.categoryRepository.find({
-            relations: ['products']
+            relations: ['products'],
         });
 
         return categories
-            .filter(category => category.products.length > 0)
-            .map(category => ({
+            .filter((category) => category.products.length > 0)
+            .map((category) => ({
                 id: category.id,
                 name: category.name,
             }));
@@ -39,14 +39,14 @@ export class CategoryService extends BaseService<CategoryEntity>{
         });
 
         // Mapear las categorías y filtrar las subcategorías según los IDs proporcionados
-        return categories.map(category => ({
+        return categories.map((category) => ({
             id: category.id,
             name: category.name,
             subCategories: categoryIds.includes(category.id)
-                ? category.subCategories.map(subCategory => ({
-                    id: subCategory.id,
-                    name: subCategory.name,
-                }))
+                ? category.subCategories.map((subCategory) => ({
+                      id: subCategory.id,
+                      name: subCategory.name,
+                  }))
                 : undefined, // Si la categoría no está en los IDs, subcategorías vacías
         }));
     }

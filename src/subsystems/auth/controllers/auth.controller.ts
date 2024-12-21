@@ -13,7 +13,7 @@ import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
 @Controller('auth')
 export class AuthController {
     constructor(
-        private authservice: AuthService,
+        @Inject(AuthService) private authservice: AuthService,
         @Inject(CodeService) private CodeServices: CodeService,
     ) {}
     // Endpoint para enviar el código de verificación
