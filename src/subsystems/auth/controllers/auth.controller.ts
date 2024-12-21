@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Inject, Post } from "@nestjs/common";
 import { roles } from '../../roles/enum/roles.enum';
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';
@@ -57,12 +57,12 @@ export class AuthController {
             newuser.email = logindata.email;
             newuser.rol = roles.User;
 
-            const signupresult: User = await this.authservice.signup1(newuser);
+            const signupresult = await this.authservice.sendVerificationEmailSignUp(newuser);
 
             if (signupresult != null) {
                 return JSON.stringify({ user: signupresult });
             } else {
-                return JSON.stringify({ error: 'Error creating the user' });
+                return JSON.stringify({ error: 'Error sending email' });
             }
         } catch (UnauthorizedException) {
             return JSON.stringify({ error: UnauthorizedException });
@@ -71,10 +71,13 @@ export class AuthController {
     // Endpoint para verificar el registro
     @Post('verify-code-signup')
     async verifyCode(@Body() logindata: SingUpBodyVerifcation) {
-        await this.CodeServices.verifyCode(
+        const verifiedCode = await this.CodeServices.verifyCode(
             logindata.email,
             logindata.code,
         );
+
+        if (!verifiedCode) throw new BadRequestException('Invalid code');
+
         try {
             const newuser = new CreateUserDto();
             newuser.name = logindata.username;

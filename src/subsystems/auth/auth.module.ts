@@ -11,10 +11,16 @@ import { ConfigModule } from '@nestjs/config';
 import { UserService } from '../user/service/user.service';
 import { CodeService } from './service/code.service';
 import { MailsService } from '../mails/services/mails.service';
+import { CacheModule } from "@nestjs/cache-manager";
+
 // Importar JwtStrategy
 
 @Module({
     imports: [
+        CacheModule.register({
+            ttl: 120, // Time in seconds
+            max: 100, // Max number of items in cache
+        }),
         TypeOrmModule.forFeature([User]),
         ConfigModule.forRoot({ isGlobal: true }),
         PassportModule,
@@ -24,6 +30,12 @@ import { MailsService } from '../mails/services/mails.service';
         }),
     ],
     controllers: [AuthController],
-    providers: [MailsService,UserService,AuthService,JwtStrategy,CodeService], // Agregar estrategias aquí
+    providers: [
+        MailsService,
+        UserService,
+        AuthService,
+        JwtStrategy,
+        CodeService,
+    ], // Agregar estrategias aquí
 })
 export class AuthModule {}

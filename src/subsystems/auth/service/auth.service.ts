@@ -18,7 +18,7 @@ export class AuthService {
         private jwt: JwtService,
     ) { }
 
-    async signup1(userdto: CreateUserDto): Promise<any> {
+    async sendVerificationEmailSignUp(userdto: CreateUserDto): Promise<any> {
         await this.CodeServices.sendVerificationEmail(userdto.email);
         return { message: "succesfully mail code send","next":"/verify-code-signup" }
     }

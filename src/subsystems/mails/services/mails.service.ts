@@ -21,8 +21,10 @@ export class MailsService {
                 text: `Your verification code is: ${verificationCode}`, // Cuerpo del correo
             });
             console.log('Verification email sent successfully');
+            return true;
         } catch (error) {
             console.error('Error sending verification email:', error);
+            return false;
         }
     }
 }

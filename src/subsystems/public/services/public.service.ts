@@ -1,12 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { ProductService } from '../../products/services/product.service';
 import { CategoryService } from '../../category/services/category.service';
 
 @Injectable()
 export class PublicService {
     constructor(
-        private readonly productService: ProductService,
-        private readonly categoryService: CategoryService,
+        @Inject(ProductService) private readonly productService: ProductService,
+        @Inject(CategoryService) private readonly categoryService: CategoryService,
     ) {}
 
     // *--- For Home View ---* //
