@@ -7,6 +7,8 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { CodeService } from './code.service';
+import { SingUpBody } from "../dto/signupDTO.dto";
+import { roles } from "../../roles/enum/roles.enum";
 
 @Injectable()
 export class AuthService {
@@ -46,5 +48,14 @@ export class AuthService {
         return {
             access_token: this.jwt.sign(payload),
         };
+    }
+
+    public getUserDataDTO(singUpBody: SingUpBody): CreateUserDto {
+        const userdata = new CreateUserDto();
+        userdata.name = singUpBody.username;
+        userdata.password = singUpBody.password;
+        userdata.email = singUpBody.email;
+        userdata.rol = roles.User;
+        return userdata;
     }
 }

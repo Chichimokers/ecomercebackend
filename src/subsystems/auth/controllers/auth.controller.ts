@@ -1,5 +1,4 @@
 import { BadRequestException, Body, Controller, Inject, Post } from "@nestjs/common";
-import { roles } from '../../roles/enum/roles.enum';
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';
 import { CreateUserDto } from 'src/subsystems/user/dto';
@@ -18,26 +17,26 @@ export class AuthController {
     ) {}
 
     // Endpoint para enviar el código de verificación
-    /*@Post('send-verification')
-    async sendVerification(@Body('email') email: string) {
-        console.log(email);
+    @Post('send-verification')
+    async sendVerification(@Body() singUpBody: SingUpBody) {
+        const userdata: CreateUserDto = this.authservice.getUserDataDTO(singUpBody);
 
-        await this.CodeServices.sendVerificationEmail(email);
+        await this.CodeServices.sendVerificationEmail(userdata);
 
         return { message: 'Verification code sent' };
-    }*/
+    }
 
     @Post('/login')
-    async Login(@Body() logindata: LoginBody): Promise<string> {
+    async Login(@Body() loginBody: LoginBody): Promise<string> {
         try {
-            const resultlogin: User = await this.authservice.validateUser(
-                logindata.mail,
-                logindata.password,
+            const resultLogin: User = await this.authservice.validateUser(
+                loginBody.mail,
+                loginBody.password,
             );
 
-            if (resultlogin != null) {
+            if (resultLogin != null) {
                 return JSON.stringify(
-                    await this.authservice.login(resultlogin),
+                    await this.authservice.login(resultLogin),
                 );
             } else {
                 return JSON.stringify({
@@ -52,13 +51,9 @@ export class AuthController {
     @Post('/signup')
     async SingUp(@Body() logindata: SingUpBody): Promise<string> {
         try {
-            const newuser = new CreateUserDto();
-            newuser.name = logindata.username;
-            newuser.password = logindata.password;
-            newuser.email = logindata.email;
-            newuser.rol = roles.User;
+            const userdata: CreateUserDto = this.authservice.getUserDataDTO(logindata);
 
-            const signupresult = await this.authservice.sendVerificationEmailSignUp(newuser);
+            const signupresult = await this.authservice.sendVerificationEmailSignUp(userdata);
 
             if (signupresult != null) {
                 return JSON.stringify({ user: signupresult });
