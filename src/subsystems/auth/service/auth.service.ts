@@ -6,7 +6,6 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/subsystems/user/entities/user.entity';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { CreateUserDto } from 'src/subsystems/user/dto';
-import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { CodeService } from './code.service';
 
 @Injectable()
@@ -16,28 +15,15 @@ export class AuthService {
         private readonly userRepository: Repository<User>,
         @Inject(UserService) private userService: UserService,
         @Inject(CodeService) private CodeServices: CodeService,
-        private jwt: JwtService,
+        @Inject(JwtService) private jwt: JwtService,
     ) {}
 
     async sendVerificationEmailSignUp(userdto: CreateUserDto): Promise<any> {
-        await this.CodeServices.sendVerificationEmail(userdto.email);
+        await this.CodeServices.sendVerificationEmail(userdto);
         return {
             message: 'succesfully mail code send',
             next: '/verify-code-signup',
         };
-    }
-
-    async signup(userdto: CreateUserDto): Promise<User> {
-        const salt: any = await bcrypt.genSalt();
-
-        userdto.password = await bcrypt.hash(userdto.password, salt);
-
-        return await this.userService.create({
-            rol: roles.User,
-            email: userdto.email,
-            name: userdto.name,
-            password: userdto.password,
-        });
     }
 
     async validateUser(mail: string, password: string): Promise<User> {
@@ -49,10 +35,8 @@ export class AuthService {
             if (await bcrypt.compare(password, foundUser.password)) {
                 return foundUser;
             }
-
             return null;
         }
-
         return null;
     }
 

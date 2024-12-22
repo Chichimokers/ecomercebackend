@@ -16,15 +16,16 @@ export class AuthController {
         @Inject(AuthService) private authservice: AuthService,
         @Inject(CodeService) private CodeServices: CodeService,
     ) {}
+
     // Endpoint para enviar el código de verificación
-    @Post('send-verification')
+    /*@Post('send-verification')
     async sendVerification(@Body('email') email: string) {
         console.log(email);
 
         await this.CodeServices.sendVerificationEmail(email);
 
         return { message: 'Verification code sent' };
-    }
+    }*/
 
     @Post('/login')
     async Login(@Body() logindata: LoginBody): Promise<string> {
@@ -78,22 +79,6 @@ export class AuthController {
 
         if (!verifiedCode) throw new BadRequestException('Invalid code');
 
-        try {
-            const newuser = new CreateUserDto();
-            newuser.name = logindata.username;
-            newuser.password = logindata.password;
-            newuser.email = logindata.email;
-            newuser.rol = roles.User;
-
-            const signupresult: User = await this.authservice.signup(newuser);
-
-            if (signupresult != null) {
-                return JSON.stringify({ user: signupresult });
-            } else {
-                return JSON.stringify({ error: 'Error creating the user' });
-            }
-        } catch (UnauthorizedException) {
-            return JSON.stringify({ error: UnauthorizedException });
-        }
+        return { message: 'User verified and created, you can login!' };
     }
 }

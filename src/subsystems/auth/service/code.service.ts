@@ -2,22 +2,34 @@ import { BadRequestException, ConflictException, Inject, Injectable } from "@nes
 import { randomBytes } from 'crypto';
 import { MailsService } from '../../mails/services/mails.service';
 import { Cache } from '@nestjs/cache-manager';
+import { CreateUserDto } from "../../user/dto";
+import { roles } from "../../roles/enum/roles.enum";
+import * as bcrypt from 'bcrypt';
+import { UserService } from "../../user/service/user.service";
 
 @Injectable()
 export class CodeService {
     constructor(
-        @Inject(MailsService) public mailService: MailsService,
+        @Inject(UserService) private userService: UserService,
+        @Inject(MailsService) private mailService: MailsService,
         @Inject(Cache) private cacheManager: Cache,
     ) {}
 
-    async sendVerificationEmail(email: string) {
+    async sendVerificationEmail(user: CreateUserDto) {
         const verificationCode = randomBytes(3).toString('hex'); // Genera un código aleatorio de 6 caracteres
         // Aquí podrías almacenar el código y el correo del usuario en una base de datos o en memoria por un tiempo limitado
-        const sendmail= await this.mailService.sendVerificationEmail(email, verificationCode);
+        const sendmail= await this.mailService.sendVerificationEmail(user.email, verificationCode);
 
         if (!sendmail) throw new ConflictException('Error sending verification email');
 
-        await this.cacheManager.set(email, verificationCode, 120000); // Almacena el código en caché por 120 segundos
+        const userdata = {
+            username: user.name,
+            email: user.email,
+            password: user.password,
+            code: verificationCode,
+        }
+
+        await this.cacheManager.set(user.email, userdata, 120000); // Almacena el código en caché por 120 segundos
 
         return verificationCode;
     }
@@ -28,7 +40,16 @@ export class CodeService {
 
         if(!coded) throw new BadRequestException('Code expired or not found');
 
-        if (coded == code) {
+        if (coded.code == code) {
+            const salt = await bcrypt.genSalt();
+
+             await this.userService.create({
+                rol: roles.User,
+                email: coded.email,
+                name: coded.username,
+                password: await bcrypt.hash(coded.password, salt),
+            });
+
             await this.cacheManager.del(email); // Elimina el código de la caché
             return true;
         }
