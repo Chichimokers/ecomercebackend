@@ -10,8 +10,8 @@ export class PublicService {
     ) {}
 
     // *--- For Home View ---* //
-    public async getHomeView() {
-        return await this.productService.getProductsHome();
+    public async getHomeView(limit: number) {
+        return await this.productService.getProductsHome(limit);
     }
 
     // *--- For Products View ---* //

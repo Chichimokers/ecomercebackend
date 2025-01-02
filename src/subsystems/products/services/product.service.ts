@@ -87,7 +87,7 @@ export class ProductService extends BaseService<ProductEntity> {
     }
 
     //      *--- Get Products Home ---*
-    public async getProductsHome() {
+    public async getProductsHome(limit: number) {
         const query = this.productRepository
             .createQueryBuilder('product')
             .leftJoin('product.ratings', 'rating')
@@ -99,7 +99,7 @@ export class ProductService extends BaseService<ProductEntity> {
             .having('COUNT(rating.id) > 0')
             .orderBy('"averageRating"', 'DESC');
 
-        return this.mapProduct(query);
+        return this.mapProduct(query, true, 0, limit);
     }
 
     //      *--- Get Filtered Products ---*

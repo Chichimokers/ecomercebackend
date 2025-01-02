@@ -40,6 +40,7 @@ export class PublicController {
     // *--- For Home View ---* //
     @Get('/home')
     @Roles(roles.User)
+    @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiResponse({ status: 200, type: HomeViewDTO })
     public getHomeView(@Query('limit') limit: number = 20) {
         limit = Number(limit)
