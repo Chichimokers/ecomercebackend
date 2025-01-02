@@ -14,7 +14,6 @@ import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
 import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
 
 @ApiTags('public')
-@ApiBearerAuth()
 @Controller('public')
 export class PublicController {
     constructor(
