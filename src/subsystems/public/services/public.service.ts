@@ -68,4 +68,13 @@ export class PublicService {
 
         return products;
     }
+
+    // *--- Get Product Detail ---* //
+    public async getProductDetails(id: number){
+        if (!id) {
+            throw new BadRequestException('ID is required');
+        }
+
+        return await this.productService.getProductDetails(id);
+    }
 }

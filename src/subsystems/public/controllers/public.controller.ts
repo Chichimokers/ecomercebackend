@@ -19,6 +19,7 @@ import { roles } from '../../roles/enum/roles.enum';
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
+import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
 
 @ApiTags('public')
 @ApiBearerAuth()
@@ -153,6 +154,16 @@ export class PublicController {
         };
 
         return this.publicService.getProductsPage(page, limit, filters);
+    }
+
+    // *--- For Products Details View ---* //
+    // TODO Need tests
+    @Get('/product-details')
+    @Roles(roles.User)
+    @ApiResponse({ status: 200, type: [ProductDTO] })
+    @ApiResponse({ status: 400, description: 'Missing id' })
+    public getProductDetails(@Body('id') id: number) {
+        return this.publicService.getProductDetails(id);
     }
 
     // *--- For Order View ---* //

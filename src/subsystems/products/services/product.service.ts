@@ -109,19 +109,7 @@ export class ProductService extends BaseService<ProductEntity> {
         prices?: number[];
         rate?: number;
     }) {
-        const query = this.productRepository
-            .createQueryBuilder('product')
-            .leftJoin('product.ratings', 'rating')
-            .leftJoin('product.discounts', 'discount')
-            .leftJoin('product.category', 'category')
-            .leftJoin('product.subCategory', 'subCategory')
-            .addSelect('AVG(rating.rate)', 'averageRating')
-            .addSelect(['discount.min', 'discount.reduction'])
-            .addSelect(['category.name', 'subCategory.name'])
-            .groupBy('product.id')
-            .addGroupBy('discount.id')
-            .addGroupBy('category.id')
-            .addGroupBy('subCategory.id');
+        const query = this.getBaseQuery();
 
         if (filters.categoryIds && filters.categoryIds.length > 0) {
             query.andWhere('category.id IN (:...categoryIds)', {
@@ -173,5 +161,48 @@ export class ProductService extends BaseService<ProductEntity> {
             .addGroupBy('subCategory.id');
 
         return this.mapProduct(query);
+    }
+
+    //      *--- Get Product Detail ---*
+    public async getProductDetails(id: number) {
+        const product: ProductEntity = await this.productRepository.findOne(
+            {
+                where: { id },
+                relations: ['category', 'subCategory'],
+            }
+        );
+
+        const category = product.category;
+        const subcategory = product.subCategory;
+
+        const query = this.getBaseQuery();
+
+        query.where('product.id != :id', { id });
+
+        if (category) {
+            query.andWhere('category.id = :categoryId', { categoryId: category.id });
+        }
+
+        if (subcategory) {
+            query.orWhere('subCategory.id = :subCategoryId', { subCategoryId: subcategory.id });
+        }
+
+        return this.mapProduct(query);
+    }
+
+    private getBaseQuery() {
+        return this.productRepository
+            .createQueryBuilder('product')
+            .leftJoin('product.ratings', 'rating')
+            .leftJoin('product.discounts', 'discount')
+            .leftJoin('product.category', 'category')
+            .leftJoin('product.subCategory', 'subCategory')
+            .addSelect('AVG(rating.rate)', 'averageRating')
+            .addSelect(['discount.min', 'discount.reduction'])
+            .addSelect(['category.name', 'subCategory.name'])
+            .groupBy('product.id')
+            .addGroupBy('discount.id')
+            .addGroupBy('category.id')
+            .addGroupBy('subCategory.id')
     }
 }
