@@ -41,8 +41,9 @@ export class PublicController {
     @Get('/home')
     @Roles(roles.User)
     @ApiResponse({ status: 200, type: HomeViewDTO })
-    public getHomeView() {
-        return this.publicService.getHomeView();
+    public getHomeView(@Query('limit') limit: number = 20) {
+        limit = Number(limit)
+        return this.publicService.getHomeView(limit);
     }
 
     // *--- For Home View ---* //
