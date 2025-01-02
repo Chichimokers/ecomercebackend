@@ -12,6 +12,7 @@ import { User } from "../user/entities/user.entity";
 import { CategoryEntity } from "../category/entity/category.entity";
 import { CategoryService } from "../category/services/category.service";
 import { ProductService } from "../products/services/product.service";
+import { UserPublicController } from "./controllers/userpublic.controller";
 
 @Module({
     imports:[
@@ -29,6 +30,6 @@ import { ProductService } from "../products/services/product.service";
         CategoryService,
         ProductService,
     ],
-    controllers: [PublicController],
+    controllers: [PublicController, UserPublicController],
 })
 export class PublicModule {}
