@@ -16,7 +16,6 @@ import { DiscountsModule } from "./subsystems/discounts/discounts.module";
 import { RatingModule } from './subsystems/rating/rating.module';
 import { CategoryModule } from './subsystems/category/category.module';
 import { MailsModule } from "./subsystems/mails/mails.module";
-import { UserPublicController } from "./subsystems/public/controllers/userpublic.controller";
 
 @Module({
     imports: [

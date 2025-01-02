@@ -9,7 +9,6 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { BuildOrderDTO } from '../dto/frontsDTO/ordersDTO/buildorder.dto';
 import { OrderService } from '../../orders/services/orders.service';
-import { PublicService } from '../services/public.service';
 import { Roles } from '../../roles/decorators/roles.decorator';
 import { roles } from '../../roles/enum/roles.enum';
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';

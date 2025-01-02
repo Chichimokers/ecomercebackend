@@ -8,7 +8,6 @@ import {
 
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { OrderService } from '../../orders/services/orders.service';
 import { PublicService } from '../services/public.service';
 import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
