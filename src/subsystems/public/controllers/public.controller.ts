@@ -40,7 +40,7 @@ export class PublicController {
 
     // *--- For Home View ---* //
     @Get('/home')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiResponse({ status: 200, type: HomeViewDTO })
     public getHomeView(@Query('limit') limit: number = 20) {
@@ -50,7 +50,7 @@ export class PublicController {
 
     // *--- For Home View ---* //
     @Get('/search')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     //FIXME No aceptar entradas vacias!
     public searchProduct(@Body('name') name: string) {
         return this.publicService.getProductByName(name);
@@ -58,7 +58,7 @@ export class PublicController {
 
     // *--- For Products View ---* //
     @Get('/products')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiQuery({
@@ -159,7 +159,7 @@ export class PublicController {
     // *--- For Products Details View ---* //
     // TODO Need tests
     @Get('/product-details')
-    @Roles(roles.User)
+    //@Roles(roles.User)
     @ApiResponse({ status: 200, type: [ProductDTO] })
     @ApiResponse({ status: 400, description: 'Missing id' })
     public getProductDetails(@Body('id') id: number) {
