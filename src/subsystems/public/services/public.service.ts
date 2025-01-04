@@ -40,7 +40,9 @@ export class PublicService {
             ? await this.categoryService.getCategoriesWithSubCategories(
                   filters.categoryIds,
               )
-            : await this.categoryService.getCategories();
+            : await this.categoryService.getCategoriesWithSubCategories();
+
+        console.log(categories);
 
         if (productsData.products.length === 0) {
             throw new NotFoundException('Not found products!');
@@ -80,6 +82,6 @@ export class PublicService {
 
     // *--- Get Categories ---* //
     public async getCategories() {
-        return await this.categoryService.getCategories();
+        return await this.categoryService.getCategoriesWithSubCategories();
     }
 }
