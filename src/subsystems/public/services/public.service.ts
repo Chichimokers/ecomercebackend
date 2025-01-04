@@ -77,4 +77,9 @@ export class PublicService {
 
         return await this.productService.getProductDetails(id);
     }
+
+    // *--- Get Categories ---* //
+    public async getCategories() {
+        return await this.categoryService.getCategories();
+    }
 }

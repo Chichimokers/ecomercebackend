@@ -7,11 +7,12 @@ import {
     Query,
 
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PublicService } from '../services/public.service';
 import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
 import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
+import { GetCategoriesDTO } from "../dto/frontsDTO/categoryDTO/getCategories.dto";
 
 @ApiTags('public')
 @Controller('public')
@@ -142,5 +143,12 @@ export class PublicController {
     @ApiResponse({ status: 400, description: 'Missing id' })
     public getProductDetails(@Body('id') id: number) {
         return this.publicService.getProductDetails(id);
+    }
+
+    // *--- For Categories ---* //
+    @Get('/categories')
+    @ApiResponse({ status: 200, type: [GetCategoriesDTO] })
+    public getCategories() {
+        return this.publicService.getCategories();
     }
 }
