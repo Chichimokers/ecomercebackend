@@ -40,14 +40,14 @@ export class CategoryService extends BaseService<CategoryEntity> {
 
         // Mapear las categorías y filtrar las subcategorías según los IDs proporcionados
         return categories
-            .filter((category) => category.products && category.products.length > 0) // Categorías con productos
-            .map((category) => ({
+            .filter((category: CategoryEntity): boolean => category.products && category.products.length > 0) // Categorías con productos
+            .map((category: CategoryEntity) => ({
                 id: category.id,
                 name: category.name,
                 subCategories: !categoryIds || categoryIds.includes(category.id) // Si no se proporcionan IDs, incluye todas las subcategorías
                     ? category.subCategories
-                        .filter((subCategory) => subCategory.products && subCategory.products.length > 0) // Subcategorías con productos
-                        .map((subCategory) => ({
+                        .filter((subCategory: SubCategoryEntity): boolean => subCategory.products && subCategory.products.length > 0) // Subcategorías con productos
+                        .map((subCategory: SubCategoryEntity) => ({
                             id: subCategory.id,
                             name: subCategory.name,
                         }))
