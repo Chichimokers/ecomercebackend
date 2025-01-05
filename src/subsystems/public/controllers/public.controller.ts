@@ -110,9 +110,23 @@ export class PublicController {
         @Query('rate')
         rate?: number,
     ) {
-        page = Number(page);
-        limit = Number(limit);
-        rate = Number(rate);
+        try {
+            page = Number(page);
+        } catch (error) {
+            throw new BadRequestException('Invalid page format');
+        }
+
+        try {
+            limit = Number(limit);
+        } catch (error) {
+            throw new BadRequestException('Invalid limit format');
+        }
+
+        try {
+            rate = Number(rate);
+        } catch (error) {
+            throw new BadRequestException('Invalid rate format');
+        }
 
         if (categoryIds && categoryIds.length === 0) {
             throw new BadRequestException('categoryIds must not be empty');

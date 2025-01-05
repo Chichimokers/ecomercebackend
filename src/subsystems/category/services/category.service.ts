@@ -34,22 +34,24 @@ export class CategoryService extends BaseService<CategoryEntity> {
     //      *--- Get Categories with SubCategories ---*
     public async getCategoriesWithSubCategories(categoryIds?: number[]) {
         // Obtener todas las categorías con sus relaciones necesarias
-        const categories = await this.categoryRepository.find({
+        const categories: CategoryEntity[] = await this.categoryRepository.find({
             relations: ['subCategories', 'subCategories.products', 'products'],
         });
 
         // Mapear las categorías y filtrar las subcategorías según los IDs proporcionados
-        return categories.map((category) => ({
-            id: category.id,
-            name: category.name,
-            subCategories: !categoryIds || categoryIds.includes(category.id) // Si no se proporcionan IDs, incluye todas las subcategorías
-                ? category.subCategories
-                    .filter((subCategory) => subCategory.products && subCategory.products.length > 0) // Subcategorías con productos
-                    .map((subCategory) => ({
-                        id: subCategory.id,
-                        name: subCategory.name,
-                    }))
-                : undefined, // Si la categoría no está en los IDs, subcategorías vacías
-        }));
+        return categories
+            .filter((category) => category.products && category.products.length > 0) // Categorías con productos
+            .map((category) => ({
+                id: category.id,
+                name: category.name,
+                subCategories: !categoryIds || categoryIds.includes(category.id) // Si no se proporcionan IDs, incluye todas las subcategorías
+                    ? category.subCategories
+                        .filter((subCategory) => subCategory.products && subCategory.products.length > 0) // Subcategorías con productos
+                        .map((subCategory) => ({
+                            id: subCategory.id,
+                            name: subCategory.name,
+                        }))
+                    : undefined, // Si la categoría no está en los IDs, subcategorías vacías
+            }));
     }
 }
