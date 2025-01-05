@@ -1,10 +1,10 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from "../dto";
-import { BaseService } from 'src/common/services/base.service';
+import { BaseService } from "../../../common/services/base.service";
 import { User } from '../entities/user.entity';
 import { UserDto } from "../dto";
-import { mapToDto } from 'src/common/utils/global-functions.utils';
+import { mapToDto } from "../../../common/utils/global-functions.utils";
 import { UpdateUserDto } from "../dto";
 import * as bcrypt from 'bcrypt';
 

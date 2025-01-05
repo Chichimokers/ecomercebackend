@@ -1,4 +1,4 @@
-import { BaseDto } from "src/common/dto/base.dto";
+import { BaseDto } from "../../../common/dto/base.dto";
 import { Transform } from "class-transformer";
 import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";

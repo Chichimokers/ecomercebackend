@@ -1,5 +1,5 @@
 import { IsNumber, IsString, IsEmail } from 'class-validator';
-import { BaseDto } from 'src/common/dto/base.dto';
+import { BaseDto } from "../../../common/dto/base.dto";
 
 export class UserDto extends BaseDto {
     @IsString()

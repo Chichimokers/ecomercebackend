@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/common/entities/base.entity';
+import { BaseEntity } from "../../../common/entities/base.entity";
 import {
     Entity,
     OneToMany,
@@ -7,9 +7,8 @@ import {
 } from "typeorm";
 import { DiscountEntity} from "../../discounts/entity/discounts.entity";
 import { RatingEntity } from "../../rating/entity/rating.entity";
-//import { OfferEntity } from "../../discounts/entity/offers.entity";
 import { IsPositive, IsString } from "class-validator";
-import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
+import { OrderProductEntity } from "../../orders/entities/order_products.entity";
 import { CategoryEntity, SubCategoryEntity } from "../../category/entity/category.entity";
 
 @Entity({ name:"tb_products"})

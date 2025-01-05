@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { BaseDto } from 'src/common/dto/base.dto';
-import { User } from 'src/subsystems/user/entities/user.entity';
+import { BaseDto } from "../../../common/dto/base.dto";
+import { User } from '../../user/entities/user.entity';
 
 export class CreateOrderDTO extends BaseDto {
     @ApiProperty({

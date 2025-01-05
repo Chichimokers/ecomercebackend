@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
-import { BaseService } from 'src/common/services/base.service';
-import { UserService } from 'src/subsystems/user/service/user.service';
+import { BaseService } from "../../../common/services/base.service";
+import { UserService } from "../../user/service/user.service";
 import { ProductEntity } from '../../products/entity/product.entity';
 import {
     BuildOrderDTO,

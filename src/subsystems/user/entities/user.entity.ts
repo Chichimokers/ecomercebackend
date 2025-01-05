@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/common/entities/base.entity';
+import { BaseEntity } from "../../../common/entities/base.entity";
 import { Column, Entity, OneToMany, Check } from "typeorm";
 import { IsBoolean, IsEmail, IsString } from "class-validator";
 import { RatingEntity } from "../../rating/entity/rating.entity";
