@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseService } from "../../../common/services/base.service";
 import { ProductEntity } from '../entity/product.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class ProductService extends BaseService<ProductEntity> {
@@ -70,19 +71,11 @@ export class ProductService extends BaseService<ProductEntity> {
             .addGroupBy('subCategory.id');
 
         const products = await this.mapProduct(query, true, offset, limit);
-        const totalProducts: number = await query.getCount();
-        const totalPages: number = Math.ceil(totalProducts / limit);
-        const previousUrl: string =
-            page - 1 <= 0 ? undefined : `/public/products?page=${page - 1}`;
-        const nextUrl: string =
-            page + 1 > totalPages
-                ? undefined
-                : `/public/products?page=${page + 1}`;
+        const urls: { previousUrl: string, nextUrl: string } = await this.getUrls(query, page, limit);
 
         return {
             products,
-            previousUrl,
-            nextUrl,
+            urls
         };
     }
 
@@ -108,7 +101,7 @@ export class ProductService extends BaseService<ProductEntity> {
         subCategoryIds?: number[];
         prices?: number[];
         rate?: number;
-    }) {
+    }, page: number, limit: number) {
         const query = this.getBaseQuery();
 
         if (filters.categoryIds && filters.categoryIds.length > 0) {
@@ -136,10 +129,13 @@ export class ProductService extends BaseService<ProductEntity> {
             });
         }
 
+        const offset: number = (page - 1) * limit;
+
+        const urls = await this.getUrls(query, page, limit);
+
         return {
-            products: await this.mapProduct(query),
-            previousUrl: undefined,
-            nextUrl: undefined,
+            products: await this.mapProduct(query, true, offset, limit),
+            urls
         };
     }
 
@@ -188,6 +184,20 @@ export class ProductService extends BaseService<ProductEntity> {
         }
 
         return this.mapProduct(query);
+    }
+
+    private async getUrls(query: SelectQueryBuilder<ProductEntity>, page: number, limit: number){
+        const totalProducts = await query.getCount();
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const previousUrl: string =
+            page - 1 <= 0 ? undefined : `/public/products?page=${page - 1}`;
+        const nextUrl: string =
+            page + 1 > totalPages
+                ? undefined
+                : `/public/products?page=${page + 1}`;
+
+        return { previousUrl, nextUrl }
     }
 
     private getBaseQuery() {

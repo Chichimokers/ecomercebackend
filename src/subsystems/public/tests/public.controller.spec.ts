@@ -102,4 +102,24 @@ describe('PublicController', () => {
     it('should be defined', () => {
         expect(controller).toBeDefined();
     });
+
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
+
+    it('should be defined', () => {
+        expect(categoryService).toBeDefined();
+    });
+
+    it('should be defined', () => {
+        expect(categoryRepository).toBeDefined();
+    });
+
+    it('should be defined', () => {
+        expect(subCategoryRepository).toBeDefined();
+    });
+
+    it('should be defined', () => {
+        expect(productRepository).toBeDefined();
+    });
 });

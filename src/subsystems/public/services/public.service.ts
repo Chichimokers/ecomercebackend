@@ -33,7 +33,7 @@ export class PublicService {
         );
 
         const productsData = hasFilters
-            ? await this.productService.getFilteredProducts(filters)
+            ? await this.productService.getFilteredProducts(filters, page, limit)
             : await this.productService.getProducts(page, limit);
 
         const categories = hasFilters
@@ -48,10 +48,12 @@ export class PublicService {
             throw new NotFoundException('Not found products!');
         }
 
+        const { previousUrl, nextUrl } = productsData.urls;
+
         return {
             products: productsData.products,
-            previousUrl: productsData.previousUrl,
-            nextUrl: productsData.nextUrl,
+            previousUrl: previousUrl,
+            nextUrl: nextUrl,
             categories,
         };
     }
