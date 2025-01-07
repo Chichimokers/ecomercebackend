@@ -71,7 +71,7 @@ export class ProductService extends BaseService<ProductEntity> {
             .addGroupBy('subCategory.id');
 
         const products = await this.mapProduct(query, true, offset, limit);
-        const urls: { previousUrl: string, nextUrl: string } = await this.getUrls(query, page, limit);
+        const urls: { previousUrl: string, nextUrl: string, totalPages: number } = await this.getUrls(query, page, limit);
 
         return {
             products,
@@ -131,7 +131,7 @@ export class ProductService extends BaseService<ProductEntity> {
 
         const offset: number = (page - 1) * limit;
 
-        const urls = await this.getUrls(query, page, limit);
+        const urls: { previousUrl: string, nextUrl: string, totalPages: number } = await this.getUrls(query, page, limit);
 
         return {
             products: await this.mapProduct(query, true, offset, limit),
@@ -197,7 +197,7 @@ export class ProductService extends BaseService<ProductEntity> {
                 ? undefined
                 : `/public/products?page=${page + 1}`;
 
-        return { previousUrl, nextUrl }
+        return { previousUrl, nextUrl, totalPages }
     }
 
     private getBaseQuery() {

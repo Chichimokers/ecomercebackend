@@ -48,12 +48,13 @@ export class PublicService {
             throw new NotFoundException('Not found products!');
         }
 
-        const { previousUrl, nextUrl } = productsData.urls;
+        const { previousUrl, nextUrl, totalPages } = productsData.urls;
 
         return {
             products: productsData.products,
             previousUrl: previousUrl,
             nextUrl: nextUrl,
+            totalPages: totalPages,
             categories,
         };
     }
