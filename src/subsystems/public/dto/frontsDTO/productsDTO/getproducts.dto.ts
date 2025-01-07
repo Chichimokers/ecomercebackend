@@ -84,4 +84,7 @@ export class GetProductDTO {
 
     @ApiProperty({ example: null, description: "URL for the next page", nullable: true })
     nextUrl: string | null;
+
+    @ApiProperty({ example: 5, description: "Total of pages you would get." })
+    totalPages: number;
 }
