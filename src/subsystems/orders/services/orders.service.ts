@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
@@ -173,6 +173,9 @@ export class OrderService extends BaseService<OrderEntity> {
             relations: ['orderItems', 'orderItems.product'],
         })
 
+        if (orders.length === 0) {
+            throw new NotFoundException('Not found any orders');
+        }
         // TODO Build a MAPPER
 
         return orders;
