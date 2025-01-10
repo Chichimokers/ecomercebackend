@@ -163,9 +163,9 @@ export class ProductService extends BaseService<ProductEntity> {
     public async getProductDetails(id: number) {
         const query = this.getBaseQuery();
         query.where('product.id=(:id)', { id: id })
-        const product = await this.mapProduct(query);
+        const product: any = await this.mapProduct(query);
 
-        if(!!product) throw new NotFoundException('Not found the product')
+        if(!product[0]) throw new NotFoundException('Not found the product');
 
         return product[0];
     }
