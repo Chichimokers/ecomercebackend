@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseService } from "../../../common/services/base.service";
@@ -161,6 +161,16 @@ export class ProductService extends BaseService<ProductEntity> {
 
     //      *--- Get Product Detail ---*
     public async getProductDetails(id: number) {
+        const query = this.getBaseQuery();
+        query.where('product.id=(:id)', { id: id })
+        const product = await this.mapProduct(query);
+
+        if(!!product) throw new NotFoundException('Not found the product')
+
+        return product[0];
+    }
+
+    public async getRelations(id: number){
         const product: ProductEntity = await this.productRepository.findOne(
             {
                 where: { id },
@@ -168,8 +178,14 @@ export class ProductService extends BaseService<ProductEntity> {
             }
         );
 
+        if(!product) throw new NotFoundException('Not found the product')
+
         const category = product.category;
         const subcategory = product.subCategory;
+
+        if(!category && !subcategory){
+            throw new NotFoundException('Not found relations');
+        }
 
         const query = this.getBaseQuery();
 
@@ -185,6 +201,8 @@ export class ProductService extends BaseService<ProductEntity> {
 
         return this.mapProduct(query);
     }
+
+
 
     private async getUrls(query: SelectQueryBuilder<ProductEntity>, page: number, limit: number){
         const totalProducts = await query.getCount();

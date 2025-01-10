@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import {
+    BadRequestException,
+    Inject,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { ProductService } from '../../products/services/product.service';
 import { CategoryService } from '../../category/services/category.service';
 
@@ -6,7 +11,8 @@ import { CategoryService } from '../../category/services/category.service';
 export class PublicService {
     constructor(
         @Inject(ProductService) private readonly productService: ProductService,
-        @Inject(CategoryService) private readonly categoryService: CategoryService,
+        @Inject(CategoryService)
+        private readonly categoryService: CategoryService,
     ) {}
 
     // *--- For Home View ---* //
@@ -33,7 +39,11 @@ export class PublicService {
         );
 
         const productsData = hasFilters
-            ? await this.productService.getFilteredProducts(filters, page, limit)
+            ? await this.productService.getFilteredProducts(
+                  filters,
+                  page,
+                  limit,
+              )
             : await this.productService.getProducts(page, limit);
 
         const categories = hasFilters
@@ -75,12 +85,20 @@ export class PublicService {
     }
 
     // *--- Get Product Detail ---* //
-    public async getProductDetails(id: number){
+    public async getProductDetails(id: number) {
         if (!id) {
             throw new BadRequestException('ID is required');
         }
 
         return await this.productService.getProductDetails(id);
+    }
+
+    public async getProductRelation(id: number) {
+        if (!id) {
+            throw new BadRequestException('ID is required');
+        }
+
+        return await this.productService.getRelations(id);
     }
 
     // *--- Get Categories ---* //

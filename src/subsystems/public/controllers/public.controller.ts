@@ -11,7 +11,7 @@ import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PublicService } from '../services/public.service';
 import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
-import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
+import { GetProductDTO, ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
 import { GetCategoriesDTO } from "../dto/frontsDTO/categoryDTO/getCategories.dto";
 
 @ApiTags('public')
@@ -153,10 +153,41 @@ export class PublicController {
     // *--- For Products Details View ---* //
     // TODO Need tests
     @Get('/product-details')
+    @ApiQuery({
+        name: 'id',
+        required: true,
+        type: Number,
+        description: 'ID of the product',
+    })
     @ApiResponse({ status: 200, type: [ProductDTO] })
-    @ApiResponse({ status: 400, description: 'Missing id' })
-    public getProductDetails(@Body('id') id: number) {
+    @ApiResponse({ status: 400, description: 'Missing or invalid id' })
+    public getProductDetails(@Query('id') id: number) {
+        try {
+            id = Number(id);
+        } catch (error){
+            throw new BadRequestException('Incorrect ID format. Required Number')
+        }
+
         return this.publicService.getProductDetails(id);
+    }
+
+    @Get('/product-relations')
+    @ApiQuery({
+        name: 'id',
+        required: true,
+        type: Number,
+        description: 'ID of the product',
+    })
+    //@ApiResponse({ status: 200, type: [GetProductDTO] })
+    @ApiResponse({ status: 400, description: 'Missing or invalid id' })
+    public getProductRelation(@Query('id') id: number){
+        try {
+            id = Number(id);
+        } catch (error){
+            throw new BadRequestException('Incorrect ID format. Required Number')
+        }
+
+        return this.publicService.getProductRelation(id);
     }
 
     // *--- For Categories ---* //
