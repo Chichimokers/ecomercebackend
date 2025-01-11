@@ -199,7 +199,7 @@ export class ProductService extends BaseService<ProductEntity> {
             query.orWhere('subCategory.id = :subCategoryId', { subCategoryId: subcategory.id });
         }
 
-        return this.mapProduct(query);
+        return this.mapProduct(query, true, 0, 15);
     }
 
 

@@ -151,7 +151,6 @@ export class PublicController {
     }
 
     // *--- For Products Details View ---* //
-    // TODO Need tests
     @Get('/product-details')
     @ApiQuery({
         name: 'id',
@@ -159,7 +158,7 @@ export class PublicController {
         type: Number,
         description: 'ID of the product',
     })
-    @ApiResponse({ status: 200, type: [ProductDTO] })
+    @ApiResponse({ status: 200, type: ProductDTO })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
     public getProductDetails(@Query('id') id: number) {
         try {
@@ -178,7 +177,7 @@ export class PublicController {
         type: Number,
         description: 'ID of the product',
     })
-    //@ApiResponse({ status: 200, type: [GetProductDTO] })
+    @ApiResponse({ status: 200, type: [ProductDTO] })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
     public getProductRelation(@Query('id') id: number){
         try {
