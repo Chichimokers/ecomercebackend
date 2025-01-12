@@ -44,7 +44,7 @@ export class ProductControllers {
     @Roles(roles.Admin)
     @UseInterceptors(FileInterceptor('image', {
         storage: diskStorage({
-            destination: './images',
+            destination: './public/images',
             filename: (req, file, cb): void => {
                 const uniqueSuffix: string = Date.now() + '-' + Math.round(Math.random() * 1E9);
                 cb(null, uniqueSuffix + extname(file.originalname));

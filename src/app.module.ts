@@ -16,6 +16,8 @@ import { DiscountsModule } from "./subsystems/discounts/discounts.module";
 import { RatingModule } from './subsystems/rating/rating.module';
 import { CategoryModule } from './subsystems/category/category.module';
 import { MailsModule } from "./subsystems/mails/mails.module";
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
     imports: [
@@ -33,6 +35,9 @@ import { MailsModule } from "./subsystems/mails/mails.module";
         RatingModule,
         CategoryModule,
         MailsModule,
+        ServeStaticModule.forRoot({
+            rootPath: join('./public'), // Ruta al directorio estático
+        }),
     ],
     controllers: [AppController],
     providers: [AppService],
