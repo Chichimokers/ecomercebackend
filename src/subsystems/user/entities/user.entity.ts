@@ -17,7 +17,7 @@ export class User extends BaseEntity {
     @Column({ type: 'smallint' })
     rol: number;
     
-    @Column({ type: 'varchar', nullable: false})
+    @Column({ type: 'varchar', nullable: true})
     @IsString()
     password: string;
 
