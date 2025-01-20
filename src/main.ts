@@ -13,7 +13,7 @@ async function bootstrap() {
 
     DocapiBuilder(app);
 
-    await app.listen(8000);
+    await app.listen(process.env.POSTGRES_HOST||  8000);
 
     //console.log("Escuchando en puerto 8000");
 
