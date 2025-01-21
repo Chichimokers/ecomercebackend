@@ -19,11 +19,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 22.2.0
+          
       - name: Instalar stripe
         run:  npm install stripe@17.4.0
+
       - name: Instalar dotenv cli
         run:   npm install -g dotenv-cli
+
       - name: Instalar deps 
         run:  npm install --verbose
+
       - name: Construir la aplicación
         run: npm run start:prod &
