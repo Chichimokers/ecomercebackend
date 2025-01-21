@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: self-hosted # Usará tu VPS como runner
+    runs-on: self-hosted  # Usará tu VPS como runner
     steps:
       - name: Clonar el repositorio
         uses: actions/checkout@v3
@@ -21,12 +21,10 @@ jobs:
           node-version: 22.2.0
 
       - name: Instalar dependencias
-
-        run: npm install stripe@17.4.0
-
-        run: npm install -g dotenv-cli
-        run: npm install
-       
+        run: |
+          npm install stripe@17.4.0
+          npm install -g dotenv-cli
+          npm install
 
       - name: Construir la aplicación
         run: npm run start:prod
