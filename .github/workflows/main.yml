@@ -27,4 +27,4 @@ jobs:
           npm install
 
       - name: Construir la aplicación
-        run: npm run start:prod
+        run: npm run start:prod &
