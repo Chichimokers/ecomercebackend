@@ -8,7 +8,7 @@ on:
   pull_request:
     branches:
       - master
-
+a
 jobs:
   build-and-test:
     runs-on: self-hosted  # Usará tu VPS como runner
@@ -29,5 +29,5 @@ jobs:
       - name: Instalar deps 
         run:  npm install --verbose
 
-      - name: Construir la aplicación
-        run: npm run start:prod &
+      - name: iniciar la aplicación
+        run: npm run start:prod 
