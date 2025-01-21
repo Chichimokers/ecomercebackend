@@ -21,11 +21,13 @@ export class createProductDTO extends BaseDto {
     @IsNotEmpty()
     name: string;
 
+
+    
     @ApiProperty({
         example: "123.25",
         description: "A valid price",
     })
-    
+
     @IsNotEmpty()
     @IsNumber({}, { message: 'Please provide a valid price.' })
     price: number;

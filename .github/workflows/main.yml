@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: self-hosted # Usará tu VPS como runner
+    runs-on: self-hosted
     steps:
       - name: Clonar el repositorio
         uses: actions/checkout@v3
@@ -29,5 +29,23 @@ jobs:
       - name: Instalar dependencias del proyecto
         run: npm install
 
-      - name: Construir la aplicación
-        run: npm run start:prod &
+      - name: Construir y ejecutar la aplicación
+        run: |
+          npm run build
+          nohup npm run start:prod > output.log 2>&1 &
+          echo $! > .pidfile
+          sleep 10
+
+      - name: Verificar si la aplicación está en ejecución
+        run: |
+          if ps -p $(cat .pidfile) > /dev/null
+          then
+            echo "La aplicación se está ejecutando correctamente"
+          else
+            echo "La aplicación no se inició correctamente"
+            cat output.log
+            exit 1
+          fi
+
+      - name: Detener la aplicación
+        run: kill $(cat .pidfile)
