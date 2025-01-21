@@ -20,11 +20,13 @@ jobs:
         with:
           node-version: 22.2.0
 
-      - name: Instalar dependencias
-        run: |
-          npm install stripe@17.4.0
-          npm install -g dotenv-cli
-          npm install
+      - name: Instalar stripe
+        run:  npm install stripe@17.4.0
+      - name: Instalar dotenv cli
+        run:   npm install -g dotenv-cli
+      - name: Instalar deps 
+        run:  npm install
+         
 
       - name: Construir la aplicación
-        run: npm run start:prod &
+        run: npm run start:prod 
