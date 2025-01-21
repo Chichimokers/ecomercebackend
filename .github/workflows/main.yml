@@ -10,7 +10,9 @@ on:
 
 jobs:
   build-and-test:
+  
     runs-on: self-hosted # Usará tu VPS como runner
+
     steps:
       - name: Clonar el repositorio
         uses: actions/checkout@v3
