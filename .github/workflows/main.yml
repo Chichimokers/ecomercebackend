@@ -12,6 +12,14 @@ jobs:
   build-and-test:
     runs-on: self-hosted # Usará tu VPS como runner
     steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.2.0
+
       - name: Instalar dependencias de Stripe
         run: npm install stripe@17.4.0
 
