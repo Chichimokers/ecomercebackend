@@ -21,7 +21,9 @@ jobs:
           node-version: 22.2.0
 
       - name: Instalar dependencias
+      
         run: npm install stripe@17.4.0
+
         run: npm install -g dotenv-cli
         run: npm install
        
