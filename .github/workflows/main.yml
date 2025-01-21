@@ -9,7 +9,6 @@ on:
       - main
 
 jobs:
-
   build-and-test:
     runs-on: self-hosted # Usará tu VPS como runner
     steps:
@@ -21,11 +20,14 @@ jobs:
         with:
           node-version: 22.2.0
 
-      - name: Instalar dependencias
+      - name: Instalar dependencias de Stripe
         run: npm install stripe@17.4.0
+
+      - name: Instalar dotenv-cli
         run: npm install -g dotenv-cli
+
+      - name: Instalar dependencias del proyecto
         run: npm install
-       
 
       - name: Construir la aplicación
         run: npm run start:prod
