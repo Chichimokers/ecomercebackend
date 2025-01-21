@@ -22,6 +22,7 @@ export class createProductDTO extends BaseDto {
     name: string;
 
 
+
     
     @ApiProperty({
         example: "123.25",

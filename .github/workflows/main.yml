@@ -24,6 +24,6 @@ jobs:
       - name: Instalar dotenv cli
         run:   npm install -g dotenv-cli
       - name: Instalar deps 
-        run:  npm install
+        run:  npm install --verbose
       - name: Construir la aplicación
         run: npm run start:prod &
