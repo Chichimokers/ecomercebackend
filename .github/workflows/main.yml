@@ -12,7 +12,6 @@ jobs:
   build-and-test:
     runs-on: self-hosted # Usará tu VPS como runner
     steps:
-
       - name: Instalar dependencias de Stripe
         run: npm install stripe@17.4.0
 
