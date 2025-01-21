@@ -29,12 +29,11 @@ jobs:
       - name: Instalar dependencias del proyecto
         run: npm install
 
-      - name: Construir y ejecutar la aplicación
+      - name: Ejecutar la aplicación
         run: |
-          npm run build
           nohup npm run start:prod > output.log 2>&1 &
           echo $! > .pidfile
-          sleep 10
+          sleep 30
 
       - name: Verificar si la aplicación está en ejecución
         run: |
