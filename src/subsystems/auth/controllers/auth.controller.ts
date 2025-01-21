@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Inject, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Inject, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';
 import { CreateUserDto } from 'src/subsystems/user/dto';
@@ -7,6 +7,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 import { CodeService } from '../service/code.service';
 import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
+import { AuthGuard } from "@nestjs/passport";
+import { GoogleAuthGuard } from "../guards/google.guard";
 
 @ApiTags('login')
 @Controller('auth')
@@ -25,6 +27,38 @@ export class AuthController {
 
         return { message: 'Verification code sent' };
     }
+
+    @Get('google')
+    @UseGuards(GoogleAuthGuard)
+    async googleAuth() {
+
+        // Esta ruta redirige al usuario a Google
+
+    }
+
+    // Endpoint que recibe el callback de Google
+    @Get('google/callback')
+    @UseGuards(AuthGuard('google'))
+
+    async googleAuthRedirect(@Req() req) {
+
+        const user = req.user;
+
+
+        const userfound = await this.authservice.validateOAuthuser(user);
+
+        const token = await this.authservice.login(userfound);
+        // Opcional: Generar un JWT para el usuario autenticado
+    
+
+        return {
+        message: 'Authenticated with Google',
+        token,
+        };
+        
+    }
+
+
 
     @Post('/login')
     async Login(@Body() loginBody: LoginBody): Promise<string> {

@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocapiBuilder } from './swagger';
+import { appendFile } from 'fs';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -13,9 +14,9 @@ async function bootstrap() {
 
     DocapiBuilder(app);
 
-    await app.listen(8000);
+    await app.listen(process.env.APP_PORT||  8000);
 
     //console.log("Escuchando en puerto 8000");
 
 }
-bootstrap().then(() => console.log("Server running on port 8000"));
+bootstrap().then(() => console.log("Server running on port " + process.env.APP_PORT||  8000));

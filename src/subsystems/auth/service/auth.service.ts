@@ -42,6 +42,24 @@ export class AuthService {
         return null;
     }
 
+    async validateOAuthuser(user): Promise<User> {
+        let foundUser: User = await this.userRepository.findOne({
+            where: { email: user.email },
+        });
+    
+        if (!foundUser) {
+            // Crear un nuevo usuario automáticamente
+            foundUser = this.userRepository.create(
+                { name:user.firstName,
+                    email: user.email,
+                    rol:roles.User, });
+            await this.userRepository.save(foundUser);
+        }
+    
+        return foundUser;
+    }
+    
+
     async login(user: User): Promise<{ access_token: string }> {
         const payload = { username: user.name, sub: user.id, role: user.rol };
 

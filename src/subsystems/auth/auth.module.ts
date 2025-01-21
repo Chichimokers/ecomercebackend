@@ -12,6 +12,7 @@ import { UserService } from '../user/service/user.service';
 import { CodeService } from './service/code.service';
 import { MailsService } from '../mails/services/mails.service';
 import { CacheModule } from "@nestjs/cache-manager";
+import { GoogleStrategy } from './strategies/google.strategy';
 
 // Importar JwtStrategy
 
@@ -35,6 +36,7 @@ import { CacheModule } from "@nestjs/cache-manager";
         UserService,
         AuthService,
         JwtStrategy,
+        GoogleStrategy,
         CodeService,
     ], // Agregar estrategias aquí
 })

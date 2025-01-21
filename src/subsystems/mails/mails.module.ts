@@ -10,8 +10,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
                 port: 465,
                 secure: true, // true para SSL/TLS
                 auth: {
-                    user: 'developer1575@gmail.com', // Tu correo
-                    pass: 'nfuv gdlp paja jzpo', // Contraseña de aplicación
+                    user: process.env.GOOGLE_MAIL || 'developer1575@gmail.com', // Tu correo
+                    pass:  process.env.GOOGLE_PASS || 'nfuv gdlp paja jzpo', // Contraseña de aplicación
                 },
             },
             defaults: {
