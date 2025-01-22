@@ -11,9 +11,10 @@ async function bootstrap() {
         cert: fs.readFileSync('src/certificates/cert.pem'),   // Ruta al archivo del certificado
       };
 
-      
+
     const app = await NestFactory.create(AppModule,{httpsOptions});
 
+    
     app.enableCors({
         origin: 'http://localhost:3000',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
