@@ -30,4 +30,7 @@ jobs:
         run:  npm install --verbose
 
       - name: iniciar la aplicación
-        run: npm run start:prod 
+      run: |
+          npm run start:prod &
+          sleep infinity
+
