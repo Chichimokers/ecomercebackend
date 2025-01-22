@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Clonar el repositorio
         uses: actions/checkout@v3
-        
+
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
@@ -31,7 +31,7 @@ jobs:
         run:  npm install --verbose
 
       - name: iniciar la aplicación
-      run: |
+        run: |
           npm run start:prod &
           sleep infinity
 
