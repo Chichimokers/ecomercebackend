@@ -25,9 +25,13 @@ jobs:
         run:  npm install stripe@17.4.0
 
       - name: Instalar dotenv cli
+      
         run:   npm install -g dotenv-cli
+
       - name: Instalar  cli pm2
+
         run:   npm install -g pm2
+
       - name: Instalar deps a
         run:  npm install --verbose
 
