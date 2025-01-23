@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C. Chichimokers - YouTube</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #030303;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid #065fd4;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 5px 0;
+            color: #606060;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats div {
+            text-align: center;
+        }
+
+        .stats span {
+            font-size: 18px;
+            font-weight: bold;
+            color: #065fd4;
+        }
+
+        .description {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            font-size: 14px;
+            color: #606060;
+        }
+
+        .videos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background-color: #ffffff;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .video-card h3 {
+            font-size: 16px;
+            margin: 10px;
+            color: #030303;
+        }
+
+        .video-card p {
+            font-size: 14px;
+            margin: 0 10px 10px;
+            color: #606060;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #606060;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado del canal -->
+        <header>
+            <img src="https://via.placeholder.com/150" alt="Logo del Canal">
+            <h1>C. Chichimokers</h1>
+            <h2>@C.Chichimokers</h2>
+            <div class="stats">
+                <div>
+                    <span>1.23M</span>
+                    <p>Suscriptores</p>
+                </div>
+                <div>
+                    <span>456</span>
+                    <p>Videos</p>
+                </div>
+                <div>
+                    <span>123M</span>
+                    <p>Vistas</p>
+                </div>
+            </div>
+            <div class="description">
+                <p>¡Bienvenidos al canal oficial de C. Chichimokers! Aquí encontrarás contenido divertido, reseñas y mucho más. ¡No olvides suscribirte!</p>
+            </div>
+        </header>
+
+        <!-- Videos del canal -->
+        <section class="videos">
+            <div class="video-card">
+                <img src="https://via.placeholder.com/300x200" alt="Miniatura del video">
+                <h3>Video 1: Reseña de producto</h3>
+                <p>123,456 vistas • Hace 1 semana</p>
+            </div>
+            <div class="video-card">
+                <img src="https://via.placeholder.com/300x200" alt="Miniatura del video">
+                <h3>Video 2: Unboxing divertido</h3>
+                <p>98,765 vistas • Hace 2 semanas</p>
+            </div>
+            <div class="video-card">
+                <img src="https://via.placeholder.com/300x200" alt="Miniatura del video">
+                <h3>Video 3: Reto imposible</h3>
+                <p>456,789 vistas • Hace 3 semanas</p>
+            </div>
+        </section>
+
+        <!-- Pie de página -->
+        <footer class="footer">
+            <p>&copy; 2023 C. Chichimokers. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>
