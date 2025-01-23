@@ -26,9 +26,12 @@ jobs:
 
       - name: Instalar dotenv cli
         run:   npm install -g dotenv-cli
-
+      - name: Instalar  cli pm2
+        run:   npm install -g pm2
       - name: Instalar deps a
         run:  npm install --verbose
+
+
       - name: iniciar la aplicación
         run: pm2 restart esakiback || pm2 start npm --name "esakiback" -- run start:prod
 
