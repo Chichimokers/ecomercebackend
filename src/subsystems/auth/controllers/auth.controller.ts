@@ -11,6 +11,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { GoogleAuthGuard } from "../guards/google.guard";
 
 @ApiTags('login')
+
 @Controller('auth')
 export class AuthController {
     constructor(

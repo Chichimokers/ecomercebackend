@@ -28,6 +28,7 @@ export class AuthService {
         };
     }
 
+    
     async validateUser(mail: string, password: string): Promise<User> {
         const foundUser: User = await this.userRepository.findOne({
             where: { email: mail },
