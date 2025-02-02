@@ -50,7 +50,7 @@ export class ProductEntity extends BaseEntity {
         { nullable: true })
     @JoinColumn()
     discounts: DiscountEntity;
-
+    
     @OneToMany(() => RatingEntity, (rating) => rating.product)
     ratings: RatingEntity[];
 
