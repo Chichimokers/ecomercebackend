@@ -10,6 +10,7 @@ export class LoginBody  extends BaseDto {
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
     @IsEmail()
+    
     @ApiProperty({
         example: "ernest@gmail.com",
         description: "mail used in signup",
