@@ -160,7 +160,7 @@ export class PublicController {
     })
     @ApiResponse({ status: 200, type: ProductDTO })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
-    public getProductDetails(@Query('id') id: number) {
+    public getProductDetails(@Query('id') id: string) {
         try {
             id = Number(id);
         } catch (error){
@@ -179,7 +179,7 @@ export class PublicController {
     })
     @ApiResponse({ status: 200, type: [ProductDTO] })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
-    public getProductRelation(@Query('id') id: number){
+    public getProductRelation(@Query('id') id: string){
         try {
             id = Number(id);
         } catch (error){

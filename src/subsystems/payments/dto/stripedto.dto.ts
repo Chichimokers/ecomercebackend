@@ -2,12 +2,12 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class StripeDTO {
     @ApiProperty({ example: 1, description: "ID of the order to pay" })
-    id: number
+    id: string
 }
 
 export class CreatedCheckoutDTO {
     @ApiProperty({ example: 1, description: "ID of the order to pay" })
-    id: number
+    id: string
 
     @ApiProperty({ example: 300, description: "Total to pay" })
     amount_total: number

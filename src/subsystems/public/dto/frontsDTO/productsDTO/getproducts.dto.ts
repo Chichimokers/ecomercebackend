@@ -12,7 +12,7 @@ export class DiscountDTO {
 
 export class ProductDTO {
     @ApiProperty({ example: 1, description: "Identifier" })
-    id: number;
+    id: string;
 
     @ApiProperty({ example: null, description: "Product image", nullable: true })
     image: string | null;

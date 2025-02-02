@@ -6,7 +6,7 @@ export abstract class BaseEntity {
     id: string;
 
     // @Column({ nullable: true })
-    // author_id: number;
+    // author_id: string;
 
     @CreateDateColumn()
     created_at: Date;
@@ -19,7 +19,7 @@ export abstract class BaseEntity {
 
     // @BeforeInsert()
     // @BeforeUpdate()
-    // setAuthor(currentUserId: number) {
+    // setAuthor(currentUserid: string) {
     //     if (currentUserId) {
     //         this.author_id = currentUserId;
     //     }

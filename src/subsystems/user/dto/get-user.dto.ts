@@ -5,7 +5,7 @@ export class GetUserDto {
         example: 1,
         description: "Unique identifier for the user",
     })
-    id: number;
+    id: string;
 
     @ApiProperty({
         example: "2024-11-16T23:09:57.598Z",

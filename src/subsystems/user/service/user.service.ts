@@ -64,7 +64,7 @@ export class UserService extends BaseService<User> {
         });
     }
 
-    async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
+    async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<UserDto> {
 
         const { ...restOfDto } = updateUserDto;
 
@@ -74,7 +74,7 @@ export class UserService extends BaseService<User> {
 
     }
 
-    deleteUser(id: number): Promise<{ affected?: number }> {
+    deleteUser(id: string): Promise<{ affected?: number }> {
         return this.delete(id);
     }
 

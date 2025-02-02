@@ -41,11 +41,11 @@ export abstract class BaseService<BaseEntity extends ObjectLiteral> implements I
         return this.repository.findOne({ where: { id, deleted_at: null } as FindOptionsWhere<BaseEntity> });
     }
 
-    async delete(id: number): Promise<{ affected?: number }> {
+    async delete(id: string): Promise<{ affected?: number }> {
         return this.repository.delete(id);
     }
 
-    async softDelete(id: number): Promise<void> {
+    async softDelete(id: string): Promise<void> {
         await this.repository.softDelete(id);
     }
 }

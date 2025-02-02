@@ -22,7 +22,7 @@ export class StripeService {
         });
     }
 
-    async createCheckoutSession(orderid: number, currency: string = 'usd') {
+    async createCheckoutSession(orderid: string, currency: string = 'usd') {
         const cart: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.discounts'], // Asegúrate de incluir la relación 'carts'
@@ -93,7 +93,7 @@ export class StripeService {
         }
     }
 
-    async CaptureCheckoutSession(order_id: number) {
+    async CaptureCheckoutSession(order_id: string) {
         const order = await this.orderRepository.findOne({ where: { id: order_id } });
 
         const sessionId = order.stripe_id;

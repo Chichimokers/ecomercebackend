@@ -101,7 +101,7 @@ export class PaypalService {
         return order
     }
 
-    async CreateOrder(orderid: number, userid: string): Promise<string> {
+    async CreateOrder(orderid: string, userid: string): Promise<string> {
 
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },

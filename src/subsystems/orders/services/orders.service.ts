@@ -38,7 +38,7 @@ export class OrderService extends BaseService<OrderEntity> {
         });
     }
 
-    async getHistory(userId: number): Promise<OrderEntity[]> {
+    async getHistory(userid: string): Promise<OrderEntity[]> {
         console.log(userId);
         return await this.orderRepository.find({
             where: {
@@ -48,7 +48,7 @@ export class OrderService extends BaseService<OrderEntity> {
         });
     }
     // TODO FIXME Cambiar Metodo de creacion de orden
-    async createOrderService(userId: number, data: BuildOrderDTO) {
+    async createOrderService(userid: string, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
         const user: User = await this.userService.findOneById(userId);
@@ -128,7 +128,7 @@ export class OrderService extends BaseService<OrderEntity> {
         return null;
     }
 
-    async processOrders(orderid: number) :Promise<OrderEntity> {
+    async processOrders(orderid: string) :Promise<OrderEntity> {
         // Verificar si la Orden existe
         const order: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
@@ -167,7 +167,7 @@ export class OrderService extends BaseService<OrderEntity> {
     }
 
     // *--- For Public Services ---* //
-    public async getOrderByUser(userId: number) {
+    public async getOrderByUser(userid: string) {
         const orders = await this.orderRepository.find({
             where: { user: { id: userId } },
             relations: ['orderItems', 'orderItems.product'],

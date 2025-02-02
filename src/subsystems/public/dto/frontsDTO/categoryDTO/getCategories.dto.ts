@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class SubCategoryDTO {
     @ApiProperty({ example: 1, description: "Subcategory identifier" })
-    id: number;
+    id: string;
 
     @ApiProperty({ example: "Fruits", description: "Subcategory name" })
     name: string;
@@ -10,7 +10,7 @@ export class SubCategoryDTO {
 
 export class GetCategoriesDTO {
     @ApiProperty({ example: 1, description: "Category identifier" })
-    id: number;
+    id: string;
 
     @ApiProperty({ example: "Food", description: "Category name" })
     name: string;

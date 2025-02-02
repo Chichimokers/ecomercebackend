@@ -160,7 +160,7 @@ export class ProductService extends BaseService<ProductEntity> {
     }
 
     //      *--- Get Product Detail ---*
-    public async getProductDetails(id: number) {
+    public async getProductDetails(id: string) {
         const query = this.getBaseQuery();
         query.where('product.id=(:id)', { id: id })
         const product: any = await this.mapProduct(query);
@@ -170,7 +170,7 @@ export class ProductService extends BaseService<ProductEntity> {
         return product[0];
     }
 
-    public async getRelations(id: number){
+    public async getRelations(id: string){
         const product: ProductEntity = await this.productRepository.findOne(
             {
                 where: { id },

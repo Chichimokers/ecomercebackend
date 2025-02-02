@@ -5,7 +5,7 @@ import { ProductEntity } from "../../products/entity/product.entity";
 @Entity({ name: 'tb_order_products' })
 export class OrderProductEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: string;
 
     @ManyToOne(() => OrderEntity, (order) => order)
     order: OrderEntity;

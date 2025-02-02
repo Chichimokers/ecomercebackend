@@ -15,7 +15,7 @@ export class ProductOrderDTO {
     @IsNotEmpty()
     @IsNumber()
     @IsPositive()
-    product_id: number;
+    product_id: string;
 
     @ApiProperty({
         description: 'Quantity of the product',
