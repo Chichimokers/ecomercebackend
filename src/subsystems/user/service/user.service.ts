@@ -41,7 +41,7 @@ export class UserService extends BaseService<User> {
     }
 
     // FIXME HTTP ERROR 500, no existen en el usuario, los roles ni rol.
-    async findUserById(id: number): Promise<UserDto> {
+    async findUserById(id: string): Promise<UserDto> {
         let user: User = await this.repository.findOne({
             where: { id: id, deleted_at: null },
             relations: ['roles', 'roles.permissions'],
