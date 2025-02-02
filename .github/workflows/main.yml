@@ -37,6 +37,6 @@ jobs:
 
 
       - name: iniciar la aplicación
-        run: pm2 restart esakiback || pm2 start npm --name "esakiback" -- run start:prod
+        run: pm2 delete esakiback || pm2 start npm --name "esakiback" -- run start:prod
 
 
