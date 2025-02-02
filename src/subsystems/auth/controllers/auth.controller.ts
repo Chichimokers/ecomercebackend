@@ -102,13 +102,12 @@ export class AuthController {
     // Endpoint para verificar el registro
     @Post('verify-code-signup')
     async verifyCode(@Body() logindata: SingUpBodyVerifcation) {
-        const verifiedCode = await this.CodeServices.verifyCode(
+        const verifiedCode :boolean = await this.CodeServices.verifyCode(
             logindata.email,
             logindata.code,
         );
 
-        if (!verifiedCode) throw new BadRequestException('Invalid code');
-
+        if (verifiedCode== false){ throw new BadRequestException('Invalid code')};
         return { message: 'User verified and created, you can login!' };
     }
 }
