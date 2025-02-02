@@ -12,7 +12,7 @@ import { OrderStatus } from "../enums/orderStatus.enum";
 @Entity({name:"tb_orders"})
 @Check(`"subtotal" >= 0`)
 export class OrderEntity  extends BaseEntity{
-    @ManyToOne((): typeof User => User, (user: User): number => user.id)
+    @ManyToOne((): typeof User => User, (user: User): string => user.id)
     user: User;
 
     @Column({ length: 70, nullable: false })

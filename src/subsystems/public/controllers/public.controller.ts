@@ -88,7 +88,7 @@ export class PublicController {
                 optional: true,
             }),
         )
-        categoryIds?: number[],
+        categoryIds?: string[],
         @Query(
             'subcategory',
             new ParseArrayPipe({
@@ -97,7 +97,7 @@ export class PublicController {
                 optional: true,
             }),
         )
-        subCategoryIds?: number[],
+        subCategoryIds?: string[],
         @Query(
             'pricerange',
             new ParseArrayPipe({
@@ -162,7 +162,7 @@ export class PublicController {
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
     public getProductDetails(@Query('id') id: string) {
         try {
-            id = Number(id);
+            id = String(id);
         } catch (error){
             throw new BadRequestException('Incorrect ID format. Required Number')
         }
@@ -181,7 +181,7 @@ export class PublicController {
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
     public getProductRelation(@Query('id') id: string){
         try {
-            id = Number(id);
+            id = String(id);
         } catch (error){
             throw new BadRequestException('Incorrect ID format. Required Number')
         }

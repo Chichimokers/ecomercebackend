@@ -97,8 +97,8 @@ export class ProductService extends BaseService<ProductEntity> {
 
     //      *--- Get Filtered Products ---*
     public async getFilteredProducts(filters: {
-        categoryIds?: number[];
-        subCategoryIds?: number[];
+        categoryIds?: string[];
+        subCategoryIds?: string[];
         prices?: number[];
         rate?: number;
     }, page: number, limit: number) {

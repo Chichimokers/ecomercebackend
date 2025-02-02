@@ -55,6 +55,6 @@ export class CategoryController {
     @Delete(':id')
     @Roles(roles.Admin)
     deleteCategory(@Param('id') id: string): Promise<void> {
-        return this.categoryService.softDelete(+id);
+        return this.categoryService.softDelete(id);
     }
 }

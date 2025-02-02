@@ -9,6 +9,6 @@ export class paydto extends BaseDto {
     })
     @IsNotEmpty()
     @IsNumber()
-    id:number
+    id:string
   
 }

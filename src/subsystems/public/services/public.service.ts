@@ -25,8 +25,8 @@ export class PublicService {
         page: number,
         limit: number,
         filters: {
-            categoryIds?: number[];
-            subCategoryIds?: number[];
+            categoryIds?: string[];
+            subCategoryIds?: string[];
             prices?: number[];
             rate?: number;
         } = {},

@@ -50,19 +50,19 @@ export class UserController {
     @Get(':id')
     @Roles(roles.Admin)
     getUserById(@Param('id') id: string): Promise<UserDto> {
-        return this.userService.findUserById(+id);
+        return this.userService.findUserById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
     updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserDto> {
-        return this.userService.updateUser(+id, updateUserDto);
+        return this.userService.updateUser(id, updateUserDto);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
     deleteUser(@Param('id') id: string): Promise<void> {
         //return this.userService.deleteUser(+id);
-        return this.userService.softDelete(+id);
+        return this.userService.softDelete(id);
     }
 }
