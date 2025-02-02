@@ -8,7 +8,7 @@ export class setDiscountToProductDTO {
     })
     @IsNumber()
     @IsPositive()
-    product: number;
+    product: string;
 
     @ApiProperty({
         example: 29,

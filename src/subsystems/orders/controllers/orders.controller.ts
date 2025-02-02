@@ -52,7 +52,7 @@ export class OrderControllers {
 
     @Post('process_order')
     @Roles(roles.Admin)
-    async process_order(@Body('order') order: number){
+    async process_order(@Body('order') order: string){
         return this.orderService.processOrders(order);
     }
 
@@ -71,6 +71,6 @@ export class OrderControllers {
     @Delete(':id')
     @Roles(roles.Admin)
     deleteOrder(@Param('id') id: string): Promise<void> {
-        return this.orderService.softDelete(+id);
+        return this.orderService.softDelete(id);
     }
 }

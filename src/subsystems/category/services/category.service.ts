@@ -32,7 +32,7 @@ export class CategoryService extends BaseService<CategoryEntity> {
             }));
     }
     //      *--- Get Categories with SubCategories ---*
-    public async getCategoriesWithSubCategories(categoryIds?: number[]) {
+    public async getCategoriesWithSubCategories(categoryIds?: string[]) {
         // Obtener todas las categorías con sus relaciones necesarias
         const categories: CategoryEntity[] = await this.categoryRepository.find({
             relations: ['subCategories', 'subCategories.products', 'products'],

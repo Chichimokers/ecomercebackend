@@ -114,7 +114,7 @@ export class StripeService {
         // Aqui va para procesar la orden!
         const captured_id = toNumber(session.metadata.order_id);
 
-        await this.orderService.processOrders(captured_id);
+        await this.orderService.processOrders(captured_id.toString());
 
         // End process order
         return {

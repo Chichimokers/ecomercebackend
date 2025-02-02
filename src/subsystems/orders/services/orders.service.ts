@@ -39,10 +39,10 @@ export class OrderService extends BaseService<OrderEntity> {
     }
 
     async getHistory(userid: string): Promise<OrderEntity[]> {
-        console.log(userId);
+        console.log(userid);
         return await this.orderRepository.find({
             where: {
-                user: { id: userId },
+                user: { id: userid },
             },
             relations: ['user'],
         });
@@ -51,7 +51,7 @@ export class OrderService extends BaseService<OrderEntity> {
     async createOrderService(userid: string, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
-        const user: User = await this.userService.findOneById(userId);
+        const user: User = await this.userService.findOneById(userid);
 
         if (!user) {
             throw Error('User not found');
@@ -114,7 +114,8 @@ export class OrderService extends BaseService<OrderEntity> {
     private async validateProducts(
         products: ProductOrderDTO[],
     ): Promise<ProductEntity[]> | null {
-        let ids: number[] = products.map((elemnt) => elemnt.product_id);
+
+        let ids: string[] = products.map((elemnt) => elemnt.product_id);
         const foundProducts: ProductEntity[] =
             await this.productRepository.find({
                 where: { id: In(ids) },
@@ -169,7 +170,7 @@ export class OrderService extends BaseService<OrderEntity> {
     // *--- For Public Services ---* //
     public async getOrderByUser(userid: string) {
         const orders = await this.orderRepository.find({
-            where: { user: { id: userId } },
+            where: { user: { id: userid } },
             relations: ['orderItems', 'orderItems.product'],
         })
 

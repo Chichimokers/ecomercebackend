@@ -43,6 +43,6 @@ export class SubCategoryController {
     @Delete(':id')
     @Roles(roles.Admin)
     deleteSubCategory(@Param('id') id: string): Promise<void> {
-        return this.subCategoryService.softDelete(+id);
+        return this.subCategoryService.softDelete(id);
     }
 }
