@@ -86,6 +86,6 @@ export class ProductControllers {
     @Delete(':id')
     @Roles(roles.Admin)
     deleteProduct(@Param('id') id: string): Promise<void> {
-        return this.productservice.softDelete(+id);
+        return this.productservice.softDelete(id);
     }
 }
