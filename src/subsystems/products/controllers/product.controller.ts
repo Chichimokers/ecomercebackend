@@ -7,15 +7,15 @@ import {
     Param,
     Delete,
     UseInterceptors,
-    UploadedFile
+    UploadedFile, Get,
 } from '@nestjs/common';
 import {
     ApiTags,
     ApiBearerAuth,
     ApiCreatedResponse,
     ApiForbiddenResponse,
-    ApiConsumes,
-} from "@nestjs/swagger";
+    ApiConsumes, ApiResponse,
+} from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';
 import { createProductDTO } from '../dto/createProductDTO.dto';
@@ -27,6 +27,9 @@ import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
+import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
+import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -63,11 +66,12 @@ export class ProductControllers {
 
     //@UseGuards(JwtAuthGuard)
     
-    /*@Get()
+    @Get()
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: [ProductDTO] })
-    public getProducts(): Promise<ProductEntity[]> {
-        return this.productservice.findAll();
+    public getProducts(@RefineQuery() query: BaseQueryInterface): Promise<ProductEntity[]> {
+        const { _start, _end } = query;
+        return this.productservice.findAll(_start, _end);
     }
 
     @Get(':id')
@@ -75,7 +79,7 @@ export class ProductControllers {
     @ApiResponse({ status: 200, type: ProductDTO })
     getProductById(@Param('id') id: string): Promise<ProductEntity> {
         return this.productservice.findOneById(+id);
-    }*/
+    }
 
     @Patch(':id')
     @Roles(roles.Admin)

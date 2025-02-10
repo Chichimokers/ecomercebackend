@@ -17,6 +17,8 @@ import { roles } from '../../roles/enum/roles.enum';
 import { CreateCategoryDTO } from '../dto/categorydto/createCategory.dto';
 import { CategoryEntity } from '../entity/category.entity';
 import { UpdateCategoryDTO } from '../dto/categorydto/updateCategory.dto';
+import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
+import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
 
 @ApiTags('category')
 @ApiBearerAuth()
@@ -33,14 +35,15 @@ export class CategoryController {
 
     @Get()
     @Roles(roles.Admin)
-    getCategories() {
-        return this.categoryService.findAll();
+    getCategories(@RefineQuery() query: BaseQueryInterface) {
+        const { _start, _end } = query;
+        return this.categoryService.findAll(_start, _end);
     }
 
     @Get(':id')
     @Roles(roles.Admin)
     getCategoryById(@Param('id') id: string): Promise<CategoryEntity> {
-        return this.categoryService.findOneById(+id);
+        return this.categoryService.findOneById(id);
     }
 
     @Patch(':id')
@@ -49,7 +52,7 @@ export class CategoryController {
         @Param('id') id: string,
         @Body() updateCategoryDto: UpdateCategoryDTO,
     ): Promise<Partial<CategoryEntity>> {
-        return this.categoryService.update(+id, updateCategoryDto);
+        return this.categoryService.update(id, updateCategoryDto);
     }
 
     @Delete(':id')

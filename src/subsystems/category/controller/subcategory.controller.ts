@@ -8,6 +8,8 @@ import { SubCategoryEntity } from "../entity/category.entity";
 import { SubCategoryService } from "../services/subcategory.service";
 import { UpdateSubCategoryDTO } from "../dto/subcategorydto/updateSubCategory.dto";
 import { CreateSubCategoryDTO } from "../dto/subcategorydto/createSubCategory.dto";
+import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
+import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
 
 @ApiTags('sub_category')
 @ApiBearerAuth()
@@ -24,8 +26,9 @@ export class SubCategoryController {
 
     @Get()
     @Roles(roles.Admin)
-    getSubCategories(){
-        return this.subCategoryService.findAll();
+    getSubCategories(@RefineQuery() query: BaseQueryInterface){
+        const { _start, _end } = query;
+        return this.subCategoryService.findAll(_start, _end);
     }
 
     @Get(':id')

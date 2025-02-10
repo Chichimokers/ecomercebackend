@@ -13,6 +13,8 @@ export class RatingService {
 
     async getAvgRating(): Promise<number> {
         // Build a query to take the avg of the rating
+        const resul = await this.ratingRepository.average('rate');
+        console.log(resul);
         const result = await this.ratingRepository
             .createQueryBuilder('rating')
             .select('AVG(rating.rate)', 'avg')

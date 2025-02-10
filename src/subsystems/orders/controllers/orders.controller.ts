@@ -19,6 +19,8 @@ import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { OrderService } from '../services/orders.service';
 import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
+import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
+import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
 
 @ApiTags('orders')
 @ApiBearerAuth()
@@ -46,8 +48,9 @@ export class OrderControllers {
 
     @Get()
     @Roles(roles.Admin)
-    async getallorders_prodcts(): Promise<OrderEntity[]> {
-        return  this.orderService.getallORderProc()
+    async getallorders_prodcts(@RefineQuery() query: BaseQueryInterface): Promise<OrderEntity[]> {
+        const { _start, _end } = query;
+        return  this.orderService.findAll(_start, _end)
     }
 
     @Post('process_order')

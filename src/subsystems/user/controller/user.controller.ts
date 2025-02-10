@@ -24,6 +24,8 @@ import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { GetUserDto } from "../dto/get-user.dto";
 import { UserDto } from "../dto";
+import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
+import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -43,8 +45,9 @@ export class UserController {
     @Get()
     @Roles(roles.Admin)
     @ApiResponse({ status: 200 ,type: [GetUserDto] })
-    public getUsers(): Promise<User[]> {
-        return this.userService.getUsers();
+    public getUsers(@RefineQuery() query: BaseQueryInterface): Promise<User[]> {
+        const { _start, _end } = query;
+        return this.userService.findAll(_start, _end);
     }
 
     @Get(':id')
