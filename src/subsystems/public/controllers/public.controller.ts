@@ -4,6 +4,7 @@ import {
     Controller,
     Get,
     ParseArrayPipe,
+    Post,
     Query,
 
 } from '@nestjs/common';
@@ -31,7 +32,7 @@ export class PublicController {
     }
 
     // *--- For Home View ---* //
-    @Get('/search')
+    @Post('/search')
     //FIXME No aceptar entradas vacias!
     public searchProduct(@Body('name') name: string) {
         return this.publicService.getProductByName(name);
