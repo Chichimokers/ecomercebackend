@@ -18,6 +18,7 @@ export class AuthService {
         @Inject(UserService) private userService: UserService,
         @Inject(CodeService) private CodeServices: CodeService,
         @Inject(JwtService) private jwt: JwtService,
+
     ) {}
 
     async sendVerificationEmailSignUp(userdto: CreateUserDto): Promise<any> {
@@ -28,13 +29,41 @@ export class AuthService {
         };
     }
 
-    
+    async verifiRefreshToken(refreshToken: string): Promise<any | null> {
+        try {
+
+          const payload = this.jwt.verify(refreshToken);
+      
+  
+          const user = await this.userRepository.findOne({
+
+            where: { id: payload.sub, refresh_token:refreshToken },
+
+          });
+          
+      
+          if (!user) {
+            console.error('El RefreshToken no está asociado a ningún usuario');
+            return null;
+          }
+      
+      
+          return payload;
+        } catch (error) {
+          console.error('Error al verificar el RefreshToken:', error.message);
+          return null;
+        }
+      }
+
     async validateUser(mail: string, password: string): Promise<User> {
+
         const foundUser: User = await this.userRepository.findOne({
             where: { email: mail },
         });
 
+
         if (foundUser) {
+
             if (await bcrypt.compare(password, foundUser.password)) {
                 return foundUser;
             }
@@ -59,13 +88,40 @@ export class AuthService {
     
         return foundUser;
     }
-    
 
-    async login(user: User): Promise<{ access_token: string }> {
+    async generate_refreshtoken(payload){
+
+        return this.jwt.sign(payload,{ expiresIn: '7d'})
+
+
+    }
+    async generate_Token(payload){
+        return this.jwt.sign(payload,{expiresIn:"1h"})
+    }
+
+    async login(user: User): Promise<{ access_token: string ,refreshtoken :string}> {
+
         const payload = { username: user.name, sub: user.id, role: user.rol };
 
+       const foundUser :User  = await this.userRepository.findOne({
+            where:{
+
+                name:user.username,
+                email:user.email
+
+        }})
+
+        const refresh_token= await this.generate_refreshtoken(payload);
+
+        foundUser.refresh_token = refresh_token;
+
+        this.userRepository.save(foundUser);
+
         return {
-            access_token: this.jwt.sign(payload),
+            access_token: await this.generate_Token(payload),
+
+            refreshtoken:refresh_token
+
         };
     }
 

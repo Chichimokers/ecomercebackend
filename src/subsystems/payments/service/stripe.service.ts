@@ -63,13 +63,13 @@ export class StripeService {
         if (!order || !order.orderItems) {
             throw new Error('No se encontraron productos en la orden.'); // Manejo de error
         }
-
+    
         let subtotal: number = 0;
         // Calcular subtotal
        order.orderItems.forEach((orderItem: OrderProductEntity): void => {
            subtotal += calculateDiscount(orderItem.product, orderItem.quantity);
        });
-
+    
         return {
             
             success_url: `${HOST}/visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
@@ -95,6 +95,7 @@ export class StripeService {
     }
 
     async CaptureCheckoutSession(order_id: string) {
+        
         const order = await this.orderRepository.findOne({ where: { id: order_id } });
 
         const sessionId = order.stripe_id;
