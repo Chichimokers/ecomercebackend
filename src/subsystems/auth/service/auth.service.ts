@@ -7,8 +7,8 @@ import { User } from 'src/subsystems/user/entities/user.entity';
 import { UserService } from 'src/subsystems/user/service/user.service';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { CodeService } from './code.service';
-import { SingUpBody } from "../dto/signupDTO.dto";
-import { roles } from "../../roles/enum/roles.enum";
+import { SingUpBody } from '../dto/signupDTO.dto';
+import { roles } from '../../roles/enum/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -18,8 +18,7 @@ export class AuthService {
         @Inject(UserService) private userService: UserService,
         @Inject(CodeService) private CodeServices: CodeService,
         @Inject(JwtService) private jwt: JwtService,
-
-    ) {}
+    ) { }
 
     async sendVerificationEmailSignUp(userdto: CreateUserDto): Promise<any> {
         await this.CodeServices.sendVerificationEmail(userdto);
@@ -31,39 +30,37 @@ export class AuthService {
 
     async verifiRefreshToken(refreshToken: string): Promise<any | null> {
         try {
+            const payload = this.jwt.verify(refreshToken, {
+                secret: process.env.JWT_SECRET,
+            }); // Añadir opciones con secret
+            const user = await this.userRepository.findOne({
+                where: { id: payload.sub, refresh_token: refreshToken },
+            });
 
-          const payload = this.jwt.verify(refreshToken);
-      
-  
-          const user = await this.userRepository.findOne({
+            if (!user) {
+                console.error('RefreshToken no válido o usuario no existe');
+                return null;
+            }
 
-            where: { id: payload.sub, refresh_token:refreshToken },
+            // Verificar expiración del refresh token
+            if (payload.exp * 1000 < Date.now()) {
+                console.error('RefreshToken expirado');
+                return null;
+            }
 
-          });
-          
-      
-          if (!user) {
-            console.error('El RefreshToken no está asociado a ningún usuario');
-            return null;
-          }
-      
-      
-          return payload;
+            return user; // Devolver el usuario completo para mayor seguridad
         } catch (error) {
-          console.error('Error al verificar el RefreshToken:', error.message);
-          return null;
+            console.error('Error al verificar RefreshToken:', error.message);
+            return null;
         }
-      }
+    }
 
     async validateUser(mail: string, password: string): Promise<User> {
-
         const foundUser: User = await this.userRepository.findOne({
             where: { email: mail },
         });
 
-
         if (foundUser) {
-
             if (await bcrypt.compare(password, foundUser.password)) {
                 return foundUser;
             }
@@ -76,52 +73,68 @@ export class AuthService {
         let foundUser: User = await this.userRepository.findOne({
             where: { email: user.email },
         });
-    
+
         if (!foundUser) {
             // Crear un nuevo usuario automáticamente
-            foundUser = this.userRepository.create(
-                { name:user.firstName,
-                    email: user.email,
-                    rol:roles.User, });
+            foundUser = this.userRepository.create({
+                name: user.firstName,
+                email: user.email,
+                rol: roles.User,
+            });
             await this.userRepository.save(foundUser);
         }
-    
+
         return foundUser;
     }
 
-    async generate_refreshtoken(payload){
-
-        return this.jwt.sign(payload,{ expiresIn: '7d'})
-
-
+    async generate_refreshtoken(payload: any) {
+        return this.jwt.sign(payload, {
+            secret: process.env.JWT_REFRESH_SECRET, // Usar secreto diferente
+            expiresIn: '5m',
+        });
     }
-    async generate_Token(payload){
-        return this.jwt.sign(payload,{expiresIn:"1h"})
+    async generate_Token(payload: any) {
+        return this.jwt.sign(payload, {
+            secret: process.env.JWT_ACCESS_SECRET,
+            expiresIn: '2m', // Tiempo de expiración más corto
+        });
     }
 
-    async login(user: User): Promise<{ access_token: string ,refreshtoken :string}> {
+    // En AuthService
+    public async updateRefreshToken(user: User, refreshToken: string) {
+        user.refresh_token = refreshToken;
+        await this.userRepository.save(user);
+    }
 
+    public async updateUser(user: User) {
+        await this.userRepository.update(user.id, { refresh_token: null });
+    }
+
+    async login(
+        user: User,
+    ): Promise<{ access_token: string; refresh_token: string }> {
         const payload = { username: user.name, sub: user.id, role: user.rol };
 
-       const foundUser :User  = await this.userRepository.findOne({
-            where:{
+        const foundUser: User = await this.userRepository.findOne({
+            where: {
+                name: user.username,
+                email: user.email,
+            },
+        });
 
-                name:user.username,
-                email:user.email
-
-        }})
-
-        const refresh_token= await this.generate_refreshtoken(payload);
+        const [access_token, refresh_token] = await Promise.all([
+            this.generate_Token(payload),
+            this.generate_refreshtoken(payload),
+        ]);
 
         foundUser.refresh_token = refresh_token;
 
         this.userRepository.save(foundUser);
 
         return {
-            access_token: await this.generate_Token(payload),
+            access_token: access_token,
 
-            refreshtoken:refresh_token
-
+            refresh_token: refresh_token,
         };
     }
 
