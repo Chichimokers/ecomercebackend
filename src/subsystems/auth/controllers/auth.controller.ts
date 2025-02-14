@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Inject, Post, Req, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Inject, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';
 import { CreateUserDto } from 'src/subsystems/user/dto';
@@ -9,9 +9,9 @@ import { CodeService } from '../service/code.service';
 import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
 import { AuthGuard } from "@nestjs/passport";
 import { GoogleAuthGuard } from "../guards/google.guard";
+import { RefresTokenDTO } from "../dto/refrestoken.dto";
 
 @ApiTags('login')
-
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -60,6 +60,31 @@ export class AuthController {
     }
 
 
+    @Post('refresh-token')
+    async refreshToken(@Body() token :RefresTokenDTO) {
+
+      try {
+
+     
+        const isvalid = await this.authservice.verifiRefreshToken(token.refreshToken);
+
+        if (!isvalid) {
+            
+          throw new UnauthorizedException('Refresh Token inválido');
+
+        }
+        console.log(isvalid)
+        const payload = { username: isvalid.name, sub: isvalid.id, role: isvalid.rol };
+
+        const newAccessToken = await this.authservice.generate_Token({payload});
+
+    
+        return { accessToken: newAccessToken};
+      } catch (error) {
+        throw new UnauthorizedException('Refresh Token inválido o expirado');
+      }
+    }
+
 
     @Post('/login')
     async Login(@Body() loginBody: LoginBody): Promise<string> {
@@ -72,6 +97,7 @@ export class AuthController {
             if (resultLogin != null) {
                 return JSON.stringify(
                     await this.authservice.login(resultLogin),
+
                 );
             } else {
                 return JSON.stringify({

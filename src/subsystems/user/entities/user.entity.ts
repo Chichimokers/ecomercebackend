@@ -25,6 +25,12 @@ export class User extends BaseEntity {
     @IsBoolean()
     enabled: boolean;
 
+
+    @Column({ type: 'varchar', nullable:true})
+    @IsString()
+    refresh_token: string;
+
+    
     @Column({ name: 'last_login', type: 'timestamp', nullable: true })
     last_login: Date | null;
 
@@ -33,5 +39,6 @@ export class User extends BaseEntity {
 
     @OneToMany(() => RatingEntity, (rating) => rating.user)
     ratings: RatingEntity[];
+    username: string;
 }
 
