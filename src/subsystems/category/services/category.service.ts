@@ -17,6 +17,17 @@ export class CategoryService extends BaseService<CategoryEntity> {
         super(categoryRepository);
     }
 
+    override async findAll(_start?: number, _end?: number){
+        const take = _end ? Number(_end) - Number(_start) : 10; // Cantidad de elementos por página
+        const skip = _start ? Number(_start) : 0; // Desde qué índice empezar
+
+        return await this.categoryRepository.find({
+            relations: ['subCategories'],
+            skip: skip,
+            take: take,
+        });
+    }
+
     //          *--- Services for public's Endpoints ---*
     //      *--- Get Categories ---*
     public async getCategories() {
