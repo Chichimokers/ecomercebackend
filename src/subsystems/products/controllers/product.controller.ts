@@ -78,13 +78,13 @@ export class ProductControllers {
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: ProductDTO })
     getProductById(@Param('id') id: string): Promise<ProductEntity> {
-        return this.productservice.findOneById(+id);
+        return this.productservice.findOneById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
     updateProduct(@Param('id') id: string, @Body() updateUserDto: updateProductDTO): Promise<Partial<ProductEntity>> {
-        return this.productservice.update(+id, updateUserDto);
+        return this.productservice.update(id, updateUserDto);
     }
 
     @Delete(':id')

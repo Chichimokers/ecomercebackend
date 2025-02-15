@@ -62,13 +62,13 @@ export class OrderControllers {
     @Get(':id')
     @Roles(roles.Admin)
     getOrderById(@Param('id') id: string): Promise<OrderEntity> {
-        return this.orderService.findOneById(+id);
+        return this.orderService.findOneById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
     updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO): Promise<Partial<OrderEntity>> {
-        return this.orderService.update(+id, updateorder);
+        return this.orderService.update(id, updateorder);
     }
 
     @Delete(':id')

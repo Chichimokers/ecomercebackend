@@ -34,13 +34,13 @@ export class SubCategoryController {
     @Get(':id')
     @Roles(roles.Admin)
     getSubCategoryById(@Param('id') id: string): Promise<SubCategoryEntity> {
-        return this.subCategoryService.findOneById(+id);
+        return this.subCategoryService.findOneById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
     updateSubCategory(@Param('id') id: string, @Body() updateSubCategoryDto: UpdateSubCategoryDTO): Promise<Partial<SubCategoryEntity>> {
-        return this.subCategoryService.update(+id, updateSubCategoryDto);
+        return this.subCategoryService.update(id, updateSubCategoryDto);
     }
 
     @Delete(':id')
