@@ -7,7 +7,7 @@ import {
     Param,
     Delete,
     UseInterceptors,
-    UploadedFile, Get,
+    UploadedFile, Get, ParseUUIDPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -77,19 +77,19 @@ export class ProductControllers {
     @Get(':id')
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: ProductDTO })
-    getProductById(@Param('id') id: string): Promise<ProductEntity> {
+    getProductById(@Param('id', new ParseUUIDPipe()) id: string): Promise<ProductEntity> {
         return this.productservice.findOneById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateProduct(@Param('id') id: string, @Body() updateUserDto: updateProductDTO): Promise<Partial<ProductEntity>> {
+    updateProduct(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateUserDto: updateProductDTO): Promise<Partial<ProductEntity>> {
         return this.productservice.update(id, updateUserDto);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteProduct(@Param('id') id: string): Promise<void> {
+    deleteProduct(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
         return this.productservice.softDelete(id);
     }
 }

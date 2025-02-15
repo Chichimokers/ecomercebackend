@@ -6,7 +6,7 @@ import {
     Body,
     Patch,
     Param,
-    Delete,
+    Delete, ParseUUIDPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -61,19 +61,19 @@ export class OrderControllers {
 
     @Get(':id')
     @Roles(roles.Admin)
-    getOrderById(@Param('id') id: string): Promise<OrderEntity> {
+    getOrderById(@Param('id', new ParseUUIDPipe()) id: string): Promise<OrderEntity> {
         return this.orderService.findOneById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO): Promise<Partial<OrderEntity>> {
+    updateOrder(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateorder:updateOrderDTO): Promise<Partial<OrderEntity>> {
         return this.orderService.update(id, updateorder);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteOrder(@Param('id') id: string): Promise<void> {
+    deleteOrder(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
         return this.orderService.softDelete(id);
     }
 }

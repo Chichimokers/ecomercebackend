@@ -6,7 +6,7 @@ import {
     Body,
     Patch,
     Param,
-    Delete,
+    Delete, ParseUUIDPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -52,19 +52,19 @@ export class UserController {
 
     @Get(':id')
     @Roles(roles.Admin)
-    getUserById(@Param('id') id: string): Promise<UserDto> {
+    getUserById(@Param('id', new ParseUUIDPipe()) id: string): Promise<UserDto> {
         return this.userService.findUserById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserDto> {
+    updateUser(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserDto> {
         return this.userService.updateUser(id, updateUserDto);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteUser(@Param('id') id: string): Promise<void> {
+    deleteUser(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
         //return this.userService.deleteUser(+id);
         return this.userService.softDelete(id);
     }

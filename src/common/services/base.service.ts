@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, ObjectLiteral, FindOptionsWhere, BaseEntity } from 'typeorm';
 import { IBaseService } from '../interfaces/base-service.interface';
@@ -34,7 +34,9 @@ export abstract class BaseService<BaseEntity extends ObjectLiteral> implements I
     }
 
     async findOneById(id: any): Promise<BaseEntity> {
-        return this.repository.findOne({ where: { id, deleted_at: null } as FindOptionsWhere<BaseEntity> });
+        const entity: BaseEntity = await this.repository.findOne({ where: { id, deleted_at: null } as FindOptionsWhere<BaseEntity> });
+        if (!entity) throw new NotFoundException('Not found this element');
+        return entity;
     }
 
     async create(dto: DeepPartial<BaseEntity>): Promise<BaseEntity> {

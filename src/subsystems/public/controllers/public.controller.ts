@@ -3,7 +3,7 @@ import {
     Body,
     Controller,
     Get,
-    ParseArrayPipe,
+    ParseArrayPipe, ParseUUIDPipe,
     Post,
     Query,
 
@@ -161,7 +161,7 @@ export class PublicController {
     })
     @ApiResponse({ status: 200, type: ProductDTO })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
-    public getProductDetails(@Query('id') id: string) {
+    public getProductDetails(@Query('id', new ParseUUIDPipe()) id: string) {
         try {
             id = String(id);
         } catch (error){

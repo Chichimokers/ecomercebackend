@@ -4,7 +4,7 @@ import {
     Controller,
     Delete,
     Get,
-    Param,
+    Param, ParseUUIDPipe,
     Patch,
     Post,
     UseGuards,
@@ -42,14 +42,14 @@ export class CategoryController {
 
     @Get(':id')
     @Roles(roles.Admin)
-    getCategoryById(@Param('id') id: string): Promise<CategoryEntity> {
+    getCategoryById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CategoryEntity> {
         return this.categoryService.findOneById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
     updateCategory(
-        @Param('id') id: string,
+        @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateCategoryDto: UpdateCategoryDTO,
     ): Promise<Partial<CategoryEntity>> {
         return this.categoryService.update(id, updateCategoryDto);
@@ -57,7 +57,7 @@ export class CategoryController {
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteCategory(@Param('id') id: string): Promise<void> {
+    deleteCategory(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
         return this.categoryService.softDelete(id);
     }
 }
