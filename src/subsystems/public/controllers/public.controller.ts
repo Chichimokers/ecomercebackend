@@ -12,7 +12,7 @@ import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PublicService } from '../services/public.service';
 import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
-import { GetProductDTO, ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
+import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
 import { GetCategoriesDTO } from "../dto/frontsDTO/categoryDTO/getCategories.dto";
 
 @ApiTags('public')
@@ -156,7 +156,7 @@ export class PublicController {
     @ApiQuery({
         name: 'id',
         required: true,
-        type: Number,
+        type: String,
         description: 'ID of the product',
     })
     @ApiResponse({ status: 200, type: ProductDTO })
