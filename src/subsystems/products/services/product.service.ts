@@ -20,29 +20,14 @@ export class ProductService extends BaseService<ProductEntity> {
         _start?: number,
         _end?: number,
     ): Promise<any> {
-        const take = _end ? Number(_end) - Number(_start) : 10; // Cantidad de elementos por página
-        const skip = _start ? Number(_start) : 0; // Desde qué índice empezar
+        const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
+        const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
 
-        const products = await this.repository
-            .createQueryBuilder('product')
-            .leftJoin('product.ratings', 'rating')
-            .leftJoin('product.category', 'category')
-            .leftJoin('product.subCategory', 'subcategory')
-            .addSelect('category.name') // Solo se selecciona el campo "name" de la categoría
-            .addSelect('subcategory.name')
-            .addSelect('AVG(rating.rate)', 'averageRating')
-            .skip(skip)
-            .take(take)
-            .addGroupBy('product.id')
-            .addGroupBy('category.name')
-            .addGroupBy('subcategory.name')
-            .getMany();
+        let query = this.getBaseQuery();
 
-        return products.map(product => ({
-            ...product,
-            category: product.category?.name,
-            subCategory: product.subCategory?.name,
-        }))
+        //query.skip(skip).take(take);
+
+        return this.mapProduct(query);
     }
 
     private async mapProduct(query, slice = false, offset = 0, limit = 0) {

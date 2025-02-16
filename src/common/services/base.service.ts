@@ -24,8 +24,8 @@ export abstract class BaseService<BaseEntity extends ObjectLiteral> implements I
     protected abstract getRepositoryName(): string;
 
     async findAll(_start?: number, _end?: number): Promise<BaseEntity[]> {
-        const take = _end ? Number(_end) - Number(_start) : 10; // Cantidad de elementos por página
-        const skip = _start ? Number(_start) : 0; // Desde qué índice empezar
+        const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
+        const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
 
         return await this.repository.find({
             skip: skip,
