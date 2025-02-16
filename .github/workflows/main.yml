@@ -33,7 +33,8 @@ jobs:
         run:  npm install --verbose
 
       - name: parando 
-        run: pm2 delete esakiback
+  
+        run: pm2 delete esakiback || true
 
 
 
