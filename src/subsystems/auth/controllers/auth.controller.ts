@@ -134,6 +134,8 @@ export class AuthController {
         );
 
         
+        
+
         if (verifiedCode== false){ throw new BadRequestException('Invalid code')};
         return { message: 'User verified and created, you can login!' };
     }
