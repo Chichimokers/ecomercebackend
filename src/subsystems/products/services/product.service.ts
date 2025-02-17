@@ -3,6 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { BaseService } from '../../../common/services/base.service';
 import { ProductEntity } from '../entity/product.entity';
+import { UpdateProductDTO } from '../dto/updateProductDTO.dto';
+import {
+    CategoryEntity,
+    SubCategoryEntity,
+} from '../../category/entity/category.entity';
 
 @Injectable()
 export class ProductService extends BaseService<ProductEntity> {
@@ -12,14 +17,15 @@ export class ProductService extends BaseService<ProductEntity> {
     constructor(
         @InjectRepository(ProductEntity)
         private readonly productRepository: Repository<ProductEntity>,
+        @InjectRepository(CategoryEntity)
+        private readonly categoryRepository: Repository<CategoryEntity>,
+        @InjectRepository(SubCategoryEntity)
+        private readonly subCategoryRepository: Repository<SubCategoryEntity>,
     ) {
         super(productRepository);
     }
 
-    override async findAll(
-        _start?: number,
-        _end?: number,
-    ): Promise<any> {
+    override async findAll(_start?: number, _end?: number): Promise<any> {
         const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
         const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
 
@@ -28,6 +34,47 @@ export class ProductService extends BaseService<ProductEntity> {
         //query.skip(skip).take(take);
 
         return this.mapProduct(query);
+    }
+
+    async updateAll(id: any, dto: UpdateProductDTO): Promise<ProductEntity> {
+        // Buscar el producto
+        const product = await this.productRepository.findOne({ where: { id } });
+        if (!product) throw new NotFoundException('Product not found');
+
+        // Actualizar los campos básicos del producto
+        [
+            'name',
+            'description',
+            'short_description',
+            'price',
+            'quantity',
+        ].forEach((field) => {
+            if (dto[field] !== undefined) {
+                product[field] = dto[field];
+            }
+        });
+
+        // Actualizar categoría si se proporciona en el DTO
+        if (dto.category) {
+            const category = await this.categoryRepository.findOne({
+                where: { id: dto.category },
+            });
+            if (!category) throw new NotFoundException('Category not found');
+            product.category = category;
+        }
+
+        // Actualizar subcategoría si se proporciona en el DTO
+        if (dto.subCategory) {
+            const subCategory = await this.subCategoryRepository.findOne({
+                where: { id: dto.subCategory },
+            });
+            if (!subCategory)
+                throw new NotFoundException('SubCategory not found');
+            product.subCategory = subCategory;
+        }
+
+        // Guardar los cambios
+        return await this.productRepository.save(product);
     }
 
     private async mapProduct(query, slice = false, offset = 0, limit = 0) {

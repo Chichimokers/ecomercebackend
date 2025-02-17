@@ -10,10 +10,11 @@ import { ProductService } from "../products/services/product.service";
 import { Repository } from "typeorm";
 import { ProductEntity } from "../products/entity/product.entity";
 import { DiscountsService } from "./service/discounts.service";
+import { CategoryEntity, SubCategoryEntity } from '../category/entity/category.entity';
 
 @Module({
     imports:[
-        TypeOrmModule.forFeature([DiscountEntity, ProductEntity]),
+        TypeOrmModule.forFeature([DiscountEntity, ProductEntity, CategoryEntity, SubCategoryEntity]),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
     controllers: [DiscountsController],

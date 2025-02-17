@@ -9,7 +9,7 @@ import { OrderProductEntity } from "../orders/entities/order_products.entity";
 import { ProductEntity } from "../products/entity/product.entity";
 import { UserService } from "../user/service/user.service";
 import { User } from "../user/entities/user.entity";
-import { CategoryEntity } from "../category/entity/category.entity";
+import { CategoryEntity, SubCategoryEntity } from '../category/entity/category.entity';
 import { CategoryService } from "../category/services/category.service";
 import { ProductService } from "../products/services/product.service";
 import { UserPublicController } from "./controllers/userpublic.controller";
@@ -20,6 +20,7 @@ import { UserPublicController } from "./controllers/userpublic.controller";
             OrderProductEntity,
             ProductEntity,
             CategoryEntity,
+            SubCategoryEntity,
             User,
         ]),
         ConfigModule.forRoot({ isGlobal: true }),

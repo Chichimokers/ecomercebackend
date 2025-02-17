@@ -19,7 +19,7 @@ import {
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';
 import { createProductDTO } from '../dto/createProductDTO.dto';
-import { updateProductDTO } from '../dto/updateProductDTO.dto';
+import { UpdateProductDTO } from '../dto/updateProductDTO.dto';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
@@ -83,8 +83,8 @@ export class ProductControllers {
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateProduct(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateUserDto: updateProductDTO): Promise<Partial<ProductEntity>> {
-        return this.productservice.update(id, updateUserDto);
+    updateProduct(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateProductDto: UpdateProductDTO): Promise<ProductEntity> {
+        return this.productservice.updateAll(id, updateProductDto);
     }
 
     @Delete(':id')

@@ -3,14 +3,14 @@ import {
     IsString,
     MinLength,
     MaxLength,
-    IsNumber
+    IsNumber, IsUUID,
 } from 'class-validator';
 
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 
-export class  updateProductDTO  extends BaseDto{
+export class UpdateProductDTO  extends BaseDto{
     @ApiProperty({
         example: "Meat",
         description: "Product Name",
@@ -52,4 +52,19 @@ export class  updateProductDTO  extends BaseDto{
     @IsString()
     description?: string;
 
+    @ApiProperty({
+        example: "a6e0c570-be0e-4a7d-93c5-767a7767890b",
+        description: "ID Category to change",
+    })
+    @IsNotEmpty()
+    @IsUUID()
+    category?: string;
+
+    @ApiProperty({
+        example: "a6e0c570-be0e-4a7d-93c5-767a7767890b",
+        description: "ID subCategory to change",
+    })
+    @IsNotEmpty()
+    @IsUUID()
+    subCategory?: string;
 }
