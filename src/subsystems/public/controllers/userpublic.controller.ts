@@ -17,7 +17,7 @@ export class UserPublicController {
     @Post('create-order')
     @Roles(roles.User)
     createOrder(@Req() request: any, @Body() orderdto: BuildOrderDTO) {
-        const userid = request.user.Id;
+        const userid = request.user.id;
         return this.orderService.createOrderService(userid, orderdto);
     }
 
@@ -25,7 +25,7 @@ export class UserPublicController {
     @Get('/orders')
     @Roles(roles.User)
     public getUserOrder(@Req() request: any) {
-        const userid = request.user.Id;
+        const userid = request.user.id;
         console.log(`Esto es lo que me llega: `, userid);
         return this.orderService.getOrderByUser(userid);
     }
