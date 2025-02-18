@@ -129,7 +129,7 @@ export class OrderService extends BaseService<OrderEntity> {
         return null;
     }
 
-    async processOrders(orderid: string) :Promise<OrderEntity> {
+    async processOrders(orderid: string): Promise<OrderEntity> {
         // Verificar si la Orden existe
         const order: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
@@ -168,9 +168,9 @@ export class OrderService extends BaseService<OrderEntity> {
     }
 
     // *--- For Public Services ---* //
-    public async getOrderByUser(userid: string) {
+    public async getOrderByUser(userId: string) {
         const orders = await this.orderRepository.find({
-            where: { user: { id: userid } },
+            where: { user: { id: userId } },
             relations: ['orderItems', 'orderItems.product'],
         })
 

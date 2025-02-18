@@ -17,7 +17,7 @@ export class UserPublicController {
     @Post('create-order')
     @Roles(roles.User)
     createOrder(@Req() request: any, @Body() orderdto: BuildOrderDTO) {
-        const userid = request.user.id;
+        const userid = request.user.Id;
         return this.orderService.createOrderService(userid, orderdto);
     }
 
@@ -25,8 +25,15 @@ export class UserPublicController {
     @Get('/orders')
     @Roles(roles.User)
     public getUserOrder(@Req() request: any) {
-        const userid = request.user.id;
-        console.log(`Esto es lo que me llega: `, userid);
+        // Inspeccionar toda la solicitud
+        console.log('Request completa:', request);
+
+        // O inspeccionar parámetros específicos
+        console.log('Query parameters:', request.query);
+        console.log('Headers:', request.headers);
+        console.log('Usuario autenticado:', request.user);
+
+        const userid = request.user.Id;
         return this.orderService.getOrderByUser(userid);
     }
 }
