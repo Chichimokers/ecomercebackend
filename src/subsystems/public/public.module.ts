@@ -13,6 +13,7 @@ import { CategoryEntity, SubCategoryEntity } from '../category/entity/category.e
 import { CategoryService } from "../category/services/category.service";
 import { ProductService } from "../products/services/product.service";
 import { UserPublicController } from "./controllers/userpublic.controller";
+import { DiscountEntity } from '../discounts/entity/discounts.entity';
 
 @Module({
     imports:[
@@ -21,6 +22,7 @@ import { UserPublicController } from "./controllers/userpublic.controller";
             ProductEntity,
             CategoryEntity,
             SubCategoryEntity,
+            DiscountEntity,
             User,
         ]),
         ConfigModule.forRoot({ isGlobal: true }),

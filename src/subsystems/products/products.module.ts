@@ -8,6 +8,7 @@ import {
     CategoryEntity,
     SubCategoryEntity,
 } from '../category/entity/category.entity';
+import { DiscountEntity } from '../discounts/entity/discounts.entity';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import {
             ProductEntity,
             CategoryEntity,
             SubCategoryEntity,
+            DiscountEntity,
         ]),
         ConfigModule.forRoot({ isGlobal: true }),
     ],

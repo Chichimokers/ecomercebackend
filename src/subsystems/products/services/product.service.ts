@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { BaseService } from '../../../common/services/base.service';
@@ -8,6 +8,7 @@ import {
     CategoryEntity,
     SubCategoryEntity,
 } from '../../category/entity/category.entity';
+import { DiscountEntity } from '../../discounts/entity/discounts.entity';
 
 @Injectable()
 export class ProductService extends BaseService<ProductEntity> {
@@ -21,6 +22,8 @@ export class ProductService extends BaseService<ProductEntity> {
         private readonly categoryRepository: Repository<CategoryEntity>,
         @InjectRepository(SubCategoryEntity)
         private readonly subCategoryRepository: Repository<SubCategoryEntity>,
+        @InjectRepository(DiscountEntity)
+        private readonly discountRepository: Repository<DiscountEntity>,
     ) {
         super(productRepository);
     }
@@ -38,7 +41,7 @@ export class ProductService extends BaseService<ProductEntity> {
 
     async updateAll(id: any, dto: UpdateProductDTO): Promise<ProductEntity> {
         // Buscar el producto
-        const product = await this.productRepository.findOne({ where: { id } });
+        const product: ProductEntity = await this.productRepository.findOne({ where: { id } });
         if (!product) throw new NotFoundException('Product not found');
 
         // Actualizar los campos básicos del producto
@@ -48,7 +51,7 @@ export class ProductService extends BaseService<ProductEntity> {
             'short_description',
             'price',
             'quantity',
-        ].forEach((field) => {
+        ].forEach((field: string): void => {
             if (dto[field] !== undefined) {
                 product[field] = dto[field];
             }
@@ -56,7 +59,7 @@ export class ProductService extends BaseService<ProductEntity> {
 
         // Actualizar categoría si se proporciona en el DTO
         if (dto.category) {
-            const category = await this.categoryRepository.findOne({
+            const category: CategoryEntity = await this.categoryRepository.findOne({
                 where: { id: dto.category },
             });
             if (!category) throw new NotFoundException('Category not found');
@@ -65,13 +68,32 @@ export class ProductService extends BaseService<ProductEntity> {
 
         // Actualizar subcategoría si se proporciona en el DTO
         if (dto.subCategory) {
-            const subCategory = await this.subCategoryRepository.findOne({
+            const subCategory: SubCategoryEntity = await this.subCategoryRepository.findOne({
                 where: { id: dto.subCategory },
             });
             if (!subCategory)
                 throw new NotFoundException('SubCategory not found');
             product.subCategory = subCategory;
         }
+
+        // Apartado del descuento
+        if(dto.discount){
+            if(!dto.discount.min || !dto.discount.reduction) {
+                throw new BadRequestException('Some params of discount are incorrect');
+            }
+
+            const discount: DiscountEntity = this.discountRepository.create({
+                min: dto.discount.min,
+                reduction: dto.discount.reduction,
+                products: product,
+            });
+
+            await this.discountRepository.save(discount);
+            product.discounts = discount;
+        }
+
+        // Actualizar updated_at
+        product.updated_at = new Date();
 
         // Guardar los cambios
         return await this.productRepository.save(product);
