@@ -11,7 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserService } from '../user/service/user.service';
 import { CodeService } from './service/code.service';
 import { MailsService } from '../mails/services/mails.service';
-import { CacheModule } from "@nestjs/cache-manager";
+import { CacheModule } from '@nestjs/cache-manager';
 import { GoogleStrategy } from './strategies/google.strategy';
 
 // Importar JwtStrategy
@@ -19,12 +19,12 @@ import { GoogleStrategy } from './strategies/google.strategy';
 @Module({
     imports: [
         CacheModule.register({
-            ttl: 120, // Time in seconds
-            max: 100, // Max number of items in cache
+            ttl: 120,
+            max: 100,
         }),
         TypeOrmModule.forFeature([User]),
         ConfigModule.forRoot({ isGlobal: true }),
-        PassportModule,
+        PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({
             secret: jwtConstants.secret,
             signOptions: { expiresIn: '60m' },
@@ -40,4 +40,4 @@ import { GoogleStrategy } from './strategies/google.strategy';
         CodeService,
     ], // Agregar estrategias aquí
 })
-export class AuthModule {}
+export class AuthModule { }

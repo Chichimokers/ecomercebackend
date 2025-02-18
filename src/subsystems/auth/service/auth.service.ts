@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/subsystems/user/entities/user.entity';
-import { UserService } from 'src/subsystems/user/service/user.service';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { CodeService } from './code.service';
 import { SingUpBody } from '../dto/signupDTO.dto';
@@ -15,7 +14,7 @@ export class AuthService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-        @Inject(UserService) private userService: UserService,
+        @Inject(DataSource) private dataSource: DataSource,
         @Inject(CodeService) private CodeServices: CodeService,
         @Inject(JwtService) private jwt: JwtService,
     ) { }
@@ -28,31 +27,52 @@ export class AuthService {
         };
     }
 
-    async verifiRefreshToken(refreshToken: string): Promise<any | null> {
+    // En el servicio de autenticación (auth.service.ts)
+    async verifirefresh_token(refresh_token: string): Promise<User | null> {
         try {
-            const payload = this.jwt.verify(refreshToken, {
+            const payload = this.jwt.verify(refresh_token, {
                 secret: process.env.JWT_SECRET,
-            }); // Añadir opciones con secret
-            const user = await this.userRepository.findOne({
-                where: { id: payload.sub, refresh_token: refreshToken },
             });
 
-            if (!user) {
-                console.error('RefreshToken no válido o usuario no existe');
-                return null;
-            }
+            // Usar una transacción para consistencia
+            return await this.dataSource.transaction(
+                async (transactionalEntityManager) => {
+                    const user = await transactionalEntityManager.findOne(
+                        User,
+                        {
+                            where: { id: payload.sub },
+                            lock: { mode: 'pessimistic_write' },
+                        },
+                    );
 
-            // Verificar expiración del refresh token
-            if (payload.exp * 1000 < Date.now()) {
-                console.error('RefreshToken expirado');
-                return null;
-            }
+                    if (!user || user.refresh_token !== refresh_token) {
+                        console.error(
+                            'refresh_token no coincide o usuario no existe',
+                        );
+                        return null;
+                    }
 
-            return user; // Devolver el usuario completo para mayor seguridad
+                    if (payload.exp * 1000 < Date.now()) {
+                        console.error('refresh_token expirado');
+                        return null;
+                    }
+
+                    return user;
+                },
+            );
         } catch (error) {
-            console.error('Error al verificar RefreshToken:', error.message);
+            console.error('Error en verificación:', error);
             return null;
         }
+    }
+
+    async updaterefresh_token(
+        userId: string,
+        newrefresh_token: string,
+    ): Promise<void> {
+        await this.dataSource
+            .getRepository(User)
+            .update({ id: userId }, { refresh_token: newrefresh_token });
     }
 
     async validateUser(mail: string, password: string): Promise<User> {
@@ -70,40 +90,52 @@ export class AuthService {
     }
 
     async validateOAuthuser(user): Promise<User> {
-        let foundUser: User = await this.userRepository.findOne({
+        const existingUser = await this.userRepository.findOne({
             where: { email: user.email },
+            relations: ['roles'],
         });
 
-        if (!foundUser) {
-            // Crear un nuevo usuario automáticamente
-            foundUser = this.userRepository.create({
-                name: user.firstName,
-                email: user.email,
-                rol: roles.User,
-            });
-            await this.userRepository.save(foundUser);
+        if (existingUser) {
+            return existingUser;
         }
 
-        return foundUser;
+        // Crear nuevo usuario con datos de Google
+        const newUser = this.userRepository.create({
+            name: user.name || user.email.split('@')[0],
+            email: user.email,
+            rol: roles.User,
+        });
+
+        await this.userRepository.save(newUser);
+        return newUser;
     }
 
-    async generate_refreshtoken(payload: any) {
-        return this.jwt.sign(payload, {
-            secret: process.env.JWT_REFRESH_SECRET, // Usar secreto diferente
-            expiresIn: '5m',
-        });
-    }
-    async generate_Token(payload: any) {
-        return this.jwt.sign(payload, {
-            secret: process.env.JWT_ACCESS_SECRET,
-            expiresIn: '2m', // Tiempo de expiración más corto
-        });
-    }
+    async generateTokens(user: User) {
+        const payload = {
+            sub: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.rol,
+        };
 
-    // En AuthService
-    public async updateRefreshToken(user: User, refreshToken: string) {
-        user.refresh_token = refreshToken;
-        await this.userRepository.save(user);
+        const [access_token, refresh_token] = await Promise.all([
+            this.jwt.signAsync(payload, {
+                secret: process.env.JWT_ACCESS_SECRET,
+                expiresIn: '15m',
+            }),
+            this.jwt.signAsync(payload, {
+                secret: process.env.JWT_REFRESH_SECRET,
+                expiresIn: '7d',
+            }),
+        ]);
+
+        await this.updaterefresh_token(user.id, refresh_token);
+
+        return {
+            access_token,
+            refresh_token,
+            expiresIn: 900,
+        };
     }
 
     public async updateUser(user: User) {
@@ -113,8 +145,6 @@ export class AuthService {
     async login(
         user: User,
     ): Promise<{ access_token: string; refresh_token: string }> {
-        const payload = { username: user.name, sub: user.id, role: user.rol };
-
         const foundUser: User = await this.userRepository.findOne({
             where: {
                 name: user.username,
@@ -122,19 +152,15 @@ export class AuthService {
             },
         });
 
-        const [access_token, refresh_token] = await Promise.all([
-            this.generate_Token(payload),
-            this.generate_refreshtoken(payload),
-        ]);
+        const tokens = await Promise.all([this.generateTokens(user)]);
 
-        foundUser.refresh_token = refresh_token;
+        foundUser.refresh_token = tokens[0].refresh_token;
 
         this.userRepository.save(foundUser);
 
         return {
-            access_token: access_token,
-
-            refresh_token: refresh_token,
+            access_token: tokens[0].access_token,
+            refresh_token: tokens[0].refresh_token,
         };
     }
 

@@ -1,11 +1,4 @@
-import {
-    Body,
-    Controller,
-    Get,
-    Post,
-    Req,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { BuildOrderDTO } from '../dto/frontsDTO/ordersDTO/buildorder.dto';
 import { OrderService } from '../../orders/services/orders.service';
@@ -19,9 +12,7 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 @Controller('userpublic')
 @UseGuards(LocalAuthGuard, RolesGuard)
 export class UserPublicController {
-    constructor(
-        private orderService: OrderService,
-    ) {}
+    constructor(private orderService: OrderService) { }
 
     @Post('create-order')
     @Roles(roles.User)
@@ -35,7 +26,7 @@ export class UserPublicController {
     @Roles(roles.User)
     public getUserOrder(@Req() request: any) {
         const userid = request.user.Id;
+        console.log(`Esto es lo que me llega: `, userid);
         return this.orderService.getOrderByUser(userid);
     }
-
 }

@@ -8,6 +8,8 @@ import {
     Req,
     UnauthorizedException,
     UseGuards,
+    HttpStatus,
+    Res,
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';
@@ -46,54 +48,70 @@ export class AuthController {
         // Esta ruta redirige al usuario a Google
     }
 
-    // Endpoint que recibe el callback de Google
+    // ... existing code ...
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
-    async googleAuthRedirect(@Req() req) {
-        const user = req.user;
+    async googleAuthRedirect(@Req() req, @Res() res) {
+        try {
+            const socialUser = req.user;
 
-        const userfound = await this.authservice.validateOAuthuser(user);
+            if (!socialUser?.access_token) {
+                throw new UnauthorizedException(
+                    'Fallo en autenticación Google',
+                );
+            }
 
-        const token = await this.authservice.login(userfound);
-        // Opcional: Generar un JWT para el usuario autenticado
+            const user = await this.authservice.validateOAuthuser({
+                email: socialUser.email,
+                name: socialUser.name,
+            });
 
-        return {
-            message: 'Authenticated with Google',
-            token,
-        };
+            const tokens = await this.authservice.login(user);
+
+            // Enviar respuesta JSON explícitamente
+            return res.status(HttpStatus.OK).json({
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                user: {
+                    email: user.email,
+                    name: user.name,
+                    id: user.id,
+                },
+            });
+        } catch (error) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({
+                status: HttpStatus.UNAUTHORIZED,
+                error: 'GOOGLE_AUTH_FAILED',
+                message: error.message,
+            });
+        }
     }
 
     // Mejorar el endpoint de refresh
     @Post('refresh-token')
-    async refreshToken(@Body() token: RefresTokenDTO) {
+    async refresh_token(@Body() token: RefresTokenDTO) {
         try {
-            const user = await this.authservice.verifiRefreshToken(
-                token.refreshToken,
+            const user = await this.authservice.verifirefresh_token(
+                token.refresh_token,
             );
 
             if (!user) {
                 throw new UnauthorizedException('Refresh Token revocado');
             }
 
-            const payload = {
-                username: user.name,
-                sub: user.id,
-                role: user.rol,
-            };
-
             // Generar nuevos tokens con rotación
-            const newAccessToken =
-                await this.authservice.generate_Token(payload);
-            const newRefreshToken =
-                await this.authservice.generate_refreshtoken(payload);
+            const tokens = await this.authservice.generateTokens(user);
 
             // Actualizar en base de datos ANTES de responder
-            await this.authservice.updateRefreshToken(user, newRefreshToken);
+            await this.authservice.updaterefresh_token(
+                user.id,
+                tokens.refresh_token,
+            );
 
             return {
-                accessToken: newAccessToken,
-                refreshToken: newRefreshToken,
-                expiresIn: 900, // 15 minutos en segundos
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                expiresIn: tokens.expiresIn, // 15 minutos en segundos
             };
         } catch (error) {
             throw new UnauthorizedException(error.message);
