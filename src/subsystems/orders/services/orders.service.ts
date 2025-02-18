@@ -115,7 +115,7 @@ export class OrderService extends BaseService<OrderEntity> {
         products: ProductOrderDTO[],
     ): Promise<ProductEntity[]> | null {
 
-        let ids: string[] = products.map((elemnt) => elemnt.product_id);
+        const ids: string[] = products.map((elemnt) => elemnt.product_id);
         const foundProducts: ProductEntity[] =
             await this.productRepository.find({
                 where: { id: In(ids) },
@@ -143,7 +143,7 @@ export class OrderService extends BaseService<OrderEntity> {
             throw new Error('Status order is not pending');
         }
 
-        let productOrderRelation: OrderProductEntity[] =
+        const productOrderRelation: OrderProductEntity[] =
             await this.orderProductRepository.find({
                 where: { order: { id: orderid } },
                 relations: ['product'],

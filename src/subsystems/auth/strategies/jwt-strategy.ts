@@ -11,7 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             audience: process.env.GOOGLE_ID_OAUTH,
             issuer: 'https://accounts.google.com',
-            algorithms: ['RS256'],
+            algorithms: ['HS256'],
             ignoreExpiration: false,
             secretOrKey: jwtConstants.secret,
             /*secretOrKeyProvider: jwksRsa.passportJwtSecret({
@@ -25,10 +25,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 
     async validate(payload: any) {
+        console.log('Payload JWT recibido:', payload);
+        console.log('Secret usado:', process.env.JWT_ACCESS_SECRET);
+
         return {
             Id: payload.sub,
             name: payload.username,
             email: payload.email,
+            role: payload.role,
         };
     }
 }

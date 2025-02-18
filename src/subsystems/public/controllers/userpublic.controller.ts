@@ -25,14 +25,6 @@ export class UserPublicController {
     @Get('/orders')
     @Roles(roles.User)
     public getUserOrder(@Req() request: any) {
-        // Inspeccionar toda la solicitud
-        console.log('Request completa:', request);
-
-        // O inspeccionar parámetros específicos
-        console.log('Query parameters:', request.query);
-        console.log('Headers:', request.headers);
-        console.log('Usuario autenticado:', request.user);
-
         const userid = request.user.Id;
         return this.orderService.getOrderByUser(userid);
     }
