@@ -91,4 +91,11 @@ export class UpdateProductDTO extends BaseDto{
     })
     @IsNotEmpty()
     discount?: UpdateDiscountProductDTO;
+
+    @ApiProperty({
+        example: "Don't include in body please",
+        description: "Image Path for images",
+    })
+    @IsNotEmpty()
+    image?: string;
 }

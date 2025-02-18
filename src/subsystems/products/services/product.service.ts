@@ -58,6 +58,7 @@ export class ProductService extends BaseService<ProductEntity> implements IServi
             'short_description',
             'price',
             'quantity',
+            'image',
         ].forEach((field: string): void => {
             if (dto[field] !== undefined) {
                 product[field] = dto[field];

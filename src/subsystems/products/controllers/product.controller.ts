@@ -8,7 +8,6 @@ import {
     Delete,
     UseInterceptors,
     UploadedFile, Get, ParseUUIDPipe,
-    ParseIntPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -31,7 +30,6 @@ import { extname } from 'path';
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
 import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
-import { updateOrderDTO } from 'src/subsystems/orders/dto/updateOrderDTO.dto';
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -103,21 +101,13 @@ export class ProductControllers {
     }))
     async update(
         @Param('id', new ParseUUIDPipe()) id: number,
-        @Body() updateProductDTO: updateOrderDTO,
+        @Body() updateProductDTO: UpdateProductDTO,
         @UploadedFile() file?: Express.Multer.File
     ) {
-        let imagePaths: string = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
-
-        return this.productservice.update(id, {
-
-            ...updateProductDTO,
-            image: imagePaths // Solo se incluye si imagePaths no es undefined
-
-        });
+        updateProductDTO.image = file ? file.filename : undefined;
+        return this.productservice.updateByDTO(id, updateProductDTO)
 
     }
-
-
 
     @Delete(':id')
     @Roles(roles.Admin)
