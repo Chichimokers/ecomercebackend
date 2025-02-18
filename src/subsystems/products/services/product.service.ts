@@ -9,9 +9,10 @@ import {
     SubCategoryEntity,
 } from '../../category/entity/category.entity';
 import { DiscountEntity } from '../../discounts/entity/discounts.entity';
+import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
 
 @Injectable()
-export class ProductService extends BaseService<ProductEntity> {
+export class ProductService extends BaseService<ProductEntity> implements IServiceDTOC {
     protected getRepositoryName(): string {
         return 'tb_products';
     }
@@ -39,7 +40,11 @@ export class ProductService extends BaseService<ProductEntity> {
         return this.mapProduct(query);
     }
 
-    async updateAll(id: any, dto: UpdateProductDTO): Promise<ProductEntity> {
+    async insertByDTO(dto: any) {
+        throw new NotFoundException("This method does't exists yet");
+    }
+
+    async updateByDTO(id: any, dto: UpdateProductDTO): Promise<ProductEntity> {
         // Buscar el producto
         const product: ProductEntity = await this.productRepository.findOne({ where: { id } });
         if (!product) throw new NotFoundException('Product not found');

@@ -1,4 +1,4 @@
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -39,8 +39,9 @@ export class SubCategoryController {
 
     @Patch(':id')
     @Roles(roles.Admin)
+    @ApiResponse({status: 404, description: 'SubCategory not found or Refer Category not found'})
     updateSubCategory(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateSubCategoryDto: UpdateSubCategoryDTO): Promise<Partial<SubCategoryEntity>> {
-        return this.subCategoryService.update(id, updateSubCategoryDto);
+        return this.subCategoryService.updateByDTO(id, updateSubCategoryDto);
     }
 
     @Delete(':id')

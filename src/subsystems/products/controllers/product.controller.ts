@@ -84,7 +84,7 @@ export class ProductControllers {
     @Patch(':id')
     @Roles(roles.Admin)
     updateProduct(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateProductDto: UpdateProductDTO): Promise<ProductEntity> {
-        return this.productservice.updateAll(id, updateProductDto);
+        return this.productservice.updateByDTO(id, updateProductDto);
     }
 
     @Delete(':id')
