@@ -44,6 +44,8 @@ export class ProductService extends BaseService<ProductEntity> implements IServi
         throw new NotFoundException("This method does't exists yet");
     }
 
+
+
     async updateByDTO(id: any, dto: UpdateProductDTO): Promise<ProductEntity> {
         // Buscar el producto
         const product: ProductEntity = await this.productRepository.findOne({ where: { id } });

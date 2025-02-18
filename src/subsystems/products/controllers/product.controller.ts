@@ -8,6 +8,7 @@ import {
     Delete,
     UseInterceptors,
     UploadedFile, Get, ParseUUIDPipe,
+    ParseIntPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -30,6 +31,7 @@ import { extname } from 'path';
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
 import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
+import { updateOrderDTO } from 'src/subsystems/orders/dto/updateOrderDTO.dto';
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -56,6 +58,7 @@ export class ProductControllers {
     }))
 
     create(@Body() createProductDTO: createProductDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
+
         let imagePaths: string = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
 
         return this.productservice.create({
@@ -63,6 +66,9 @@ export class ProductControllers {
             image: imagePaths // Solo se incluye si imagePaths no es undefined
         });
     }
+
+
+
 
     //@UseGuards(JwtAuthGuard)
     
@@ -81,11 +87,37 @@ export class ProductControllers {
         return this.productservice.findOneById(id);
     }
 
+    @ApiCreatedResponse({ description: 'El producto ha sido actualizado exitosamente' })
+    @ApiForbiddenResponse({ description: 'Prohibido' })
+    @ApiConsumes('multipart/form-data')
     @Patch(':id')
     @Roles(roles.Admin)
-    updateProduct(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateProductDto: UpdateProductDTO): Promise<ProductEntity> {
-        return this.productservice.updateByDTO(id, updateProductDto);
+    @UseInterceptors(FileInterceptor('image', {
+        storage: diskStorage({
+            destination: './public/images',
+            filename: (req, file, cb): void => {
+                const uniqueSuffix: string = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                cb(null, uniqueSuffix + extname(file.originalname));
+            }
+        })
+    }))
+    async update(
+        @Param('id', new ParseUUIDPipe()) id: number,
+        @Body() updateProductDTO: updateOrderDTO,
+        @UploadedFile() file?: Express.Multer.File
+    ) {
+        let imagePaths: string = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
+
+        return this.productservice.update(id, {
+
+            ...updateProductDTO,
+            image: imagePaths // Solo se incluye si imagePaths no es undefined
+
+        });
+
     }
+
+
 
     @Delete(':id')
     @Roles(roles.Admin)
