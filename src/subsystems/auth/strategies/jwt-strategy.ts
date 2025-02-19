@@ -10,10 +10,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
             secretOrKey: jwtConstants.secret,
+            audience: process.env.GOOGLE_ID_OAUTH,
+            algorithms: ['HS256'],
+            //issuer: 'https://accounts.google.com', Aqui reside el problema de las ordenes
         });
     }
 
-    
     async validate(payload: any) {
         return {
             Id: payload.sub,

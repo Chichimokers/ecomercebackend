@@ -1,25 +1,31 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/subsystems/user/entities/user.entity';
-import { UserService } from 'src/subsystems/user/service/user.service';
 import { CreateUserDto } from 'src/subsystems/user/dto';
 import { CodeService } from './code.service';
-import { SingUpBody } from "../dto/signupDTO.dto";
-import { roles } from "../../roles/enum/roles.enum";
+import { SingUpBody } from '../dto/signupDTO.dto';
+import { roles } from '../../roles/enum/roles.enum';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
+    private googleClient: OAuth2Client;
+
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-        @Inject(UserService) private userService: UserService,
+        @Inject(DataSource) private dataSource: DataSource,
         @Inject(CodeService) private CodeServices: CodeService,
         @Inject(JwtService) private jwt: JwtService,
-
-    ) {}
+    ) {
+        this.googleClient = new OAuth2Client(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+        );
+    }
 
     async sendVerificationEmailSignUp(userdto: CreateUserDto): Promise<any> {
         await this.CodeServices.sendVerificationEmail(userdto);
@@ -29,41 +35,65 @@ export class AuthService {
         };
     }
 
-    async verifiRefreshToken(refreshToken: string): Promise<any | null> {
-        try {
-
-          const payload = this.jwt.verify(refreshToken);
-      
-  
-          const user = await this.userRepository.findOne({
-
-            where: { id: payload.sub, refresh_token:refreshToken },
-
-          });
-          
-      
-          if (!user) {
-            console.error('El RefreshToken no está asociado a ningún usuario');
+    // En el servicio de autenticación (auth.service.ts)
+    async verifirefresh_token(refresh_token: string): Promise<User | null> {
+        if (!refresh_token) {
+            console.error('Refresh token no proporcionado');
             return null;
-          }
-      
-      
-          return payload;
-        } catch (error) {
-          console.error('Error al verificar el RefreshToken:', error.message);
-          return null;
         }
-      }
+
+        try {
+            const payload = this.jwt.verify(refresh_token, {
+                secret: process.env.JWT_REFRESH_SECRET,
+            });
+
+            // Usar una transacción para consistencia
+            return await this.dataSource.transaction(
+                async (transactionalEntityManager) => {
+                    const user = await transactionalEntityManager.findOne(
+                        User,
+                        {
+                            where: { id: payload.sub },
+                            lock: { mode: 'pessimistic_write' },
+                        },
+                    );
+
+                    if (!user || user.refresh_token !== refresh_token) {
+                        console.error(
+                            'refresh_token no coincide o usuario no existe',
+                        );
+                        return null;
+                    }
+
+                    if (payload.exp * 1000 < Date.now()) {
+                        console.error('refresh_token expirado');
+                        return null;
+                    }
+
+                    return user;
+                },
+            );
+        } catch (error) {
+            console.error('Error en verificación:', error.message);
+            return null;
+        }
+    }
+
+    async updaterefresh_token(
+        userId: string,
+        newrefresh_token: string,
+    ): Promise<void> {
+        await this.dataSource
+            .getRepository(User)
+            .update({ id: userId }, { refresh_token: newrefresh_token });
+    }
 
     async validateUser(mail: string, password: string): Promise<User> {
-
         const foundUser: User = await this.userRepository.findOne({
             where: { email: mail },
         });
 
-
         if (foundUser) {
-
             if (await bcrypt.compare(password, foundUser.password)) {
                 return foundUser;
             }
@@ -73,55 +103,74 @@ export class AuthService {
     }
 
     async validateOAuthuser(user): Promise<User> {
-        let foundUser: User = await this.userRepository.findOne({
+        const existingUser = await this.userRepository.findOne({
             where: { email: user.email },
+            //relations: ['roles'],
         });
-    
-        if (!foundUser) {
-            // Crear un nuevo usuario automáticamente
-            foundUser = this.userRepository.create(
-                { name:user.firstName,
-                    email: user.email,
-                    rol:roles.User, });
-            await this.userRepository.save(foundUser);
+
+        if (!existingUser) {
+            const newUser = this.userRepository.create({
+                name: user.name,
+                email: user.email,
+                rol: roles.User,
+            });
+
+            return this.userRepository.save(newUser);
         }
-    
-        return foundUser;
+        return existingUser;
     }
 
-    async generate_refreshtoken(payload){
+    async generateTokens(user: User) {
+        const payload = {
+            sub: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.rol,
+        };
 
-        return this.jwt.sign(payload,{ expiresIn: '7d'})
+        const [access_token, refresh_token] = await Promise.all([
+            this.jwt.signAsync(payload, {
+                secret: process.env.JWT_ACCESS_SECRET,
+                expiresIn: '15m',
+            }),
+            this.jwt.signAsync(payload, {
+                secret: process.env.JWT_REFRESH_SECRET,
+                expiresIn: '7d',
+            }),
+        ]);
 
+        await this.updaterefresh_token(user.id, refresh_token);
 
+        return {
+            access_token,
+            refresh_token,
+            expiresIn: 900,
+        };
     }
-    async generate_Token(payload){
-        return this.jwt.sign(payload,{expiresIn:"1h"})
+
+    public async updateUser(user: User) {
+        await this.userRepository.update(user.id, { refresh_token: null });
     }
 
-    async login(user: User): Promise<{ access_token: string ,refreshtoken :string}> {
+    async login(
+        user: User,
+    ): Promise<{ access_token: string; refresh_token: string }> {
+        const foundUser: User = await this.userRepository.findOne({
+            where: {
+                name: user.username,
+                email: user.email,
+            },
+        });
 
-        const payload = { username: user.name, sub: user.id, role: user.rol };
+        const tokens = await Promise.all([this.generateTokens(user)]);
 
-       const foundUser :User  = await this.userRepository.findOne({
-            where:{
-
-                name:user.username,
-                email:user.email
-
-        }})
-
-        const refresh_token= await this.generate_refreshtoken(payload);
-
-        foundUser.refresh_token = refresh_token;
+        foundUser.refresh_token = tokens[0].refresh_token;
 
         this.userRepository.save(foundUser);
 
         return {
-            access_token: await this.generate_Token(payload),
-
-            refreshtoken:refresh_token
-
+            access_token: tokens[0].access_token,
+            refresh_token: tokens[0].refresh_token,
         };
     }
 
@@ -132,5 +181,18 @@ export class AuthService {
         userdata.email = singUpBody.email;
         userdata.rol = roles.User;
         return userdata;
+    }
+
+    async validateGoogleToken(token: string) {
+        try {
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken: token,
+                audience: process.env.GOOGLE_ID_OAUTH,
+            });
+
+            return ticket.getPayload();
+        } catch (error) {
+            throw new UnauthorizedException('Token de Google inválido');
+        }
     }
 }

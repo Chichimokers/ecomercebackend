@@ -5,7 +5,10 @@ import { CLIENTID, HOST, PAYPAL_HOST, SECRET_KEY } from '../config.payments';
 import axios from 'axios';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { OrderService } from 'src/subsystems/orders/services/orders.service';
-import { calculateDiscount, getPrice } from 'src/common/utils/global-functions.utils';
+import {
+    calculateDiscount,
+    getPrice,
+} from 'src/common/utils/global-functions.utils';
 
 @Injectable()
 export class PaypalService {
@@ -13,36 +16,37 @@ export class PaypalService {
         @Inject(OrderService) public orderService: OrderService,
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
-    ) {
-    }
+    ) { }
 
     async confirmorder(token: string): Promise<boolean> {
-
         const authd = {
             username: CLIENTID,
-            password: SECRET_KEY
+            password: SECRET_KEY,
+        };
+        const response = await axios.post(
+            `${PAYPAL_HOST}/v2/checkout/orders/${token}/capture`,
+            {},
+            {
+                auth: authd,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
+        if (response.data.status === 'COMPLETED') {
+            await this.orderService.processOrders(
+                response.data.purchase_units[0].payments.captures[0].custom_id,
+            );
         }
-        const response = await axios.post(`${PAYPAL_HOST}/v2/checkout/orders/${token}/capture`, {}, {
 
-            auth: authd,
-            headers: {
-                "Content-Type": "application/json",
-            }
-
-        })
-        if(response.data.status === "COMPLETED"){
-            await this.orderService.processOrders(response.data.purchase_units[0].payments.captures[0].custom_id)
-        }
-
-
-        return response.data.status === "COMPLETED";
+        return response.data.status === 'COMPLETED';
     }
 
     async CreateJSONOrder(carts: OrderEntity, moneda: string): Promise<any> {
         // Verificar si la orden existe
 
         if (!carts || !carts.orderItems) {
-            throw new Error("No se encontraron carts en la orden."); // Manejo de error
+            throw new Error('No se encontraron carts en la orden.'); // Manejo de error
         }
 
         const { v4: uuidv4 } = require('uuid');
@@ -50,14 +54,12 @@ export class PaypalService {
 
         // Calcular el subtotal
         let subtotal: number = 0;
-        carts.orderItems.forEach(cart => {
-            
+        carts.orderItems.forEach((cart) => {
             subtotal += calculateDiscount(cart.product, cart.quantity); // Sumar el total de cada cart
-
         });
 
         const order = {
-            intent: "CAPTURE",
+            intent: 'CAPTURE',
             purchase_units: [
                 {
                     custom_id: carts.id.toString(),
@@ -69,75 +71,88 @@ export class PaypalService {
                         breakdown: {
                             item_total: {
                                 currency_code: moneda,
-                                value: subtotal // Asignar el subtotal calculado
-                            }
-                        }
+                                value: subtotal, // Asignar el subtotal calculado
+                            },
+                        },
                     },
                     //TODO Items
-                    items: carts.orderItems.map(item => ({
+                    items: carts.orderItems.map((item) => ({
                         name: item.product.name, // Asumiendo que cada cart tiene un atributo 'productName'
                         unit_amount: {
                             currency_code: moneda,
-                            value: getPrice(item.product,item.quantity).toFixed(2) // Asumiendo que cada cart tiene un atributo 'price'
+                            value: getPrice(
+                                item.product,
+                                item.quantity,
+                            ).toFixed(2), // Asumiendo que cada cart tiene un atributo 'price'
                         },
-                        quantity: item.quantity.toString() // Asumiendo que cada cart tiene un atributo 'quantity'
-                    }))
+                        quantity: item.quantity.toString(), // Asumiendo que cada cart tiene un atributo 'quantity'
+                    })),
                 },
             ],
             payment_source: {
                 paypal: {
                     experience_context: {
-                        payment_method_preference: "IMMEDIATE_PAYMENT_REQUIRED",
-                        brand_name: "ESAKISHOP INC",
-                        landing_page: "LOGIN",
-                        user_action: "PAY_NOW",
+                        payment_method_preference: 'IMMEDIATE_PAYMENT_REQUIRED',
+                        brand_name: 'ESAKISHOP INC',
+                        landing_page: 'LOGIN',
+                        user_action: 'PAY_NOW',
                         return_url: `${HOST}/payments/capture-order`,
-                        cancel_url: `${HOST}/payments/cancel-order`
-                    }
-                }
-            }
+                        cancel_url: `${HOST}/payments/cancel-order`,
+                    },
+                },
+            },
         };
 
-        return order
+        return order;
     }
 
     async CreateOrder(orderid: string, userid: string): Promise<string> {
-
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['orderItems', 'orderItem.product', 'orderItem.product.discounts'], // Asegúrate de incluir la relación 'carts'
+            relations: [
+                'orderItems',
+                'orderItem.product',
+                'orderItem.product.discounts',
+            ], // Asegúrate de incluir la relación 'carts'
         });
 
-
-        let order: string = "";
+        let order: string = '';
 
         if (userid.toString() !== orderbd.user.id.toString()) {
-            throw new Error("Esa orden no pertenece a ese usuario");
+            throw new Error('Esa orden no pertenece a ese usuario');
         }
 
-        if (!orderbd) throw new Error("No se encontro en la bd");
+        if (!orderbd) throw new Error('No se encontro en la bd');
 
-        order = await this.CreateJSONOrder(orderbd, "USD");
-        
+        order = await this.CreateJSONOrder(orderbd, 'USD');
+
         //Obteniendo Token
         const paramas = new URLSearchParams();
 
-        paramas.append("grant_type", "client_credentials");
+        paramas.append('grant_type', 'client_credentials');
 
         const auth = {
             username: CLIENTID,
-            password: SECRET_KEY
-        }
-        const { data } = await axios.post(`${PAYPAL_HOST}/v1/oauth2/token`, paramas, {
-            auth: auth
-        })
+            password: SECRET_KEY,
+        };
+        const { data } = await axios.post(
+            `${PAYPAL_HOST}/v1/oauth2/token`,
+            paramas,
+            {
+                auth: auth,
+            },
+        );
 
-        const response = await axios.post(`${PAYPAL_HOST}/v2/checkout/orders`, order, {
-            headers: {
-                Authorization: `Bearer ${data.access_token}`,
-                "Content-Type": "application/json",
-            }
-        })
+        const response = await axios.post(
+            `${PAYPAL_HOST}/v2/checkout/orders`,
+            order,
+            {
+                headers: {
+                    Authorization: `Bearer ${data.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
 
         return response.data.links[1];
     }
