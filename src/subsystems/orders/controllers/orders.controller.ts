@@ -6,7 +6,7 @@ import {
     Body,
     Patch,
     Param,
-    Delete,
+    Delete, ParseUUIDPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -19,6 +19,8 @@ import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { OrderService } from '../services/orders.service';
 import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
+import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
+import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
 
 @ApiTags('orders')
 @ApiBearerAuth()
@@ -46,8 +48,9 @@ export class OrderControllers {
 
     @Get()
     @Roles(roles.Admin)
-    async getallorders_prodcts(): Promise<OrderEntity[]> {
-        return  this.orderService.getallORderProc()
+    async getallorders_prodcts(@RefineQuery() query: BaseQueryInterface): Promise<OrderEntity[]> {
+        const { _start, _end } = query;
+        return  this.orderService.findAll(_start, _end)
     }
 
     @Post('process_order')
@@ -58,19 +61,19 @@ export class OrderControllers {
 
     @Get(':id')
     @Roles(roles.Admin)
-    getOrderById(@Param('id') id: string): Promise<OrderEntity> {
-        return this.orderService.findOneById(+id);
+    getOrderById(@Param('id', new ParseUUIDPipe()) id: string): Promise<OrderEntity> {
+        return this.orderService.findOneById(id);
     }
 
     @Patch(':id')
     @Roles(roles.Admin)
-    updateOrder(@Param('id') id: string, @Body() updateorder:updateOrderDTO): Promise<Partial<OrderEntity>> {
-        return this.orderService.update(+id, updateorder);
+    updateOrder(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateorder:updateOrderDTO): Promise<Partial<OrderEntity>> {
+        return this.orderService.update(id, updateorder);
     }
 
     @Delete(':id')
     @Roles(roles.Admin)
-    deleteOrder(@Param('id') id: string): Promise<void> {
+    deleteOrder(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
         return this.orderService.softDelete(id);
     }
 }

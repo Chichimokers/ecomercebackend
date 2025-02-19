@@ -32,6 +32,11 @@ jobs:
       - name: Instalar deps a
         run:  npm install --verbose
 
+      - name: parando 
+  
+        run: pm2 delete esakiback || true
+
+
 
       - name: iniciar la aplicación
         run: pm2 start npm --name "esakiback" -- run start:prod

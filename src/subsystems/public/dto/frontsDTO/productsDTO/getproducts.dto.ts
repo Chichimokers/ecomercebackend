@@ -11,7 +11,7 @@ export class DiscountDTO {
 }
 
 export class ProductDTO {
-    @ApiProperty({ example: 1, description: "Identifier" })
+    @ApiProperty({ example: "8bebf95d-8667-4291-9265-8074db4ebe99", description: "Identifier" })
     id: string;
 
     @ApiProperty({ example: null, description: "Product image", nullable: true })

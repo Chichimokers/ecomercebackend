@@ -1,9 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { BaseService } from "../../../common/services/base.service";
+import { Repository, SelectQueryBuilder } from 'typeorm';
+import { BaseService } from '../../../common/services/base.service';
 import { ProductEntity } from '../entity/product.entity';
-import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class ProductService extends BaseService<ProductEntity> {
@@ -15,6 +14,20 @@ export class ProductService extends BaseService<ProductEntity> {
         private readonly productRepository: Repository<ProductEntity>,
     ) {
         super(productRepository);
+    }
+
+    override async findAll(
+        _start?: number,
+        _end?: number,
+    ): Promise<any> {
+        const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
+        const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
+
+        let query = this.getBaseQuery();
+
+        //query.skip(skip).take(take);
+
+        return this.mapProduct(query);
     }
 
     private async mapProduct(query, slice = false, offset = 0, limit = 0) {
@@ -71,11 +84,15 @@ export class ProductService extends BaseService<ProductEntity> {
             .addGroupBy('subCategory.id');
 
         const products = await this.mapProduct(query, true, offset, limit);
-        const urls: { previousUrl: string, nextUrl: string, totalPages: number } = await this.getUrls(query, page, limit);
+        const urls: {
+            previousUrl: string;
+            nextUrl: string;
+            totalPages: number;
+        } = await this.getUrls(query, page, limit);
 
         return {
             products,
-            urls
+            urls,
         };
     }
 
@@ -96,12 +113,16 @@ export class ProductService extends BaseService<ProductEntity> {
     }
 
     //      *--- Get Filtered Products ---*
-    public async getFilteredProducts(filters: {
-        categoryIds?: string[];
-        subCategoryIds?: string[];
-        prices?: number[];
-        rate?: number;
-    }, page: number, limit: number) {
+    public async getFilteredProducts(
+        filters: {
+            categoryIds?: string[];
+            subCategoryIds?: string[];
+            prices?: number[];
+            rate?: number;
+        },
+        page: number,
+        limit: number,
+    ) {
         const query = this.getBaseQuery();
 
         if (filters.categoryIds && filters.categoryIds.length > 0) {
@@ -131,11 +152,15 @@ export class ProductService extends BaseService<ProductEntity> {
 
         const offset: number = (page - 1) * limit;
 
-        const urls: { previousUrl: string, nextUrl: string, totalPages: number } = await this.getUrls(query, page, limit);
+        const urls: {
+            previousUrl: string;
+            nextUrl: string;
+            totalPages: number;
+        } = await this.getUrls(query, page, limit);
 
         return {
             products: await this.mapProduct(query, true, offset, limit),
-            urls
+            urls,
         };
     }
 
@@ -150,7 +175,9 @@ export class ProductService extends BaseService<ProductEntity> {
             .addSelect('AVG(rating.rate)', 'averageRating')
             .addSelect(['discount.min', 'discount.reduction'])
             .addSelect(['category.name', 'subCategory.name'])
-            .where('LOWER(product.name) LIKE LOWER(:name)', { name: `%${name}%` })
+            .where('LOWER(product.name) LIKE LOWER(:name)', {
+                name: `%${name}%`,
+            })
             .groupBy('product.id')
             .addGroupBy('discount.id')
             .addGroupBy('category.id')
@@ -162,28 +189,26 @@ export class ProductService extends BaseService<ProductEntity> {
     //      *--- Get Product Detail ---*
     public async getProductDetails(id: string) {
         const query = this.getBaseQuery();
-        query.where('product.id=(:id)', { id: id })
+        query.where('product.id=(:id)', { id: id });
         const product: any = await this.mapProduct(query);
 
-        if(!product[0]) throw new NotFoundException('Not found the product');
+        if (!product[0]) throw new NotFoundException('Not found the product');
 
         return product[0];
     }
 
-    public async getRelations(id: string){
-        const product: ProductEntity = await this.productRepository.findOne(
-            {
-                where: { id },
-                relations: ['category', 'subCategory'],
-            }
-        );
+    public async getRelations(id: string) {
+        const product: ProductEntity = await this.productRepository.findOne({
+            where: { id },
+            relations: ['category', 'subCategory'],
+        });
 
-        if(!product) throw new NotFoundException('Not found the product')
+        if (!product) throw new NotFoundException('Not found the product');
 
         const category = product.category;
         const subcategory = product.subCategory;
 
-        if(!category && !subcategory){
+        if (!category && !subcategory) {
             throw new NotFoundException('Not found relations');
         }
 
@@ -192,19 +217,25 @@ export class ProductService extends BaseService<ProductEntity> {
         query.where('product.id != :id', { id });
 
         if (category) {
-            query.andWhere('category.id = :categoryId', { categoryId: category.id });
+            query.andWhere('category.id = :categoryId', {
+                categoryId: category.id,
+            });
         }
 
         if (subcategory) {
-            query.orWhere('subCategory.id = :subCategoryId', { subCategoryId: subcategory.id });
+            query.orWhere('subCategory.id = :subCategoryId', {
+                subCategoryId: subcategory.id,
+            });
         }
 
         return this.mapProduct(query, true, 0, 15);
     }
 
-
-
-    private async getUrls(query: SelectQueryBuilder<ProductEntity>, page: number, limit: number){
+    private async getUrls(
+        query: SelectQueryBuilder<ProductEntity>,
+        page: number,
+        limit: number,
+    ) {
         const totalProducts = await query.getCount();
         const totalPages = Math.ceil(totalProducts / limit);
 
@@ -215,7 +246,7 @@ export class ProductService extends BaseService<ProductEntity> {
                 ? undefined
                 : `/public/products?page=${page + 1}`;
 
-        return { previousUrl, nextUrl, totalPages }
+        return { previousUrl, nextUrl, totalPages };
     }
 
     private getBaseQuery() {
@@ -231,6 +262,6 @@ export class ProductService extends BaseService<ProductEntity> {
             .groupBy('product.id')
             .addGroupBy('discount.id')
             .addGroupBy('category.id')
-            .addGroupBy('subCategory.id')
+            .addGroupBy('subCategory.id');
     }
 }
