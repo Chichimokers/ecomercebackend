@@ -18,7 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';
-import { createProductDTO } from '../dto/createProductDTO.dto';
+import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
 import { UpdateProductDTO } from '../dto/updateProductDTO.dto';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
@@ -54,14 +54,11 @@ export class ProductControllers {
             }
         })
     }))
-    create(@Body() createProductDTO: createProductDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
+    create(@Body() createProductDTO: CreateProductSpecialDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
 
-        let imagePaths: string = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
+        createProductDTO.image = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
 
-        return this.productservice.create({
-            ...createProductDTO,
-            image: imagePaths // Solo se incluye si imagePaths no es undefined
-        });
+        return this.productservice.insertByDTO(createProductDTO);
     }
 
     //@UseGuards(JwtAuthGuard)

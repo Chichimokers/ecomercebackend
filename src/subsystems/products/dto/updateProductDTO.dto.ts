@@ -10,7 +10,7 @@ import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
 
-export class UpdateDiscountProductDTO {
+export class DiscountProductDTO {
     @ApiProperty({
         example: 40,
         description: "Min of products to apply discount",
@@ -107,7 +107,7 @@ export class UpdateProductDTO extends BaseDto{
     })
     @IsOptional()
     @IsNotEmpty()
-    discount?: UpdateDiscountProductDTO;
+    discount?: DiscountProductDTO;
 
     @ApiProperty({
         example: "Don't include in body please",
