@@ -48,17 +48,17 @@ export class AuthController {
         // Esta ruta redirige al usuario a Google
     }
 
-    // ... existing code ...
-    @Get('google/callback')
-    @UseGuards(AuthGuard('google'))
-    async googleAuthRedirect(@Req() req, @Res() res) {
+    @Post('google/token-exchange')
+    async googleTokenExchange(@Body() body: { token: string }) {
         try {
-            const socialUser = req.user;
+            const { token } = body;
 
-            if (!socialUser?.access_token) {
-                throw new UnauthorizedException(
-                    'Fallo en autenticación Google',
-                );
+            // Validar token con Google
+            const socialUser =
+                await this.authservice.validateGoogleToken(token);
+
+            if (!socialUser?.email) {
+                throw new UnauthorizedException('Token de Google inválido');
             }
 
             const user = await this.authservice.validateOAuthuser({
@@ -68,20 +68,19 @@ export class AuthController {
 
             const tokens = await this.authservice.login(user);
 
-            // Enviar respuesta JSON explícitamente
-            return res.status(HttpStatus.OK).json({
+            return {
                 access_token: tokens.access_token,
                 refresh_token: tokens.refresh_token,
+                expiresIn: 900,
                 user: {
                     email: user.email,
                     name: user.name,
                     id: user.id,
                 },
-            });
+            };
         } catch (error) {
-            return res.status(HttpStatus.UNAUTHORIZED).json({
-                status: HttpStatus.UNAUTHORIZED,
-                error: 'GOOGLE_AUTH_FAILED',
+            throw new UnauthorizedException({
+                error: 'GOOGLE_TOKEN_EXCHANGE_FAILED',
                 message: error.message,
             });
         }

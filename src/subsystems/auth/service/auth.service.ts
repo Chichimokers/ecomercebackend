@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -8,16 +8,24 @@ import { CreateUserDto } from 'src/subsystems/user/dto';
 import { CodeService } from './code.service';
 import { SingUpBody } from '../dto/signupDTO.dto';
 import { roles } from '../../roles/enum/roles.enum';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
+    private googleClient: OAuth2Client;
+
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
         @Inject(DataSource) private dataSource: DataSource,
         @Inject(CodeService) private CodeServices: CodeService,
         @Inject(JwtService) private jwt: JwtService,
-    ) { }
+    ) {
+        this.googleClient = new OAuth2Client(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+        );
+    }
 
     async sendVerificationEmailSignUp(userdto: CreateUserDto): Promise<any> {
         await this.CodeServices.sendVerificationEmail(userdto);
@@ -29,9 +37,14 @@ export class AuthService {
 
     // En el servicio de autenticación (auth.service.ts)
     async verifirefresh_token(refresh_token: string): Promise<User | null> {
+        if (!refresh_token) {
+            console.error('Refresh token no proporcionado');
+            return null;
+        }
+
         try {
             const payload = this.jwt.verify(refresh_token, {
-                secret: process.env.JWT_SECRET,
+                secret: process.env.JWT_REFRESH_SECRET,
             });
 
             // Usar una transacción para consistencia
@@ -61,7 +74,7 @@ export class AuthService {
                 },
             );
         } catch (error) {
-            console.error('Error en verificación:', error);
+            console.error('Error en verificación:', error.message);
             return null;
         }
     }
@@ -92,22 +105,19 @@ export class AuthService {
     async validateOAuthuser(user): Promise<User> {
         const existingUser = await this.userRepository.findOne({
             where: { email: user.email },
-            relations: ['roles'],
+            //relations: ['roles'],
         });
 
-        if (existingUser) {
-            return existingUser;
+        if (!existingUser) {
+            const newUser = this.userRepository.create({
+                name: user.name,
+                email: user.email,
+                rol: roles.User,
+            });
+
+            return this.userRepository.save(newUser);
         }
-
-        // Crear nuevo usuario con datos de Google
-        const newUser = this.userRepository.create({
-            name: user.name || user.email.split('@')[0],
-            email: user.email,
-            rol: roles.User,
-        });
-
-        await this.userRepository.save(newUser);
-        return newUser;
+        return existingUser;
     }
 
     async generateTokens(user: User) {
@@ -171,5 +181,18 @@ export class AuthService {
         userdata.email = singUpBody.email;
         userdata.rol = roles.User;
         return userdata;
+    }
+
+    async validateGoogleToken(token: string) {
+        try {
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken: token,
+                audience: process.env.GOOGLE_ID_OAUTH,
+            });
+
+            return ticket.getPayload();
+        } catch (error) {
+            throw new UnauthorizedException('Token de Google inválido');
+        }
     }
 }
