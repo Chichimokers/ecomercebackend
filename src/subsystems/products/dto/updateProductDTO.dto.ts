@@ -3,7 +3,7 @@ import {
     IsString,
     MinLength,
     MaxLength,
-    IsNumber, IsUUID, IsInt,
+    IsNumber, IsUUID, IsInt, IsOptional,
 } from 'class-validator';
 
 import { Transform } from 'class-transformer';
@@ -32,8 +32,10 @@ export class UpdateProductDTO extends BaseDto{
     @ApiProperty({
         example: "Meat",
         description: "Product Name",
+        required: false,
     })
     @Transform(({ value }) => value.trim())
+    @IsOptional()
     @IsString()
     @MinLength(2, { message: 'Name must have at least 2 characters.' })
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
@@ -43,21 +45,28 @@ export class UpdateProductDTO extends BaseDto{
     @ApiProperty({
         example: "123.25",
         description: "A valid price",
+        required: false,
     })
+    @IsOptional()
+    @IsNotEmpty()
     @IsNumber({}, { message: 'Please provide valid price.' })
     price?: number;
 
     @ApiProperty({
         example: "120",
         description: "A valid quantity",
+        required: false,
     })
+    @IsOptional()
     @IsNotEmpty()
     quantity?: number;
 
     @ApiProperty({
         example: "Short Description",
         description: "Short description to show in cards",
+        required: false,
     })
+    @IsOptional()
     @IsNotEmpty()
     @IsString()
     short_description?: string;
@@ -65,7 +74,9 @@ export class UpdateProductDTO extends BaseDto{
     @ApiProperty({
         example: "Large Description",
         description: "Short description to show in cards",
+        required: false,
     })
+    @IsOptional()
     @IsNotEmpty()
     @IsString()
     description?: string;
@@ -73,7 +84,9 @@ export class UpdateProductDTO extends BaseDto{
     @ApiProperty({
         example: "a6e0c570-be0e-4a7d-93c5-767a7767890b",
         description: "ID Category to change",
+        required: false,
     })
+    @IsOptional()
     @IsNotEmpty()
     @IsUUID()
     category?: string;
@@ -81,21 +94,27 @@ export class UpdateProductDTO extends BaseDto{
     @ApiProperty({
         example: "a6e0c570-be0e-4a7d-93c5-767a7767890b",
         description: "ID subCategory to change",
+        required: false,
     })
+    @IsOptional()
     @IsNotEmpty()
     @IsUUID()
     subCategory?: string;
 
     @ApiProperty({
         description: "Discounts dto to apply on products",
+        required: false,
     })
+    @IsOptional()
     @IsNotEmpty()
     discount?: UpdateDiscountProductDTO;
 
     @ApiProperty({
         example: "Don't include in body please",
         description: "Image Path for images",
+        required: false,
     })
+    @IsOptional()
     @IsNotEmpty()
     image?: string;
 }

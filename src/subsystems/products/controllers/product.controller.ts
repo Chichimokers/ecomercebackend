@@ -54,7 +54,6 @@ export class ProductControllers {
             }
         })
     }))
-
     create(@Body() createProductDTO: createProductDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
 
         let imagePaths: string = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
@@ -65,11 +64,7 @@ export class ProductControllers {
         });
     }
 
-
-
-
     //@UseGuards(JwtAuthGuard)
-    
     @Get()
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: [ProductDTO] })
