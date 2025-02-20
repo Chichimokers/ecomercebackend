@@ -80,22 +80,7 @@ export class ProductService
             subCategory: subCategory,
         });
 
-        if (dto.discount) {
-            if (!dto.discount.min || !dto.discount.reduction) {
-                throw new BadRequestException(
-                    'Some params of discount are incorrect',
-                );
-            }
-
-            const discount: DiscountEntity = this.discountRepository.create({
-                min: dto.discount.min,
-                reduction: dto.discount.reduction,
-                products: product,
-            });
-
-            await this.discountRepository.save(discount);
-            product.discounts = discount;
-        }
+        await this.modifyProductDiscount(dto, product);
 
         return await this.productRepository.save(product);
     }
@@ -143,6 +128,16 @@ export class ProductService
         }
 
         // Apartado del descuento
+        await this.modifyProductDiscount(dto, product);
+
+        // Actualizar updated_at
+        product.updated_at = new Date();
+
+        // Guardar los cambios
+        return await this.productRepository.save(product);
+    }
+
+    private async modifyProductDiscount(dto: any, product: ProductEntity): Promise<void> {
         if (dto.discount) {
             if (!dto.discount.min || !dto.discount.reduction) {
                 throw new BadRequestException(
@@ -159,12 +154,6 @@ export class ProductService
             await this.discountRepository.save(discount);
             product.discounts = discount;
         }
-
-        // Actualizar updated_at
-        product.updated_at = new Date();
-
-        // Guardar los cambios
-        return await this.productRepository.save(product);
     }
 
     private async mapProduct(query, slice = false, offset = 0, limit = 0) {
