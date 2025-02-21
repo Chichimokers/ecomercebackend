@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BaseService } from '../../../common/services/base.service';
 import { CategoryEntity, SubCategoryEntity } from '../entity/category.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
 import { UpdateSubCategoryDTO } from '../dto/subcategorydto/updateSubCategory.dto';
+import { notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class SubCategoryService
@@ -32,7 +33,8 @@ export class SubCategoryService
         const subcategory: SubCategoryEntity = await this.subCategoryRepository.findOne({
             where: { id },
         });
-        if (!subcategory) throw new NotFoundException('SubCategory not found');
+
+        notFoundException(subcategory, 'SubCategory');
 
         ['name'].forEach((field: string): void => {
             if (dto[field] !== undefined) {
@@ -45,7 +47,7 @@ export class SubCategoryService
                 where: { id: dto.categoryId },
             });
 
-            if(!category) throw new NotFoundException('Refer Category not found');
+            notFoundException(category, `Refer Category`);
 
             subcategory.category = category;
         }
