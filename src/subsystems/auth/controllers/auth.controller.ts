@@ -5,11 +5,9 @@ import {
     Get,
     Inject,
     Post,
-    Req,
     UnauthorizedException,
     UseGuards,
-    HttpStatus,
-    Res,
+
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';

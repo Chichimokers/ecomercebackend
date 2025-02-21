@@ -166,7 +166,7 @@ export class AuthService {
 
         foundUser.refresh_token = tokens[0].refresh_token;
 
-        this.userRepository.save(foundUser);
+        await this.userRepository.save(foundUser);
 
         return {
             access_token: tokens[0].access_token,

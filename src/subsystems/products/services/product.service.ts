@@ -39,8 +39,8 @@ export class ProductService
     }
 
     override async findAll(_start?: number, _end?: number): Promise<any> {
-        const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
-        const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
+        // const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
+        // const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
 
         let query = this.getBaseQuery();
 

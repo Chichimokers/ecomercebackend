@@ -25,7 +25,7 @@ export class SubCategoryService
     }
 
     async insertByDTO(dto: any) {
-        throw new Error('Method not implemented.');
+        throw new Error(`Method not implemented. ${dto}`);
     }
 
     async updateByDTO(id: string, dto: UpdateSubCategoryDTO): Promise<Partial<SubCategoryEntity>> {

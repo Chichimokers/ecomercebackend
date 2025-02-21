@@ -6,8 +6,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class MailsService {
     constructor(public mailservice: MailerService) {}
 
-    public sendOrderMail(order: OrderEntity, email: string) {
-        this.mailservice.sendMail({
+    public async sendOrderMail(order: OrderEntity, email: string) {
+        await this.mailservice.sendMail({
             to: email,
         });
     }
