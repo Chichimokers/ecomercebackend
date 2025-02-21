@@ -3,7 +3,7 @@ import {
     Body,
     Controller,
     Get,
-    ParseArrayPipe, ParseUUIDPipe,
+    ParseUUIDPipe,
     Post,
     Query,
 
@@ -14,6 +14,9 @@ import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
 import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
 import { GetCategoriesDTO } from "../dto/frontsDTO/categoryDTO/getCategories.dto";
+import { ProductPublicQuery } from '../../../common/decorators/public.decorator';
+import { PublicQueryInterface } from '../../../common/interfaces/basequery.interface';
+import { badRequestException } from '../../../common/exceptions/modular.exception';
 
 @ApiTags('public')
 @Controller('public')
@@ -78,77 +81,23 @@ export class PublicController {
         status: 400,
         description: 'In case you send a query without inserting valid data',
     })
-    public getProductView(
-        @Query('page') page: number = 1,
-        @Query('limit') limit: number = 10,
-        @Query(
-            'category',
-            new ParseArrayPipe({
-                items: Number,
-                separator: ',',
-                optional: true,
-            }),
-        )
-        categoryIds?: string[],
-        @Query(
-            'subcategory',
-            new ParseArrayPipe({
-                items: Number,
-                separator: ',',
-                optional: true,
-            }),
-        )
-        subCategoryIds?: string[],
-        @Query(
-            'pricerange',
-            new ParseArrayPipe({
-                items: Number,
-                separator: '-',
-                optional: true,
-            }),
-        )
-        prices?: number[],
-        @Query('rate')
-        rate?: number,
-    ) {
-        try {
-            page = Number(page);
-        } catch (error) {
-            throw new BadRequestException('Invalid page format');
-        }
-
-        try {
-            limit = Number(limit);
-        } catch (error) {
-            throw new BadRequestException('Invalid limit format');
-        }
-
-        try {
-            rate = Number(rate);
-        } catch (error) {
-            throw new BadRequestException('Invalid rate format');
-        }
-
-        if (categoryIds && categoryIds.length === 0) {
-            throw new BadRequestException('categoryIds must not be empty');
-        }
-
-        if (subCategoryIds && subCategoryIds.length === 0) {
-            throw new BadRequestException('subCategoryIds must not be empty');
-        }
-
-        if (prices && prices.length === 0) {
-            throw new BadRequestException('prices must not be empty');
-        }
+    public getProductView(@ProductPublicQuery() query: PublicQueryInterface) {
+        badRequestException(query.categoryIds, 'CategoryIDS');
+        badRequestException(query.subCategoryIds, 'SubCategoryIDS');
+        badRequestException(query.prices, 'Prices');
 
         const filters = {
-            categoryIds,
-            subCategoryIds,
-            prices,
-            rate,
+            categoryIds: query.categoryIds,
+            subCategoryIds: query.subCategoryIds,
+            prices: query.prices,
+            rate: query.rate,
         };
 
-        return this.publicService.getProductsPage(page, limit, filters);
+        return this.publicService.getProductsPage(
+            +query.page,
+            +query.limit,
+            filters,
+        );
     }
 
     // *--- For Products Details View ---* //
