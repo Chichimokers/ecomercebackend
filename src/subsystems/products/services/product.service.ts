@@ -19,7 +19,8 @@ import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
 @Injectable()
 export class ProductService
     extends BaseService<ProductEntity>
-    implements IServiceDTOC {
+    implements IServiceDTOC
+{
     protected getRepositoryName(): string {
         return 'tb_products';
     }
@@ -49,25 +50,7 @@ export class ProductService
     }
 
     async insertByDTO(dto: CreateProductSpecialDTO) {
-        let category: CategoryEntity;
-        let subCategory: SubCategoryEntity;
-
-        if (dto.category) {
-            category =
-                await this.categoryRepository.findOne({
-                    where: { id: dto.category },
-                });
-            if (!category) throw new NotFoundException('Category not found');
-        }
-
-        if (dto.subCategory) {
-            subCategory =
-                await this.subCategoryRepository.findOne({
-                    where: { id: dto.subCategory },
-                });
-            if (!subCategory)
-                throw new NotFoundException('SubCategory not found');
-        }
+        const { category, subCategory } = await this.getCategoryAndSubCategoryByDTO(dto);
 
         const product: ProductEntity = this.productRepository.create({
             name: dto.name,
@@ -106,26 +89,11 @@ export class ProductService
             }
         });
 
-        // Actualizar categoría si se proporciona en el DTO
-        if (dto.category) {
-            const category: CategoryEntity =
-                await this.categoryRepository.findOne({
-                    where: { id: dto.category },
-                });
-            if (!category) throw new NotFoundException('Category not found');
-            product.category = category;
-        }
+        const { category, subCategory } =
+            await this.getCategoryAndSubCategoryByDTO(dto);
 
-        // Actualizar subcategoría si se proporciona en el DTO
-        if (dto.subCategory) {
-            const subCategory: SubCategoryEntity =
-                await this.subCategoryRepository.findOne({
-                    where: { id: dto.subCategory },
-                });
-            if (!subCategory)
-                throw new NotFoundException('SubCategory not found');
-            product.subCategory = subCategory;
-        }
+        // Se actualizan categorias y subcategorias
+        this.setCategoryAndSubCategory(product, category, subCategory);
 
         // Apartado del descuento
         await this.modifyProductDiscount(dto, product);
@@ -137,7 +105,10 @@ export class ProductService
         return await this.productRepository.save(product);
     }
 
-    private async modifyProductDiscount(dto: any, product: ProductEntity): Promise<void> {
+    private async modifyProductDiscount(
+        dto: any,
+        product: ProductEntity,
+    ): Promise<void> {
         if (dto.discount) {
             if (!dto.discount.min || !dto.discount.reduction) {
                 throw new BadRequestException(
@@ -153,6 +124,45 @@ export class ProductService
 
             await this.discountRepository.save(discount);
             product.discounts = discount;
+        }
+    }
+
+    private async getCategoryAndSubCategoryByDTO(dto: any) {
+        let category: CategoryEntity = undefined;
+        let subCategory: SubCategoryEntity = undefined;
+
+        if (dto.category) {
+            category = await this.categoryRepository.findOne({
+                where: { id: dto.category },
+            });
+            if (!category) throw new NotFoundException('Category not found');
+        }
+
+        if (dto.subCategory) {
+            subCategory = await this.subCategoryRepository.findOne({
+                where: { id: dto.subCategory },
+            });
+            if (!subCategory)
+                throw new NotFoundException('SubCategory not found');
+        }
+
+        return {
+            category: category,
+            subCategory: subCategory,
+        };
+    }
+
+    private setCategoryAndSubCategory(
+        product: ProductEntity,
+        category: CategoryEntity,
+        subCategory: SubCategoryEntity,
+    ): void {
+        if (category) {
+            product.category = category;
+        }
+
+        if (subCategory) {
+            product.subCategory = subCategory;
         }
     }
 
@@ -182,9 +192,9 @@ export class ProductService
                 item.discount_min === null && item.discount_reduction === null
                     ? undefined
                     : {
-                        min: item.discount_min,
-                        reduction: item.discount_reduction,
-                    },
+                          min: item.discount_min,
+                          reduction: item.discount_reduction,
+                      },
         }));
     }
 
