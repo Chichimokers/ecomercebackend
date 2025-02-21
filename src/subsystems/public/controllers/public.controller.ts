@@ -6,14 +6,13 @@ import {
     ParseUUIDPipe,
     Post,
     Query,
-
 } from '@nestjs/common';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PublicService } from '../services/public.service';
 import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
-import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
-import { GetCategoriesDTO } from "../dto/frontsDTO/categoryDTO/getCategories.dto";
+import { ProductDTO } from '../dto/frontsDTO/productsDTO/getproducts.dto';
+import { GetCategoriesDTO } from '../dto/frontsDTO/categoryDTO/getCategories.dto';
 import { ProductPublicQuery } from '../../../common/decorators/public.decorator';
 import { PublicQueryInterface } from '../../../common/interfaces/basequery.interface';
 import { badRequestException } from '../../../common/exceptions/modular.exception';
@@ -21,16 +20,14 @@ import { badRequestException } from '../../../common/exceptions/modular.exceptio
 @ApiTags('public')
 @Controller('public')
 export class PublicController {
-    constructor(
-        private publicService: PublicService,
-    ) {}
+    constructor(private publicService: PublicService) {}
 
     // *--- For Home View ---* //
     @Get('/home')
     @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiResponse({ status: 200, type: HomeViewDTO })
     public getHomeView(@Query('limit') limit: number = 20) {
-        limit = Number(limit)
+        limit = Number(limit);
         return this.publicService.getHomeView(limit);
     }
 
@@ -113,8 +110,10 @@ export class PublicController {
     public getProductDetails(@Query('id', new ParseUUIDPipe()) id: string) {
         try {
             id = String(id);
-        } catch (error){
-            throw new BadRequestException('Incorrect ID format. Required Number')
+        } catch (error) {
+            throw new BadRequestException(
+                'Incorrect ID format. Required Number',
+            );
         }
 
         return this.publicService.getProductDetails(id);
@@ -129,11 +128,13 @@ export class PublicController {
     })
     @ApiResponse({ status: 200, type: [ProductDTO] })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
-    public getProductRelation(@Query('id') id: string){
+    public getProductRelation(@Query('id') id: string) {
         try {
             id = String(id);
-        } catch (error){
-            throw new BadRequestException('Incorrect ID format. Required Number')
+        } catch (error) {
+            throw new BadRequestException(
+                'Incorrect ID format. Required Number',
+            );
         }
 
         return this.publicService.getProductRelation(id);
