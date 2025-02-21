@@ -9,12 +9,14 @@ import {
 } from '@nestjs/common';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PublicService } from '../services/public.service';
-import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
 import { ProductDTO } from '../dto/frontsDTO/productsDTO/getproducts.dto';
 import { GetCategoriesDTO } from '../dto/frontsDTO/categoryDTO/getCategories.dto';
-import { ProductPublicQuery } from '../../../common/decorators/public.decorator';
-import { PublicQueryInterface } from '../../../common/interfaces/basequery.interface';
+import {
+    ProductPublicApiDoc,
+    ProductPublicQuery,
+} from '../decorators/public.decorator';
+import { PublicQueryInterface } from '../interfaces/basequery.interface';
 import { badRequestException } from '../../../common/exceptions/modular.exception';
 
 @ApiTags('public')
@@ -33,55 +35,20 @@ export class PublicController {
 
     // *--- For Home View ---* //
     @Post('/search')
-    //FIXME No aceptar entradas vacias!
     public searchProduct(@Body('name') name: string) {
+        badRequestException(name, 'Name');
         return this.publicService.getProductByName(name);
     }
 
     // *--- For Products View ---* //
     @Get('/products')
-    @ApiQuery({ name: 'page', required: false, type: Number })
-    @ApiQuery({ name: 'limit', required: false, type: Number })
-    @ApiQuery({
-        name: 'category',
-        required: false,
-        isArray: true,
-        type: Number,
-        description: 'Category IDs separated by commas',
-    })
-    @ApiQuery({
-        name: 'subcategory',
-        required: false,
-        isArray: true,
-        type: Number,
-        description: 'Subcategory IDs separated by commas',
-    })
-    @ApiQuery({
-        name: 'pricerange',
-        required: false,
-        isArray: true,
-        type: Number,
-        description: 'Price range separated by hyphen',
-    })
-    @ApiQuery({
-        name: 'rate',
-        required: false,
-        type: Number,
-        description: 'Rate of the product',
-    })
-    @ApiResponse({ status: 200, type: ProductsViewDTO })
-    @ApiResponse({
-        status: 404,
-        description: 'In case there is no product searched',
-    })
-    @ApiResponse({
-        status: 400,
-        description: 'In case you send a query without inserting valid data',
-    })
+    @ProductPublicApiDoc()
     public getProductView(@ProductPublicQuery() query: PublicQueryInterface) {
-        badRequestException(query.categoryIds, 'CategoryIDS');
-        badRequestException(query.subCategoryIds, 'SubCategoryIDS');
-        badRequestException(query.prices, 'Prices');
+        if (query.categoryIds)
+            badRequestException(query.categoryIds, 'CategoryIDS');
+        if (query.subCategoryIds)
+            badRequestException(query.subCategoryIds, 'SubCategoryIDS');
+        if (query.prices) badRequestException(query.prices, 'Prices');
 
         const filters = {
             categoryIds: query.categoryIds,

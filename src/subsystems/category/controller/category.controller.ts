@@ -18,7 +18,7 @@ import { CreateCategoryDTO } from '../dto/categorydto/createCategory.dto';
 import { CategoryEntity } from '../entity/category.entity';
 import { UpdateCategoryDTO } from '../dto/categorydto/updateCategory.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
+import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
 
 @ApiTags('category')
 @ApiBearerAuth()

@@ -25,7 +25,7 @@ import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { GetUserDto } from "../dto/get-user.dto";
 import { UserDto } from "../dto";
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
+import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
 
 @ApiTags('user')
 @ApiBearerAuth()
