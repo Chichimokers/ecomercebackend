@@ -15,6 +15,7 @@ import {
 import { DiscountEntity } from '../../discounts/entity/discounts.entity';
 import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
 import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
+import { notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class ProductService
@@ -73,7 +74,7 @@ export class ProductService
         const product: ProductEntity = await this.productRepository.findOne({
             where: { id },
         });
-        if (!product) throw new NotFoundException('Product not found');
+        notFoundException(product, 'Product');
 
         // Actualizar los campos básicos del producto
         [
@@ -135,15 +136,14 @@ export class ProductService
             category = await this.categoryRepository.findOne({
                 where: { id: dto.category },
             });
-            if (!category) throw new NotFoundException('Category not found');
+            notFoundException(category, 'Category');
         }
 
         if (dto.subCategory) {
             subCategory = await this.subCategoryRepository.findOne({
                 where: { id: dto.subCategory },
             });
-            if (!subCategory)
-                throw new NotFoundException('SubCategory not found');
+            notFoundException(subCategory, 'Subcategory');
         }
 
         return {
@@ -328,7 +328,7 @@ export class ProductService
         query.where('product.id=(:id)', { id: id });
         const product: any = await this.mapProduct(query);
 
-        if (!product[0]) throw new NotFoundException('Not found the product');
+        notFoundException(product[0], 'Product');
 
         return product[0];
     }
@@ -339,10 +339,10 @@ export class ProductService
             relations: ['category', 'subCategory'],
         });
 
-        if (!product) throw new NotFoundException('Not found the product');
+        notFoundException(product, 'Product');
 
-        const category = product.category;
-        const subcategory = product.subCategory;
+        const category: CategoryEntity = product.category;
+        const subcategory: SubCategoryEntity = product.subCategory;
 
         if (!category && !subcategory) {
             throw new NotFoundException('Not found relations');
