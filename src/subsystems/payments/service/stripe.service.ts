@@ -19,7 +19,7 @@ export class StripeService {
         private readonly orderRepository: Repository<OrderEntity>,
     ) {
         this.stripe = new Stripe(STRIPE_SECRET_KEY, {
-            apiVersion: "2025-01-27.acacia",
+            apiVersion: "2025-02-24.acacia",
         });
     }
 
