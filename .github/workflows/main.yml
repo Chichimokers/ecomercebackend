@@ -21,9 +21,7 @@ jobs:
         with:
           node-version: 22.2.0
 
-      
-
-
+    
       - name: Instalar dotenv cli
       
         run:   npm install -g dotenv-cli
