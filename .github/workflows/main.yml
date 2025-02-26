@@ -21,8 +21,11 @@ jobs:
         with:
           node-version: 22.2.0
 
+      - name: Limpiar cache
+
+        run: npm cache clean --force
+
       - name: Instalar dotenv cli
-      
       
         run:   npm install -g dotenv-cli
 
