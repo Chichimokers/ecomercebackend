@@ -41,8 +41,5 @@ jobs:
 
       - name: iniciar la aplicación
         run: pm2 start npm --name "esakiback" -- run start:prod
-
-      - name: Logs
-        run: pm2 logs esakiback
       
 
