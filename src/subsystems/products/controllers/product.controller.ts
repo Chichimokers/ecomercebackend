@@ -70,7 +70,7 @@ export class ProductControllers {
         return this.productservice.findAll(_start, _end);
     }
 
-    
+
     @Get(':id')
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: ProductDTO })
