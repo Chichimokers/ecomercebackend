@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { toNumber } from '../../../common/utils/cast.utils';
 import { OrderProductEntity } from "../../orders/entities/order_products.entity";
 import { calculateDiscount, getPrice } from "../../../common/utils/global-functions.utils";
+import { notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class StripeService {
@@ -23,21 +24,22 @@ export class StripeService {
     }
 
     async createCheckoutSession(orderid: string, currency: string = 'usd') {
-        const cart: OrderEntity = await this.orderRepository.findOne({
+        const orderEntity: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.discounts'], // Asegúrate de incluir la relación 'carts'
         });
 
-        const order = await this.createJSONOrder(cart, currency);
+        notFoundException(orderEntity, 'Order');
 
+        const order = await this.createJSONOrder(orderEntity, currency);
 
         const session = await this.stripe.checkout.sessions.create(order);
 
-        const order_find: OrderEntity = await this.orderRepository.findOne({where: {id: orderid}});
+        //const order_find: OrderEntity = await this.orderRepository.findOne({where: {id: orderid}});
 
-        order_find.stripe_id = session.id;
+        orderEntity.stripe_id = session.id;
 
-        await this.orderRepository.save(order_find);
+        await this.orderRepository.save(orderEntity);
 
         return await this.createJSONResponse(session);
     }

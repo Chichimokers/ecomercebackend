@@ -11,7 +11,11 @@ export function notFoundException(element: any[] | any, varName: string): void {
 }
 
 export function badRequestException(param: any, varName: string): void {
-    if(!param) {
-        throw new BadRequestException(`${varName} is required!`);
+    const responseError = `${varName} is required`;
+
+    if(!Array.isArray(param)){
+        if(!param) throw new BadRequestException(responseError);
+    } else {
+        if(param.length === 0) throw new BadRequestException(responseError);
     }
 }
