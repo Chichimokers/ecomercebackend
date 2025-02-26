@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: 22.2.0
 
+    
       - name: Instalar dotenv cli
       
         run:   npm install -g dotenv-cli
@@ -30,7 +31,7 @@ jobs:
         run:   npm install -g pm2
 
       - name: Instalar deps a
-        run:  npm install --verbose
+        run:  npm install --force -verbose
 
       - name: parando 
   
@@ -41,4 +42,7 @@ jobs:
       - name: iniciar la aplicación
         run: pm2 start npm --name "esakiback" -- run start:prod
 
+      - name: Logs
+        run: pm2 logs esakiback
+      
 

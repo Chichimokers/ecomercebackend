@@ -70,12 +70,14 @@ export class ProductControllers {
         return this.productservice.findAll(_start, _end);
     }
 
+
     @Get(':id')
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: ProductDTO })
     getProductById(@Param('id', new ParseUUIDPipe()) id: string): Promise<ProductEntity> {
         return this.productservice.findOneById(id);
     }
+
 
     @ApiCreatedResponse({ description: 'El producto ha sido actualizado exitosamente' })
     @ApiForbiddenResponse({ description: 'Prohibido' })
