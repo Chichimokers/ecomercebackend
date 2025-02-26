@@ -77,6 +77,7 @@ export class ProductControllers {
         return this.productservice.findOneById(id);
     }
 
+    
     @ApiCreatedResponse({ description: 'El producto ha sido actualizado exitosamente' })
     @ApiForbiddenResponse({ description: 'Prohibido' })
     @ApiConsumes('multipart/form-data')
