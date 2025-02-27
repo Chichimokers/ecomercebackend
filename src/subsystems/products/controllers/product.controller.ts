@@ -29,7 +29,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
+import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -70,12 +70,14 @@ export class ProductControllers {
         return this.productservice.findAll(_start, _end);
     }
 
+
     @Get(':id')
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: ProductDTO })
     getProductById(@Param('id', new ParseUUIDPipe()) id: string): Promise<ProductEntity> {
         return this.productservice.findOneById(id);
     }
+
 
     @ApiCreatedResponse({ description: 'El producto ha sido actualizado exitosamente' })
     @ApiForbiddenResponse({ description: 'Prohibido' })

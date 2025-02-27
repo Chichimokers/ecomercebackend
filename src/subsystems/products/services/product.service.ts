@@ -15,11 +15,13 @@ import {
 import { DiscountEntity } from '../../discounts/entity/discounts.entity';
 import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
 import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
+import { notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class ProductService
     extends BaseService<ProductEntity>
-    implements IServiceDTOC {
+    implements IServiceDTOC
+{
     protected getRepositoryName(): string {
         return 'tb_products';
     }
@@ -38,8 +40,8 @@ export class ProductService
     }
 
     override async findAll(_start?: number, _end?: number): Promise<any> {
-        const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
-        const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
+        // const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
+        // const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
 
         let query = this.getBaseQuery();
 
@@ -49,25 +51,7 @@ export class ProductService
     }
 
     async insertByDTO(dto: CreateProductSpecialDTO) {
-        let category: CategoryEntity;
-        let subCategory: SubCategoryEntity;
-
-        if (dto.category) {
-            category =
-                await this.categoryRepository.findOne({
-                    where: { id: dto.category },
-                });
-            if (!category) throw new NotFoundException('Category not found');
-        }
-
-        if (dto.subCategory) {
-            subCategory =
-                await this.subCategoryRepository.findOne({
-                    where: { id: dto.subCategory },
-                });
-            if (!subCategory)
-                throw new NotFoundException('SubCategory not found');
-        }
+        const { category, subCategory } = await this.getCategoryAndSubCategoryByDTO(dto);
 
         const product: ProductEntity = this.productRepository.create({
             name: dto.name,
@@ -80,22 +64,7 @@ export class ProductService
             subCategory: subCategory,
         });
 
-        if (dto.discount) {
-            if (!dto.discount.min || !dto.discount.reduction) {
-                throw new BadRequestException(
-                    'Some params of discount are incorrect',
-                );
-            }
-
-            const discount: DiscountEntity = this.discountRepository.create({
-                min: dto.discount.min,
-                reduction: dto.discount.reduction,
-                products: product,
-            });
-
-            await this.discountRepository.save(discount);
-            product.discounts = discount;
-        }
+        await this.modifyProductDiscount(dto, product);
 
         return await this.productRepository.save(product);
     }
@@ -105,7 +74,7 @@ export class ProductService
         const product: ProductEntity = await this.productRepository.findOne({
             where: { id },
         });
-        if (!product) throw new NotFoundException('Product not found');
+        notFoundException(product, 'Product');
 
         // Actualizar los campos básicos del producto
         [
@@ -121,28 +90,26 @@ export class ProductService
             }
         });
 
-        // Actualizar categoría si se proporciona en el DTO
-        if (dto.category) {
-            const category: CategoryEntity =
-                await this.categoryRepository.findOne({
-                    where: { id: dto.category },
-                });
-            if (!category) throw new NotFoundException('Category not found');
-            product.category = category;
-        }
+        const { category, subCategory } =
+            await this.getCategoryAndSubCategoryByDTO(dto);
 
-        // Actualizar subcategoría si se proporciona en el DTO
-        if (dto.subCategory) {
-            const subCategory: SubCategoryEntity =
-                await this.subCategoryRepository.findOne({
-                    where: { id: dto.subCategory },
-                });
-            if (!subCategory)
-                throw new NotFoundException('SubCategory not found');
-            product.subCategory = subCategory;
-        }
+        // Se actualizan categorias y subcategorias
+        this.setCategoryAndSubCategory(product, category, subCategory);
 
         // Apartado del descuento
+        await this.modifyProductDiscount(dto, product);
+
+        // Actualizar updated_at
+        product.updated_at = new Date();
+
+        // Guardar los cambios
+        return await this.productRepository.save(product);
+    }
+
+    private async modifyProductDiscount(
+        dto: any,
+        product: ProductEntity,
+    ): Promise<void> {
         if (dto.discount) {
             if (!dto.discount.min || !dto.discount.reduction) {
                 throw new BadRequestException(
@@ -159,12 +126,44 @@ export class ProductService
             await this.discountRepository.save(discount);
             product.discounts = discount;
         }
+    }
 
-        // Actualizar updated_at
-        product.updated_at = new Date();
+    private async getCategoryAndSubCategoryByDTO(dto: any) {
+        let category: CategoryEntity = undefined;
+        let subCategory: SubCategoryEntity = undefined;
 
-        // Guardar los cambios
-        return await this.productRepository.save(product);
+        if (dto.category) {
+            category = await this.categoryRepository.findOne({
+                where: { id: dto.category },
+            });
+            notFoundException(category, 'Category');
+        }
+
+        if (dto.subCategory) {
+            subCategory = await this.subCategoryRepository.findOne({
+                where: { id: dto.subCategory },
+            });
+            notFoundException(subCategory, 'Subcategory');
+        }
+
+        return {
+            category: category,
+            subCategory: subCategory,
+        };
+    }
+
+    private setCategoryAndSubCategory(
+        product: ProductEntity,
+        category: CategoryEntity,
+        subCategory: SubCategoryEntity,
+    ): void {
+        if (category) {
+            product.category = category;
+        }
+
+        if (subCategory) {
+            product.subCategory = subCategory;
+        }
     }
 
     private async mapProduct(query, slice = false, offset = 0, limit = 0) {
@@ -193,9 +192,9 @@ export class ProductService
                 item.discount_min === null && item.discount_reduction === null
                     ? undefined
                     : {
-                        min: item.discount_min,
-                        reduction: item.discount_reduction,
-                    },
+                          min: item.discount_min,
+                          reduction: item.discount_reduction,
+                      },
         }));
     }
 
@@ -329,7 +328,7 @@ export class ProductService
         query.where('product.id=(:id)', { id: id });
         const product: any = await this.mapProduct(query);
 
-        if (!product[0]) throw new NotFoundException('Not found the product');
+        notFoundException(product[0], 'Product');
 
         return product[0];
     }
@@ -340,10 +339,10 @@ export class ProductService
             relations: ['category', 'subCategory'],
         });
 
-        if (!product) throw new NotFoundException('Not found the product');
+        notFoundException(product, 'Product');
 
-        const category = product.category;
-        const subcategory = product.subCategory;
+        const category: CategoryEntity = product.category;
+        const subcategory: SubCategoryEntity = product.subCategory;
 
         if (!category && !subcategory) {
             throw new NotFoundException('Not found relations');

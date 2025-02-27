@@ -9,6 +9,7 @@ import {
     calculateDiscount,
     getPrice,
 } from 'src/common/utils/global-functions.utils';
+import { notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class PaypalService {
@@ -122,7 +123,7 @@ export class PaypalService {
             throw new Error('Esa orden no pertenece a ese usuario');
         }
 
-        if (!orderbd) throw new Error('No se encontro en la bd');
+        notFoundException(orderbd, 'Order');
 
         order = await this.CreateJSONOrder(orderbd, 'USD');
 

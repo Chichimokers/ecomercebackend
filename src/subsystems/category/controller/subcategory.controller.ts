@@ -9,7 +9,7 @@ import { SubCategoryService } from "../services/subcategory.service";
 import { UpdateSubCategoryDTO } from "../dto/subcategorydto/updateSubCategory.dto";
 import { CreateSubCategoryDTO } from "../dto/subcategorydto/createSubCategory.dto";
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
+import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
 
 @ApiTags('sub_category')
 @ApiBearerAuth()

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
@@ -13,6 +13,7 @@ import { User } from '../../user/entities/user.entity';
 import { calculateDiscount } from '../../../common/utils/global-functions.utils';
 import { OrderProductEntity } from '../entities/order_products.entity';
 import { OrderStatus } from '../enums/orderStatus.enum';
+import { notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -53,17 +54,13 @@ export class OrderService extends BaseService<OrderEntity> {
         //Capturar USER (Validacion)
         const user: User = await this.userService.findOneById(userid);
 
-        if (!user) {
-            throw Error('User not found');
-        }
+        notFoundException(user, 'User');
 
         const foundProducts: ProductEntity[] = await this.validateProducts(
             data.products,
         );
 
-        if (!foundProducts) {
-            throw Error('Products are not valid');
-        }
+        notFoundException(foundProducts, 'Products');
 
         // Mapeo para construir un array con los productos encontrados y sus quantitys
 
@@ -135,12 +132,10 @@ export class OrderService extends BaseService<OrderEntity> {
             where: { id: orderid },
         });
 
-        if (!order) {
-            throw new Error('Order not found');
-        }
+        notFoundException(order, 'Order');
 
         if (order.status !== OrderStatus.Accepted) {
-            throw new Error('Status order is not pending');
+            throw new BadRequestException('Status order is not pending');
         }
 
         const productOrderRelation: OrderProductEntity[] =
@@ -153,7 +148,7 @@ export class OrderService extends BaseService<OrderEntity> {
         // Go through all the products related to the order to verify if there is still enough stock
         for (const relation of productOrderRelation) {
             if (relation.quantity > relation.product.quantity) {
-                throw new Error('There is not enough stock');
+                throw new BadRequestException('There is not enough stock');
             }
 
             relation.product.quantity -= relation.quantity;
@@ -169,14 +164,12 @@ export class OrderService extends BaseService<OrderEntity> {
 
     // *--- For Public Services ---* //
     public async getOrderByUser(userId: string) {
-        const orders = await this.orderRepository.find({
+        const orders: OrderEntity[] = await this.orderRepository.find({
             where: { user: { id: userId } },
             relations: ['orderItems', 'orderItems.product'],
         })
 
-        if (orders.length === 0) {
-            throw new NotFoundException('Not found any orders');
-        }
+        notFoundException(orders, 'Orders');
         // TODO Build a MAPPER
 
         return orders;

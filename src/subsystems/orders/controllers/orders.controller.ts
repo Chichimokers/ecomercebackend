@@ -20,7 +20,7 @@ import { OrderService } from '../services/orders.service';
 import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../../common/interfaces/basequery.interface';
+import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
 
 @ApiTags('orders')
 @ApiBearerAuth()

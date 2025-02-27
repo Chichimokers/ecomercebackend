@@ -1,11 +1,10 @@
 import {
-    BadRequestException,
     Inject,
     Injectable,
-    NotFoundException,
 } from '@nestjs/common';
 import { ProductService } from '../../products/services/product.service';
 import { CategoryService } from '../../category/services/category.service';
+import { badRequestException, notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class PublicService {
@@ -52,11 +51,7 @@ export class PublicService {
               )
             : await this.categoryService.getCategoriesWithSubCategories();
 
-        console.log(categories);
-
-        if (productsData.products.length === 0) {
-            throw new NotFoundException('Not found products!');
-        }
+        notFoundException(productsData.products, 'Products');
 
         const { previousUrl, nextUrl, totalPages } = productsData.urls;
 
@@ -71,32 +66,24 @@ export class PublicService {
 
     // *--- Search Product By Name ---* //
     public async getProductByName(name: string) {
-        if (!name) {
-            throw new BadRequestException('Name is required');
-        }
+        badRequestException(name, 'Name');
 
         const products = await this.productService.searchProductByName(name);
 
-        if (products.length === 0) {
-            throw new NotFoundException('Product not found');
-        }
+        notFoundException(products, 'Product');
 
         return products;
     }
 
     // *--- Get Product Detail ---* //
     public async getProductDetails(id: string) {
-        if (!id) {
-            throw new BadRequestException('ID is required');
-        }
+        badRequestException(id, 'ID');
 
         return await this.productService.getProductDetails(id);
     }
 
     public async getProductRelation(id: string) {
-        if (!id) {
-            throw new BadRequestException('ID is required');
-        }
+        badRequestException(id, 'ID');
 
         return await this.productService.getRelations(id);
     }

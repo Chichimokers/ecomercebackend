@@ -2,8 +2,6 @@ import { BaseService } from '../services/base.service';
 import { Body, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { Roles } from '../../subsystems/roles/decorators/roles.decorator';
 import { roles } from '../../subsystems/roles/enum/roles.enum';
-import { BaseDto } from '../dto/base.dto';
-import { Type } from 'class-transformer';
 
 // TODO Finish this
 export abstract class BaseController<T> {
