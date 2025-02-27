@@ -14,7 +14,7 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 export class UserPublicController {
     constructor(private orderService: OrderService) { }
 
-    @Post('create-order')
+    @Post('/create-order')
     @Roles(roles.User)
     createOrder(@Req() request: any, @Body() orderdto: BuildOrderDTO) {
         const userid = request.user.Id;
