@@ -19,12 +19,10 @@ jobs:
       - name: Instalar dependencias
         run: npm install --force --verbose
 
-
-      - name: Detener sesiones anteriores
+      - name: Detener sesión tmux anterior (si existe)
         run: |
-          screen -list | grep -q "esakiback" && screen -XS esakiback quit || true
+          tmux kill-session -t esakiback || true
 
-      - name: Iniciar aplicación con screen
+      - name: Iniciar aplicación con tmux
         run: |
-         screen  -dmS esakiback npm run start:prod
-
+          tmux new-session -d -s esakiback "npm run start:prod"
