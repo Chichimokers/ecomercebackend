@@ -19,8 +19,24 @@ jobs:
       - name: Instalar dependencias
         run: npm install --force --verbose
 
-      - name: Detener proceso anterior
-        run: pkill -f "npm run start:prod" || true  # Termina cualquier instancia previa
+      - name: Instalar screen
+        run: sudo apt-get install -y screen
 
-      - name: Iniciar aplicación en segundo plano
-        run: nohup npm run start:prod > app.log 2>&1 &
+      - name: Preparar archivo de log
+        run: |
+          sudo touch /home/appback.log
+          sudo chown $USER:$USER /home/appback.log
+
+      - name: Detener sesiones anteriores
+        run: |
+          screen -list | grep -q "esakiback" && screen -XS esakiback quit || true
+
+      - name: Iniciar aplicación con screen
+        run: |
+          screen -Logfile /home/appback.log -L -dmS esakiback npm run start:prod
+
+      - name: Verificar sesión
+        run: |
+          sleep 3
+          screen -list
+          ps aux | grep -q "[n]pm run start:prod" || (echo "¡Error al iniciar!" && exit 1)
