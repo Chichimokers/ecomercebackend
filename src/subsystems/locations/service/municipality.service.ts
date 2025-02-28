@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MunicipalityEntity } from '../entity/municipality.entity';
 import { Repository } from 'typeorm';
 import { ProvinceEntity } from '../entity/province.entity';
-import { notFoundException } from '../../../common/exceptions/modular.exception';
+import { badRequestException, notFoundException } from '../../../common/exceptions/modular.exception';
+import { PriceByWeightEntity } from '../entity/priceByWeight.entity';
 
 @Injectable()
 export class MunicipalityService extends BaseService<MunicipalityEntity> {
@@ -17,6 +18,8 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
         private readonly municipalityRepository: Repository<MunicipalityEntity>,
         @InjectRepository(ProvinceEntity)
         private readonly provinceRepository: Repository<ProvinceEntity>,
+        @InjectRepository(PriceByWeightEntity)
+        private readonly priceBWERepository: Repository<PriceByWeightEntity>,
     ) {
         super(municipalityRepository);
     }
@@ -28,10 +31,27 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
 
         notFoundException(province, 'Province');
 
-        return this.municipalityRepository.create({
-            name: dto.name,
-            price: dto.price,
-            province: province,
+        let prices: PriceByWeightEntity = this.priceBWERepository.create({
+            price: dto.prices.price,
+            minWeight: dto.prices.minWeight,
+            maxWeight: dto.prices.maxWeight,
         });
+
+        badRequestException(prices, 'Prices');
+
+        const municipality: MunicipalityEntity = this.municipalityRepository.create({
+            name: dto.name,
+            province: province,
+            prices: [prices],
+        });
+
+        badRequestException(municipality, 'Municipality');
+
+        prices.municipality = municipality;
+
+        await this.priceBWERepository.save(prices);
+        await this.municipalityRepository.save(municipality);
+
+        return municipality;
     }
 }

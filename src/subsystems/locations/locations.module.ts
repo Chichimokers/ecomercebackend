@@ -7,12 +7,14 @@ import { MunicipalityController } from './controller/municipality.controller';
 import { ProvinceController } from './controller/province.controller';
 import { ProvinceService } from './service/province.service';
 import { MunicipalityService } from './service/municipality.service';
+import { PriceByWeightEntity } from './entity/priceByWeight.entity';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             ProvinceEntity,
             MunicipalityEntity,
+            PriceByWeightEntity,
         ]),
         ConfigModule.forRoot({ isGlobal: true }),
     ],

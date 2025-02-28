@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsPositive, IsString, Length, ValidateNested } from "class-validator";
+import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { Type } from "class-transformer";
 import { IsValidCI } from "../../../../orders/decorators/orders.decorator";
 
@@ -75,7 +75,7 @@ export class BuildOrderDTO {
     })
     @IsNotEmpty()
     @IsString()
-    @IsValidCI() // TODO test this!
+    @IsValidCI()
     @Length(11, 20)
     ci: string;
 
@@ -87,4 +87,12 @@ export class BuildOrderDTO {
     @IsString()
     @Length(1, 15)
     phone: string;
+
+    @ApiProperty({
+        example: 'a6e0c570-be0e-4a7d-93c5-767a7767890b',
+        description: 'The id of the province',
+    })
+    @IsNotEmpty()
+    @IsUUID()
+    municipality: string;
 }
