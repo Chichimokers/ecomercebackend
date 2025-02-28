@@ -26,4 +26,4 @@ jobs:
 
       - name: Iniciar aplicación con tmux
         run: |
-          tmux new-session -d -s esakiback "npm run start:prod"
+          tmux new -s esakiback "npm run start:prod"
