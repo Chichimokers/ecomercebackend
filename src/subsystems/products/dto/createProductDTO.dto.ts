@@ -21,7 +21,17 @@ export class createProductDTO extends BaseDto {
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
     name: string;
-    
+
+    @ApiProperty({
+        example: "peso",
+        description: "peso del producto ",
+    })
+    @IsNumber()
+    @MinLength(2, { message: 'Name must have at least 2 characters.' })
+    @MaxLength(20, { message: 'Name must have max 20 characters.' })
+    @IsNotEmpty()
+    weight: number;
+
     @ApiProperty({
         example: "123.25",
         description: "A valid price",
