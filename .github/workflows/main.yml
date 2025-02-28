@@ -19,8 +19,6 @@ jobs:
       - name: Instalar dependencias
         run: npm install --force --verbose
 
-      - name: Instalar screen
-        run: sudo apt-get install -y screen
 
       - name: Preparar archivo de log
         run: |
