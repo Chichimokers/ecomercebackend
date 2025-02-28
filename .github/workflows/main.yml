@@ -23,6 +23,7 @@ jobs:
         run: |
           tmux kill-session -t esakiback || true
 
+
       - name: Iniciar aplicación con tmux
         run: |
           tmux new-session -d -s esakiback "npm run start:prod"
