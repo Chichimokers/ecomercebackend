@@ -26,5 +26,5 @@ jobs:
 
       - name: Iniciar aplicación con screen
         run: |
-          screen  -dmS esakiback npm run start:prod
+         screen  -dmS esakiback npm run start:prod
 
