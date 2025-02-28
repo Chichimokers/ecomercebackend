@@ -32,9 +32,9 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
         notFoundException(province, 'Province');
 
         let prices: PriceByWeightEntity = this.priceBWERepository.create({
+
             price: dto.prices.price,
-            minWeight: dto.prices.minWeight,
-            maxWeight: dto.prices.maxWeight,
+            weight:dto.prices.weight
         });
 
         badRequestException(prices, 'Prices');

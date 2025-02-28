@@ -8,11 +8,8 @@ export class priceDTO {
 
     @IsOptional()
     @IsNumber()
-    minWeight?: number;
+    weight?: number;
 
-    @IsOptional()
-    @IsNumber()
-    maxWeight?: number;
 }
 
 export class createMunicipalityDTO {
