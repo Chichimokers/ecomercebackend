@@ -8,7 +8,7 @@ jobs:
   build-and-test:
     runs-on: self-hosted
     steps:
-      - name: Clonar el repositorio
+      - name: Clonar repositorio
         uses: actions/checkout@v3
 
       - name: Configurar Node.js
@@ -19,11 +19,20 @@ jobs:
       - name: Instalar dependencias
         run: npm install --force --verbose
 
-      - name: Detener sesión tmux anterior (si existe)
+      - name: Verificar y detener instancia previa del servidor
         run: |
-          tmux kill-session -t esakiback || true
+          echo "Buscando proceso existente..."
+          if pgrep -f "npm run start:prod"; then
+            echo "Servidor en ejecución. Deteniendo..."
+            pkill -f "npm run start:prod"
+            sleep 3
+          else
+            echo "No se encontró ningún servidor en ejecución."
+          fi
 
-
-      - name: Iniciar aplicación con tmux
+      - name: Iniciar servidor en background
         run: |
-          tmux new -s esakiback "npm run start:prod"
+          echo "Iniciando el servidor en segundo plano..."
+          npm run start:prod &
+          sleep 5  # Espera para que el servidor se inicie
+
