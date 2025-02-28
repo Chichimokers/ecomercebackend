@@ -1,0 +1,17 @@
+# Usa una imagen base oficial de Node.js
+FROM node:22.2.0
+
+# Establece el directorio de trabajo en el contenedor
+WORKDIR /usr/src/app
+
+# Copia los archivos del proyecto al contenedor
+COPY . .
+
+# Instala las dependencias
+RUN npm install --force --verbose
+
+# Expone el puerto en el que tu aplicación escuchará
+EXPOSE 3000
+
+# Comando para iniciar la aplicación en producción
+CMD ["npm", "run", "start:prod"]
