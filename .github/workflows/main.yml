@@ -3,10 +3,10 @@ on:
   push:
     branches:
       - master
-      
+
 jobs:
   build-and-test:
-    runs-on: self-hosted  # Usará tu VPS como runner
+    runs-on: self-hosted
     steps:
       - name: Clonar el repositorio
         uses: actions/checkout@v3
@@ -15,25 +15,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 22.2.0
-    
-      - name: Instalar dotenv cli
-      
-        run:   npm install -g dotenv-cli
 
-      - name: Instalar  cli pm2
+      - name: Instalar dependencias
+        run: npm install --force --verbose
 
-        run:   npm install -g pm2
+      - name: Detener proceso anterior
+        run: pkill -f "npm run start:prod" || true  # Termina cualquier instancia previa
 
-      - name: Instalar deps a
-        run:  npm install --force -verbose
-
-      - name: parando 
-  
-        run: pm2 delete esakiback || true
-
-
-
-      - name: iniciar la aplicación
-        run: pm2 start npm --name "esakiback" -- run start:prod
-      
-
+      - name: Iniciar aplicación en segundo plano
+        run: nohup npm run start:prod > app.log 2>&1 &
