@@ -43,7 +43,8 @@ export class PaypalService {
         return response.data.status === 'COMPLETED';
     }
 
-    async CreateJSONOrder(carts: OrderEntity, moneda: string): Promise<any> {
+  
+    async CreateJSONOrder(carts: OrderEntity, moneda: string,precioenvio :number): Promise<any> {
         // Verificar si la orden existe
 
         if (!carts || !carts.orderItems) {
@@ -67,17 +68,17 @@ export class PaypalService {
                     reference_id: requestId, // Usar el UUID generado
                     amount: {
                         currency_code: moneda,
-                        value: subtotal, // Asignar el subtotal calculado
+                        value: subtotal+ precioenvio, // Asignar el subtotal calculado
 
                         breakdown: {
                             item_total: {
                                 currency_code: moneda,
-                                value: subtotal, // Asignar el subtotal calculado
+                                value: subtotal+precioenvio, // Asignar el subtotal calculado
                             },
                         },
                     },
                     //TODO Items
-                    items: carts.orderItems.map((item) => ({
+                    items:[carts.orderItems.map((item) => ({
                         name: item.product.name, // Asumiendo que cada cart tiene un atributo 'productName'
                         unit_amount: {
                             currency_code: moneda,
@@ -88,6 +89,18 @@ export class PaypalService {
                         },
                         quantity: item.quantity.toString(), // Asumiendo que cada cart tiene un atributo 'quantity'
                     })),
+                                
+                    {                     
+                        name : "Envio", 
+                   
+                        unit_amount: {
+                            currency_code: moneda,
+                            value: precioenvio 
+                        },
+                        quantity: 1
+                    }
+
+                ],
                 },
             ],
             payment_source: {
@@ -106,17 +119,55 @@ export class PaypalService {
 
         return order;
     }
+    
+    async calcularprecio_envio(ordern: OrderEntity): Promise<number> {
+        // Validación de productos
+        if (!ordern.orderItems?.length) {
+            throw new Error('La orden no contiene productos');
+        }
+    
+        // Cálculo de peso total con validación
+        const pesoTotal = ordern.orderItems.reduce((total, item) => {
+            if (!item.product?.weight || item.product.weight <= 0) {
+                throw new Error(`Peso inválido en producto: ${item.product?.id}`);
+            }
+            return total + (item.product.weight * item.quantity);
+        }, 0);
+    
+        if (pesoTotal <= 0) throw new Error('Peso total inválido');
+    
+        // Validación de estructura de municipio
+        const municipio = ordern.municipality;
+        if (!municipio?.price || !municipio.prices?.length) {
+            return municipio?.price || 0; // Si no hay precios especiales
+        }
+    
+        // Procesamiento de precios
+        const preciosOrdenados = [...municipio.prices]
+            .filter(p => p.weight !== null && p.weight > 0)
+            .sort((a, b) => b.weight! - a.weight!);
+    
+        // Encontrar el primer precio que aplica
+        const precioAplicable = preciosOrdenados.find(p => pesoTotal >= p.weight!);
+        
+        return precioAplicable?.price ?? municipio.price;
+    }
 
     async CreateOrder(orderid: string, userid: string): Promise<string> {
+        
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: [
                 'orderItems',
                 'orderItem.product',
                 'orderItem.product.discounts',
-            ], // Asegúrate de incluir la relación 'carts'
+                'municipality',          // Relación directa de OrderEntity -> MunicipalityEntity
+                'municipality.prices'     // Relación MunicipalityEntity -> PriceByWeightEntity
+            ],
         });
 
+        const precioenvio : number = await this.calcularprecio_envio(orderbd)
+        
         let order: string = '';
 
         if (userid.toString() !== orderbd.user.id.toString()) {
@@ -125,7 +176,7 @@ export class PaypalService {
 
         notFoundException(orderbd, 'Order');
 
-        order = await this.CreateJSONOrder(orderbd, 'USD');
+        order = await this.CreateJSONOrder(orderbd, 'USD',precioenvio);
 
         //Obteniendo Token
         const paramas = new URLSearchParams();
