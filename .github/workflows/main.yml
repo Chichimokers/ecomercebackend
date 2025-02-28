@@ -32,7 +32,6 @@ jobs:
 
       - name: Iniciar servidor en background
         run: |
-          echo "Iniciando el servidor en segundo plano..."
-          npm run start:prod &
-          sleep 5  # Espera para que el servidor se inicie
+          npm run start:prod 
+   
 
