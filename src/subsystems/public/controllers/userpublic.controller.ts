@@ -22,11 +22,11 @@ export class UserPublicController {
         return this.orderService.createOrderService(userid, orderdto);
     }
 
-    @Post('/cancel-order')
+    @Post('/retire-order')
     @Roles(roles.User)
-    cancelOrder(@Req() request: any, @Body() orderdto: DeleteOrderDTO) {
+    retireOrder(@Req() request: any, @Body() orderdto: DeleteOrderDTO) {
         const userid = request.user.Id;
-        return this.orderService.cancelOrderByUser(userid, orderdto.orderId);
+        return this.orderService.retireOrderByUser(userid, orderdto.orderId);
     }
 
     // *--- For Order View ---* //

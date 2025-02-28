@@ -173,14 +173,14 @@ export class OrderService extends BaseService<OrderEntity> {
         return orders;
     }
 
-    public async cancelOrderByUser(userId: string, orderId: string) {
+    public async retireOrderByUser(userId: string, orderId: string) {
         const order: OrderEntity = await this.orderRepository.findOne({
             where: { user: { id: userId }, id: orderId },
         });
 
         notFoundException(order, 'Order');
 
-        order.status = OrderStatus.Cancelled;
+        order.status = OrderStatus.Retired;
 
         await this.orderRepository.save(order);
 
