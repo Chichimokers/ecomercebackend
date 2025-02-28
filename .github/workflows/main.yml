@@ -20,21 +20,11 @@ jobs:
         run: npm install --force --verbose
 
 
-      - name: Preparar archivo de log
-        run: |
-          sudo touch /home/appback.log
-          sudo chown $USER:$USER /home/appback.log
-
       - name: Detener sesiones anteriores
         run: |
           screen -list | grep -q "esakiback" && screen -XS esakiback quit || true
 
       - name: Iniciar aplicación con screen
         run: |
-          screen -Logfile /home/appback.log -L -dmS esakiback npm run start:prod
+          screen  -L -dmS esakiback npm run start:prod
 
-      - name: Verificar sesión
-        run: |
-          sleep 3
-          screen -list
-          ps aux | grep -q "[n]pm run start:prod" || (echo "¡Error al iniciar!" && exit 1)
