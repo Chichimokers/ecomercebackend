@@ -1,15 +1,16 @@
-import { IsNotEmpty, MaxLength, IsString, IsNumber, IsPositive, IsUUID, IsOptional } from 'class-validator';
+import { IsNotEmpty, MaxLength, IsString, IsNumber, IsPositive, IsUUID, IsOptional, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class priceDTO {
+export class priceBWDTO {
+    @IsNotEmpty()
     @IsNumber()
     @IsPositive()
     price: number;
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
-    weight?: number;
-
+    @IsPositive()
+    minWeight: number;
 }
 
 export class createMunicipalityDTO {
@@ -30,6 +31,11 @@ export class createMunicipalityDTO {
     @IsUUID()
     province: string;
 
+    @IsNumber()
+    @IsPositive()
+    basePrice: number;
+
     @IsNotEmpty()
-    prices: priceDTO;
+    @IsArray()
+    weightPrices: priceBWDTO[];
 }

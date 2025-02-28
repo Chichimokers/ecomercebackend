@@ -14,9 +14,8 @@ export class PriceByWeightEntity extends BaseEntity {
     @IsOptional()
     @IsNumber()
     @Column({ type: 'float', nullable: true })
-    weight?: number;
+    minWeight?: number;
 
- 
     @ManyToOne(() => MunicipalityEntity, (municipality) => municipality.prices)
     municipality: MunicipalityEntity;
 }

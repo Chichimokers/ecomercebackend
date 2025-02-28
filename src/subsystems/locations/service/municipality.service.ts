@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { ProvinceEntity } from '../entity/province.entity';
 import { badRequestException, notFoundException } from '../../../common/exceptions/modular.exception';
 import { PriceByWeightEntity } from '../entity/priceByWeight.entity';
+import { createMunicipalityDTO } from '../dto/municipalitydto/createMunicipality.dto';
 
 @Injectable()
 export class MunicipalityService extends BaseService<MunicipalityEntity> {
@@ -31,25 +32,32 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
 
         notFoundException(province, 'Province');
 
-        let prices: PriceByWeightEntity = this.priceBWERepository.create({
+        let pricesWeight: PriceByWeightEntity[] = [];
 
-            price: dto.prices.price,
-            weight:dto.prices.weight
-        });
+        for (let i = 0; i < dto.weightPrices.length; i++) {
+            pricesWeight.push(
+                this.priceBWERepository.create({
+                    minWeight: dto.weightPrices[i].minWeight,
+                    price: dto.weightPrices[i].price,
+                })
+            );
+        }
 
-        badRequestException(prices, 'Prices');
+        badRequestException(pricesWeight, 'Prices');
 
         const municipality: MunicipalityEntity = this.municipalityRepository.create({
             name: dto.name,
             province: province,
-            prices: [prices],
+            prices: pricesWeight,
         });
 
         badRequestException(municipality, 'Municipality');
 
-        prices.municipality = municipality;
+        for (let i = 0; i < pricesWeight.length; i++) {
+            pricesWeight[i].municipality = municipality;
+            await this.priceBWERepository.save(pricesWeight[i]);
+        }
 
-        await this.priceBWERepository.save(prices);
         await this.municipalityRepository.save(municipality);
 
         return municipality;
