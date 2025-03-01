@@ -13,9 +13,6 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v3
 
-      - name: Iniciar Docker si es necesario (solo para self-hosted)
-        run: |
-          sudo systemctl start docker || true  # Asegura que el servicio Docker esté activo
 
       - name: Construir imagen con etiqueta latest
         run: |
