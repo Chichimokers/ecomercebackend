@@ -7,19 +7,32 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # Especifica que se ejecuta en un runner self-hosted
 
     steps:
       - name: Clonar repositorio
         uses: actions/checkout@v3
 
+      - name: Iniciar Docker si es necesario (solo para self-hosted)
+        run: |
+          sudo systemctl start docker || true  # Asegura que el servicio Docker esté activo
+
       - name: Construir imagen con etiqueta latest
         run: |
-          docker build -f DockerFile.integration -t esakiback:1.0 .
+          docker build -f DockerFile.integration -t esakiback:latest .
 
-      - name: Reiniciar contenedor con la nueva imagen
+      - name: Eliminar contenedor antiguo
         run: |
-          # Fuerza la eliminación del contenedor si existe
-          docker rm -f esakiback || true
-          # Ejecuta la nueva versión
-          docker run -d -p 3100:3100 --name esakiback --restart unless-stopped esakiback:1.0
+          docker rm -f esakiback || true  # Fuerza eliminación si existe
+
+      - name: Limpiar imágenes huérfanas (opcional)
+        run: |
+          docker image prune -f  # Elimina imágenes sin uso para ahorrar espacio
+
+      - name: Ejecutar nuevo contenedor
+        run: |
+          docker run -d \
+            --name esakiback \
+            -p 3100:3100 \
+            --restart unless-stopped \
+            esakiback:latest
