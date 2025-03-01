@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-
 jobs:
   build-and-deploy:
     runs-on: self-hosted  # Especifica que se ejecuta en un runner self-hosted
