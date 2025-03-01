@@ -15,7 +15,7 @@ jobs:
 
       - name: Construir imagen con etiqueta latest
         run: |
-          docker build -f DockerFile.integration -t esakiback:latest .
+          docker build -f DockerFile.vps -t esakiback:latest .
 
       - name: Eliminar contenedor antiguo
         run: |
