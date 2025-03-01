@@ -15,11 +15,11 @@ jobs:
 
       - name: Construir imagen con etiqueta latest
         run: |
-          docker build -f Dockerfile.integration -t esakiback:latest .
+          docker build -f Dockerfile.integration -t esakiback:1.0 .
 
       - name: Reiniciar contenedor con la nueva imagen
         run: |
           # Fuerza la eliminación del contenedor si existe
           docker rm -f esakiback || true
           # Ejecuta la nueva versión
-          docker run -d -p 3100:3100 --name esakiback --restart unless-stopped esakiback:latest
+          docker run -d -p 3100:3100 --name esakiback --restart unless-stopped esakiback:1.0
