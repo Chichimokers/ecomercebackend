@@ -29,6 +29,17 @@ export class DiscountProductDTO {
 }
 
 export class UpdateProductDTO extends BaseDto{
+    
+    @ApiProperty({
+        example: "peso",
+        description: "peso del producto ",
+    })
+    @IsNumber()
+    @MinLength(2, { message: 'Name must have at least 2 characters.' })
+    @MaxLength(20, { message: 'Name must have max 20 characters.' })
+    @IsNotEmpty()
+    weight?: number;
+
     @ApiProperty({
         example: "Meat",
         description: "Product Name",

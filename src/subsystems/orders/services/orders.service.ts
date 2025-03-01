@@ -2,8 +2,8 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
-import { BaseService } from "../../../common/services/base.service";
-import { UserService } from "../../user/service/user.service";
+import { BaseService } from '../../../common/services/base.service';
+import { UserService } from '../../user/service/user.service';
 import { ProductEntity } from '../../products/entity/product.entity';
 import {
     BuildOrderDTO,
@@ -111,7 +111,6 @@ export class OrderService extends BaseService<OrderEntity> {
     private async validateProducts(
         products: ProductOrderDTO[],
     ): Promise<ProductEntity[]> | null {
-
         const ids: string[] = products.map((elemnt) => elemnt.product_id);
         const foundProducts: ProductEntity[] =
             await this.productRepository.find({
@@ -144,7 +143,6 @@ export class OrderService extends BaseService<OrderEntity> {
                 relations: ['product'],
             });
 
-
         // Go through all the products related to the order to verify if there is still enough stock
         for (const relation of productOrderRelation) {
             if (relation.quantity > relation.product.quantity) {
@@ -167,12 +165,26 @@ export class OrderService extends BaseService<OrderEntity> {
         const orders: OrderEntity[] = await this.orderRepository.find({
             where: { user: { id: userId } },
             relations: ['orderItems', 'orderItems.product'],
-        })
+        });
 
         notFoundException(orders, 'Orders');
         // TODO Build a MAPPER
 
         return orders;
+    }
+
+    public async retireOrderByUser(userId: string, orderId: string) {
+        const order: OrderEntity = await this.orderRepository.findOne({
+            where: { user: { id: userId }, id: orderId },
+        });
+
+        notFoundException(order, 'Order');
+
+        order.status = OrderStatus.Retired;
+
+        await this.orderRepository.save(order);
+
+        return true;
     }
 }
 

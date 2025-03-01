@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { BaseDto } from "../../../common/dto/base.dto";
 import { User } from '../../user/entities/user.entity';
 
@@ -33,4 +33,12 @@ export class CreateOrderDTO extends BaseDto {
     @IsNotEmpty()
     @IsString()
     CI :string
+
+    @ApiProperty({
+        example: 'a6e0c570-be0e-4a7d-93c5-767a7767890b',
+        description: 'The id of the province',
+    })
+    @IsNotEmpty()
+    @IsUUID()
+    municipality: string;
 }

@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { OrderProductEntity } from "./order_products.entity";
 import { OrderStatus } from "../enums/orderStatus.enum";
+import { MunicipalityEntity } from '../../locations/entity/municipality.entity';
 
 @Entity({name:"tb_orders"})
 @Check(`"subtotal" >= 0`)
@@ -53,4 +54,6 @@ export class OrderEntity  extends BaseEntity{
     @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.order)
     orderItems: OrderProductEntity[];
 
+    @ManyToOne(() => MunicipalityEntity)
+    municipality: MunicipalityEntity;
 }
