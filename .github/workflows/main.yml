@@ -1,45 +1,27 @@
-name: CI Pipeline
+name: Deploy to Docker
 
 on:
-
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
 
 jobs:
-  build-and-test:
-    runs-on: self-hosted  # Usará tu VPS como runner
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Clonar el repositorio
+      - name: Clonar repositorio
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22.2.0
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Instalar dotenv cli
-      
-      
-        run:   npm install -g dotenv-cli
+      - name: Construir la imagen Docker
+        run: |
+          docker build -f DockerFile.integration  -t esakiback .
+        env:
+          DOCKER_BUILDKIT: 1
 
-      - name: Instalar  cli pm2
-
-        run:   npm install -g pm2
-
-      - name: Instalar deps a
-        run:  npm install --force -verbose
-
-      - name: parando 
-  
-        run: pm2 delete esakiback || true
-
-
-
-      - name: iniciar la aplicación
-        run: pm2 start npm --name "esakiback" -- run start:prod
-
-
+      - name: Ejecutar el contenedor
+        run: |
+          docker run -d -p 3100:3100 --name esakiback esakiback
