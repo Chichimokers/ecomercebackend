@@ -6,8 +6,11 @@ import { Repository } from 'typeorm';
 import { OrderService } from '../../orders/services/orders.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toNumber } from '../../../common/utils/cast.utils';
-import { OrderProductEntity } from "../../orders/entities/order_products.entity";
-import { calculateDiscount, getPrice } from "../../../common/utils/global-functions.utils";
+import { OrderProductEntity } from '../../orders/entities/order_products.entity';
+import {
+    calculateDiscount,
+    getPrice,
+} from '../../../common/utils/global-functions.utils';
 import { notFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
@@ -19,14 +22,19 @@ export class StripeService {
         private readonly orderRepository: Repository<OrderEntity>,
     ) {
         this.stripe = new Stripe(STRIPE_SECRET_KEY, {
-            apiVersion: "2025-02-24.acacia",
+            apiVersion: '2025-02-24.acacia',
         });
     }
 
     async createCheckoutSession(orderid: string, currency: string = 'usd') {
         const orderEntity: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.discounts'], // Asegúrate de incluir la relación 'carts'
+            relations: [
+                'user',
+                'orderItems',
+                'orderItems.product',
+                'orderItems.product.discounts',
+            ], // Asegúrate de incluir la relación 'carts'
         });
 
         notFoundException(orderEntity, 'Order');
@@ -57,7 +65,7 @@ export class StripeService {
         };
     }
 
-   private async createJSONOrder(
+    private async createJSONOrder(
         order: OrderEntity,
         currency: string = 'usd',
     ): Promise<any> {
@@ -65,15 +73,17 @@ export class StripeService {
         if (!order || !order.orderItems) {
             throw new Error('No se encontraron productos en la orden.'); // Manejo de error
         }
-    
+
         let subtotal: number = 0;
         // Calcular subtotal
-       order.orderItems.forEach((orderItem: OrderProductEntity): void => {
-           subtotal += calculateDiscount(orderItem.product, orderItem.quantity);
-       });
-    
+        order.orderItems.forEach((orderItem: OrderProductEntity): void => {
+            subtotal += calculateDiscount(
+                orderItem.product,
+                orderItem.quantity,
+            );
+        });
+
         return {
-            
             success_url: `${HOST}/visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
             mode: 'payment',
             currency: currency,
@@ -83,22 +93,27 @@ export class StripeService {
                 user_id: order.user.id.toString(),
             },
             // Items del carrito
-            line_items: order.orderItems.map((orderItem: OrderProductEntity) => ({
-                price_data: {
-                    currency: currency,
-                    product_data: {
-                        name: orderItem.product.name,
+            line_items: order.orderItems.map(
+                (orderItem: OrderProductEntity) => ({
+                    price_data: {
+                        currency: currency,
+                        product_data: {
+                            name: orderItem.product.name,
+                        },
+                        unit_amount:
+                            getPrice(orderItem.product, orderItem.quantity) *
+                            100,
                     },
-                    unit_amount: getPrice(orderItem.product, orderItem.quantity) * 100,
-                },
-                quantity: orderItem.quantity,
-            })),
-        }
+                    quantity: orderItem.quantity,
+                }),
+            ),
+        };
     }
 
     async CaptureCheckoutSession(order_id: string) {
-        
-        const order = await this.orderRepository.findOne({ where: { id: order_id } });
+        const order = await this.orderRepository.findOne({
+            where: { id: order_id },
+        });
 
         const sessionId = order.stripe_id;
 
