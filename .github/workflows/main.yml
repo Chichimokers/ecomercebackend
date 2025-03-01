@@ -13,7 +13,6 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v3
 
-
       - name: Construir imagen con etiqueta latest
         run: |
           docker build -f DockerFile.integration -t esakiback:latest .
@@ -25,6 +24,7 @@ jobs:
       - name: Limpiar imágenes huérfanas (opcional)
         run: |
           docker image prune -f  # Elimina imágenes sin uso para ahorrar espacio
+
 
       - name: Ejecutar nuevo contenedor
         run: |
