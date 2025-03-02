@@ -1,10 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { MailerService } from '@nestjs-modules/mailer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MailsService {
-    constructor(public mailservice: MailerService) {}
+    constructor(
+        public mailservice: MailerService,
+        /*@InjectRepository(OrderEntity)
+        private readonly orderRepository: Repository<OrderEntity>,*/
+    ) {}
+
+    public async sendOrderAcceptedMail(order: OrderEntity, email: string) {
+        await this.mailservice.sendMail({
+            to: email,
+            subject: 'Tu orden ha sido aceptada. GRACIAS POR COMPRAR!',
+            // TODO Investigar y sacar alguna idea para esto.
+        })
+    }
 
     public async sendOrderMail(order: OrderEntity, email: string) {
         await this.mailservice.sendMail({

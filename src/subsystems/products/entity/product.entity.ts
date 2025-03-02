@@ -42,7 +42,6 @@ export class ProductEntity extends BaseEntity {
     @IsPositive()
     weight: number;
 
-
     @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.product)
     orderItems: OrderProductEntity[];
 
