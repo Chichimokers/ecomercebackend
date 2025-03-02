@@ -10,7 +10,7 @@ export const PostgresDataSource = new DataSource({
     password: process.env.POSTGRES_PASSWORD || 'mypassword',
     database: process.env.POSTGRES_DATABASE || 'esaquishop',
     synchronize:  true,
-    logging: true,
+    logging: false,
     migrationsRun: true,
     entities: [__dirname + '/**/*.entity{.ts,.js}'], // Busca todas las entidades
 });

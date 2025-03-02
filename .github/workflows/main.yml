@@ -1,48 +1,34 @@
-name: CI Pipeline
+name: Deploy to Docker
 
 on:
-
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
-
 jobs:
-  build-and-test:
-    runs-on: self-hosted  # Usará tu VPS como runner
+  build-and-deploy:
+    runs-on: self-hosted  # Especifica que se ejecuta en un runner self-hosted
+
     steps:
-      - name: Clonar el repositorio
+      - name: Clonar repositorio
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22.2.0
+      - name: Construir imagen con etiqueta latest
+        run: |
+          docker build -f DockerFile.vps -t esakiback:latest .
 
-    
-      - name: Instalar dotenv cli
-      
-        run:   npm install -g dotenv-cli
+      - name: Eliminar contenedor antiguo
+        run: |
+          docker rm -f esakiback || true  # Fuerza eliminación si existe
 
-      - name: Instalar  cli pm2
-
-        run:   npm install -g pm2
-
-      - name: Instalar deps a
-        run:  npm install --force -verbose
-
-      - name: parando 
-  
-        run: pm2 delete esakiback || true
+      - name: Limpiar imágenes huérfanas (opcional)
+        run: |
+          docker image prune -f  # Elimina imágenes sin uso para ahorrar espacio
 
 
-
-      - name: iniciar la aplicación
-        run: pm2 start npm --name "esakiback" -- run start:prod
-
-      - name: Logs
-        run: pm2 logs esakiback
-      
-
+      - name: Ejecutar nuevo contenedor
+        run: |
+          docker run -d \
+            --name esakiback \
+            -p 3100:3100 \
+            --restart unless-stopped \
+            esakiback:latest
