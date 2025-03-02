@@ -26,7 +26,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
         ConfigModule.forRoot({ isGlobal: true }),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({
-            secret: jwtConstants.secret,
+            secret: process.env.JWT_SECRET || jwtConstants.secret,
             signOptions: { expiresIn: '60m' },
         }),
     ],
