@@ -11,10 +11,10 @@ export const ProductPublicQuery = createParamDecorator(
             page: query.page ? Number(query.page) : 1,
             limit: query.limit ? Number(query.limit) : 10,
             categoryIds: query.category
-                ? query.category.split(',').map(Number)
+                ? query.category.split(',').map(String)
                 : undefined,
             subCategoryIds: query.subcategory
-                ? query.subcategory.split(',').map(Number)
+                ? query.subcategory.split(',').map(String)
                 : undefined,
             prices: query.pricerange
                 ? query.pricerange.split('-').map(Number)
