@@ -28,6 +28,7 @@ export class MailsService {
 
     public async sendVerificationEmail(to: string, verificationCode: string) {
         try {
+            console.log(verificationCode);
             await this.mailservice.sendMail({
                 to: to, // Dirección de correo del destinatario
                 from: '"Esaki-Shop" <developer1575@gmail.com>', // Remitente

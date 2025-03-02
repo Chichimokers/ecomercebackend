@@ -14,7 +14,7 @@ import { BaseQueryInterface } from '../../public/interfaces/basequery.interface'
 @ApiTags('sub_category')
 @ApiBearerAuth()
 @Controller('sub_category')
-@UseGuards(LocalAuthGuard, RolesGuard)
+@UseGuards(LocalAuthGuard ,RolesGuard)
 export class SubCategoryController {
     constructor(private readonly subCategoryService: SubCategoryService) {}
 

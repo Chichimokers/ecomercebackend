@@ -35,7 +35,6 @@ import { BaseQueryInterface } from '../../public/interfaces/basequery.interface'
 @ApiBearerAuth()
 @Controller('products')
 @UseGuards(LocalAuthGuard,RolesGuard)
-
 export class ProductControllers {
 
     constructor(private readonly productservice: ProductService) { }
