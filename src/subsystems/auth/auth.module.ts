@@ -29,7 +29,7 @@ import { GoogleAuthGuard } from './guards/google.guard';
         ConfigModule.forRoot({ isGlobal: true }),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({
-            secret: process.env.JWT_SECRET || jwtConstants.secret,
+            secret: process.env.JWT_ACCESS_SECRET || jwtConstants.secret,
             signOptions: { expiresIn: '60m' },
         }),
     ],

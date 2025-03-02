@@ -5,27 +5,33 @@ import { roles } from "../../roles/enum/roles.enum";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-    constructor(private reflector: Reflector) {
-    }
+  constructor(private reflector: Reflector) {}
 
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles: roles[] = this.reflector.get<roles[]>(ROLES_KEY, context.getHandler());
     
-    canActivate(context: ExecutionContext): boolean {
-        const requiredRoles: roles[] = this.reflector.get<roles[]>(ROLES_KEY, context.getHandler());
-
-        if (!requiredRoles) {
-            return true; // Si no hay roles requeridos, permite el acceso
-        }
-
-        const request: any = context.switchToHttp().getRequest();
-        console.log(request.user);
-        const user: any = request.user; // Asegúrate de que el usuario esté disponible en la solicitud
-
-        console.log(user);
-
-        const hasRole  = (): boolean => user && requiredRoles.includes(user.role);
-        if (!hasRole()) {
-            throw new ForbiddenException('you dont have permission to access to this resource');
-        }
-        return true;
+    // Si no hay roles requeridos, permite el acceso
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
     }
+
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    // Verifica si el usuario existe y tiene un rol válido
+    if (!user?.role) {
+      throw new ForbiddenException('Usuario no autenticado o sin rol asignado');
+    }
+
+    // Comprueba si el rol del usuario está en los requeridos
+    const hasRequiredRole = requiredRoles.includes(user.role);
+    
+    if (!hasRequiredRole) {
+      throw new ForbiddenException(
+        `Acceso denegado. Roles permitidos: ${requiredRoles.join(', ')}`,
+      );
+    }
+
+    return true;
+  }
 }
