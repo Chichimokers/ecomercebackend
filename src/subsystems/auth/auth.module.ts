@@ -13,6 +13,9 @@ import { CodeService } from './service/code.service';
 import { MailsService } from '../mails/services/mails.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { LocalAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { GoogleAuthGuard } from './guards/google.guard';
 
 // Importar JwtStrategy
 
@@ -37,6 +40,10 @@ import { GoogleStrategy } from './strategies/google.strategy';
         AuthService,
         JwtStrategy,
         GoogleStrategy,
+        LocalAuthGuard,
+        RolesGuard,
+        GoogleAuthGuard,
+
         CodeService,
     ], // Agregar estrategias aquí
 })
