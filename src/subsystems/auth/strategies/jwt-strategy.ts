@@ -10,7 +10,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
             secretOrKey: process.env.JWT_ACCESS_SECRET || jwtConstants.secret,
-            
+            audience: process.env.GOOGLE_CLIENT_ID, // Client ID de Google
+            issuer: 'https://accounts.google.com',
+            algorithms: ['RS256'],
         });
     }
 
