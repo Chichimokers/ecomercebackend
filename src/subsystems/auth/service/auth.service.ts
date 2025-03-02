@@ -155,7 +155,7 @@ export class AuthService {
     async login(
         user: User,
     ): Promise<{ access_token: string; refresh_token: string }> {
-        
+
         const foundUser: User = await this.userRepository.findOne({
             where: {
                 name: user.username,

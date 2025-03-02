@@ -17,7 +17,7 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-
+    console.log(user)
     // Verifica si el usuario existe y tiene un rol válido
     if (!user?.role) {
       throw new ForbiddenException('Usuario no autenticado o sin rol asignado');
