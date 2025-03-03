@@ -59,6 +59,7 @@ export class ProductService
             quantity: dto.quantity,
             short_description: dto.short_description,
             description: dto.description,
+            weight: dto.weight,
             category: category,
             image: dto.image,
             subCategory: subCategory,
@@ -181,6 +182,7 @@ export class ProductService
             description: item.product_description,
             short_description: item.product_short_description,
             quantity: item.product_quantity,
+            weight: item.product_weight,
             averageRating: parseFloat(item.averageRating) || undefined,
             category:
                 item.category_name || item.product_categoryId || undefined,
