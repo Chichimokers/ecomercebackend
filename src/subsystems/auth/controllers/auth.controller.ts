@@ -40,12 +40,6 @@ export class AuthController {
         return { message: 'Verification code sent' };
     }
 
-    @Get('google')
-    @UseGuards(GoogleAuthGuard)
-    async googleAuth() {
-        // Esta ruta redirige al usuario a Google
-    }
-
     @Post('google/token-exchange')
     async googleTokenExchange(@Body() body: { token: string }) {
         try {

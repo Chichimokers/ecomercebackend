@@ -22,8 +22,8 @@ export class AuthService {
         @Inject(JwtService) private jwt: JwtService,
     ) {
         this.googleClient = new OAuth2Client(
-            process.env.GOOGLE_CLIENT_ID,
-            process.env.GOOGLE_CLIENT_SECRET,
+            process.env.GOOGLE_ID_OAUTH,
+            process.env.GOOGLE_SECRET_KEY,
         );
     }
 
