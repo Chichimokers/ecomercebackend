@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { BaseService } from '../../../common/services/base.service';
+import { Injectable } from "@nestjs/common";
+import { BaseService } from "../../../common/services/base.service";
 import { CategoryEntity, SubCategoryEntity } from "../entity/category.entity";
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class CategoryService extends BaseService<CategoryEntity> {
@@ -64,5 +64,9 @@ export class CategoryService extends BaseService<CategoryEntity> {
                         }))
                     : undefined, // Si la categoría no está en los IDs, subcategorías vacías
             }));
+    }
+
+    public async countCategories(): Promise<number> {
+        return await this.categoryRepository.count();
     }
 }

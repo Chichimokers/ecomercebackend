@@ -1,10 +1,13 @@
 import {
     Inject,
-    Injectable,
-} from '@nestjs/common';
-import { ProductService } from '../../products/services/product.service';
-import { CategoryService } from '../../category/services/category.service';
-import { badRequestException, notFoundException } from '../../../common/exceptions/modular.exception';
+    Injectable
+} from "@nestjs/common";
+import { ProductService } from "../../products/services/product.service";
+import { CategoryService } from "../../category/services/category.service";
+import { badRequestException, notFoundException } from "../../../common/exceptions/modular.exception";
+import { ProvinceService } from "../../locations/service/province.service";
+import { Cache } from '@nestjs/cache-manager';
+import { roundMinor } from "../utils/roundMinor";
 
 @Injectable()
 export class PublicService {
@@ -12,7 +15,11 @@ export class PublicService {
         @Inject(ProductService) private readonly productService: ProductService,
         @Inject(CategoryService)
         private readonly categoryService: CategoryService,
-    ) {}
+        @Inject(ProvinceService)
+        private readonly provinceService: ProvinceService,
+        @Inject(Cache) private cacheManager: Cache,
+    ) {
+    }
 
     // *--- For Home View ---* //
     public async getHomeView(limit: number) {
@@ -28,7 +35,7 @@ export class PublicService {
             subCategoryIds?: string[];
             prices?: number[];
             rate?: number;
-        } = {},
+        } = {}
     ) {
         const hasFilters: boolean = !!(
             filters.categoryIds?.length ||
@@ -39,19 +46,19 @@ export class PublicService {
 
         const productsData = hasFilters
             ? await this.productService.getFilteredProducts(
-                  filters,
-                  page,
-                  limit,
-              )
+                filters,
+                page,
+                limit
+            )
             : await this.productService.getProducts(page, limit);
 
         const categories = hasFilters
             ? await this.categoryService.getCategoriesWithSubCategories(
-                  filters.categoryIds,
-              )
+                filters.categoryIds
+            )
             : await this.categoryService.getCategoriesWithSubCategories();
 
-        notFoundException(productsData.products, 'Products');
+        notFoundException(productsData.products, "Products");
 
         const { previousUrl, nextUrl, totalPages } = productsData.urls;
 
@@ -60,30 +67,30 @@ export class PublicService {
             previousUrl: previousUrl,
             nextUrl: nextUrl,
             totalPages: totalPages,
-            categories,
+            categories
         };
     }
 
     // *--- Search Product By Name ---* //
     public async getProductByName(name: string) {
-        badRequestException(name, 'Name');
+        badRequestException(name, "Name");
 
         const products = await this.productService.searchProductByName(name);
 
-        notFoundException(products, 'Product');
+        notFoundException(products, "Product");
 
         return products;
     }
 
     // *--- Get Product Detail ---* //
     public async getProductDetails(id: string) {
-        badRequestException(id, 'ID');
+        badRequestException(id, "ID");
 
         return await this.productService.getProductDetails(id);
     }
 
     public async getProductRelation(id: string) {
-        badRequestException(id, 'ID');
+        badRequestException(id, "ID");
 
         return await this.productService.getRelations(id);
     }
@@ -91,5 +98,24 @@ export class PublicService {
     // *--- Get Categories ---* //
     public async getCategories() {
         return await this.categoryService.getCategoriesWithSubCategories();
+    }
+
+    // *--- Get Main View Products, Categories, Provinces ---* //
+    public async getMainViewInfo() {
+        const cacheManage: any = await this.cacheManager.get('counters');
+
+        if (cacheManage) {
+            return cacheManage;
+        }
+
+        const data = {
+            provinces: await this.provinceService.countProvinces(),
+            products: roundMinor(await this.productService.countProducts()),
+            category: await this.categoryService.countCategories(),
+        }
+
+        await this.cacheManager.set('counters', data);
+
+        return data
     }
 }

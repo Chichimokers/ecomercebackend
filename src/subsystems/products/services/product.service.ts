@@ -369,6 +369,10 @@ export class ProductService
         return this.mapProduct(query, true, 0, 15);
     }
 
+    public async countProducts(): Promise<number> {
+        return await this.productRepository.count();
+    }
+
     private async getUrls(
         query: SelectQueryBuilder<ProductEntity>,
         page: number,

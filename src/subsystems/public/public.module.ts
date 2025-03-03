@@ -14,6 +14,9 @@ import { CategoryService } from "../category/services/category.service";
 import { ProductService } from "../products/services/product.service";
 import { UserPublicController } from "./controllers/userpublic.controller";
 import { DiscountEntity } from '../discounts/entity/discounts.entity';
+import { CacheModule } from "@nestjs/cache-manager";
+import { ProvinceService } from "../locations/service/province.service";
+import { ProvinceEntity } from "../locations/entity/province.entity";
 
 @Module({
     imports:[
@@ -23,8 +26,13 @@ import { DiscountEntity } from '../discounts/entity/discounts.entity';
             CategoryEntity,
             SubCategoryEntity,
             DiscountEntity,
+            ProvinceEntity,
             User,
         ]),
+        CacheModule.register({
+            ttl: 86400,
+            max: 1,
+        }),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
     providers: [PublicService,
@@ -32,6 +40,7 @@ import { DiscountEntity } from '../discounts/entity/discounts.entity';
         UserService,
         CategoryService,
         ProductService,
+        ProvinceService,
     ],
     controllers: [PublicController, UserPublicController],
 })

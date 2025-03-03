@@ -16,4 +16,8 @@ export class ProvinceService extends BaseService<ProvinceEntity> {
     ) {
         super(provinceRepository);
     }
+
+    public async countProvinces(): Promise<number> {
+        return await this.provinceRepository.count();
+    }
 }

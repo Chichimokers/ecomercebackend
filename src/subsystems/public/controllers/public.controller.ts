@@ -113,4 +113,10 @@ export class PublicController {
     public getCategories() {
         return this.publicService.getCategories();
     }
+
+    // *--- For Main View Info ---* //
+    @Get('/main')
+    public getMainView() {
+        return this.publicService.getMainViewInfo();
+    }
 }
