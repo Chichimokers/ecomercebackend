@@ -186,7 +186,7 @@ export class AuthService {
     }
 
     async validateGoogleToken(token: string) {
-       
+            console.log(token)
             const ticket = await this.googleClient.verifyIdToken({
 
                 idToken: token,
