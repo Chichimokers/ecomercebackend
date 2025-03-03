@@ -187,6 +187,7 @@ export class AuthService {
     async validateGoogleToken(token: string) {
         try {
             const ticket = await this.googleClient.verifyIdToken({
+                
                 idToken: token,
                 audience: process.env.GOOGLE_ID_OAUTH,
             });
