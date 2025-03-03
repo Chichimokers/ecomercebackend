@@ -52,14 +52,17 @@ export class AuthController {
             if (!socialUser?.email) {
                 throw new UnauthorizedException('Token de Google inválido');
             }
+            console.log(socialUser)
 
             const user = await this.authservice.validateOAuthuser({
                 email: socialUser.email,
                 name: socialUser.name,
             });
+            console.log(user)
 
             const tokens = await this.authservice.login(user);
-
+            console.log(tokens)
+            
             return {
                 access_token: tokens.access_token,
                 refresh_token: tokens.refresh_token,
