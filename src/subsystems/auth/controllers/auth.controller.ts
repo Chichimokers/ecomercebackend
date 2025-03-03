@@ -41,7 +41,7 @@ export class AuthController {
 
     @Post('google/token-exchange')
     async googleTokenExchange(@Body() body: { token: string }) {
-        try {
+       
             console.log("Entrando token exchange")
             const { token } = body;
 
@@ -62,7 +62,7 @@ export class AuthController {
 
             const tokens = await this.authservice.login(user);
             console.log(tokens)
-            
+
             return {
                 access_token: tokens.access_token,
                 refresh_token: tokens.refresh_token,
@@ -73,12 +73,9 @@ export class AuthController {
                     id: user.id,
                 },
             };
-        } catch (error) {
-            throw new UnauthorizedException({
-                error: 'GOOGLE_TOKEN_EXCHANGE_FAILED',
-                message: error.message,
-            });
-        }
+
+        
+        
     }
 
     // Mejorar el endpoint de refresh

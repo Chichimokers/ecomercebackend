@@ -103,7 +103,7 @@ export class AuthService {
     }
 
     async validateOAuthuser(user): Promise<User> {
-        
+
         const existingUser = await this.userRepository.findOne({
             where: { email: user.email },
             //relations: ['roles'],
@@ -186,7 +186,7 @@ export class AuthService {
     }
 
     async validateGoogleToken(token: string) {
-        try {
+       
             const ticket = await this.googleClient.verifyIdToken({
 
                 idToken: token,
@@ -194,8 +194,6 @@ export class AuthService {
             });
 
             return ticket.getPayload();
-        } catch (error) {
-            throw new UnauthorizedException('Token de Google inválido');
-        }
+      
     }
 }
