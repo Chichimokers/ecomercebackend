@@ -12,7 +12,10 @@ import { UserService } from '../user/service/user.service';
 import { CodeService } from './service/code.service';
 import { MailsService } from '../mails/services/mails.service';
 import { CacheModule } from '@nestjs/cache-manager';
-import { GoogleStrategy } from './strategies/google.strategy';
+
+import { LocalAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+
 
 // Importar JwtStrategy
 
@@ -26,7 +29,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
         ConfigModule.forRoot({ isGlobal: true }),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({
-            secret: jwtConstants.secret,
+            secret: process.env.JWT_ACCESS_SECRET || jwtConstants.secret,
             signOptions: { expiresIn: '60m' },
         }),
     ],
@@ -36,7 +39,9 @@ import { GoogleStrategy } from './strategies/google.strategy';
         UserService,
         AuthService,
         JwtStrategy,
-        GoogleStrategy,
+        LocalAuthGuard,
+        RolesGuard,
+
         CodeService,
     ], // Agregar estrategias aquí
 })

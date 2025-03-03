@@ -2,6 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { jwtConstants } from '../constants';
+import { audit } from 'rxjs';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -9,17 +10,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: jwtConstants.secret,
-            audience: process.env.GOOGLE_ID_OAUTH,
-            algorithms: ['HS256'],
-            //issuer: 'https://accounts.google.com', Aqui reside el problema de las ordenes
+            secretOrKey: process.env.JWT_ACCESS_SECRET || jwtConstants.secret,
         });
     }
 
     async validate(payload: any) {
         return {
             Id: payload.sub,
-            name: payload.username,
+            email: payload.email,
             role: payload.role,
         };
     }

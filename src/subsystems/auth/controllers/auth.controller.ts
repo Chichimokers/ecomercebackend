@@ -7,6 +7,7 @@ import {
     Post,
     UnauthorizedException,
     UseGuards,
+
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { LoginBody } from '../dto/loginDTO.dto';
@@ -16,8 +17,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 import { CodeService } from '../service/code.service';
 import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { GoogleAuthGuard } from '../guards/google.guard';
+//import { AuthGuard } from '@nestjs/passport';
 import { RefresTokenDTO } from '../dto/refrestoken.dto';
 
 @ApiTags('login')
@@ -39,15 +39,10 @@ export class AuthController {
         return { message: 'Verification code sent' };
     }
 
-    @Get('google')
-    @UseGuards(GoogleAuthGuard)
-    async googleAuth() {
-        // Esta ruta redirige al usuario a Google
-    }
-
     @Post('google/token-exchange')
     async googleTokenExchange(@Body() body: { token: string }) {
-        try {
+       
+            console.log("Entrando token exchange")
             const { token } = body;
 
             // Validar token con Google
@@ -57,13 +52,16 @@ export class AuthController {
             if (!socialUser?.email) {
                 throw new UnauthorizedException('Token de Google inválido');
             }
+            console.log(socialUser)
 
             const user = await this.authservice.validateOAuthuser({
                 email: socialUser.email,
                 name: socialUser.name,
             });
+            console.log(user)
 
             const tokens = await this.authservice.login(user);
+            console.log(tokens)
 
             return {
                 access_token: tokens.access_token,
@@ -75,12 +73,9 @@ export class AuthController {
                     id: user.id,
                 },
             };
-        } catch (error) {
-            throw new UnauthorizedException({
-                error: 'GOOGLE_TOKEN_EXCHANGE_FAILED',
-                message: error.message,
-            });
-        }
+
+        
+        
     }
 
     // Mejorar el endpoint de refresh

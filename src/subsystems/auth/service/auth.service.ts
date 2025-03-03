@@ -22,8 +22,8 @@ export class AuthService {
         @Inject(JwtService) private jwt: JwtService,
     ) {
         this.googleClient = new OAuth2Client(
-            process.env.GOOGLE_CLIENT_ID,
-            process.env.GOOGLE_CLIENT_SECRET,
+            process.env.GOOGLE_ID_OAUTH,
+            process.env.GOOGLE_SECRET_KEY,
         );
     }
 
@@ -103,6 +103,7 @@ export class AuthService {
     }
 
     async validateOAuthuser(user): Promise<User> {
+
         const existingUser = await this.userRepository.findOne({
             where: { email: user.email },
             //relations: ['roles'],
@@ -131,7 +132,7 @@ export class AuthService {
         const [access_token, refresh_token] = await Promise.all([
             this.jwt.signAsync(payload, {
                 secret: process.env.JWT_ACCESS_SECRET,
-                expiresIn: '15m',
+                expiresIn: '60m',
             }),
             this.jwt.signAsync(payload, {
                 secret: process.env.JWT_REFRESH_SECRET,
@@ -155,6 +156,7 @@ export class AuthService {
     async login(
         user: User,
     ): Promise<{ access_token: string; refresh_token: string }> {
+
         const foundUser: User = await this.userRepository.findOne({
             where: {
                 name: user.username,
@@ -184,15 +186,15 @@ export class AuthService {
     }
 
     async validateGoogleToken(token: string) {
-        try {
+            console.log(token)
             const ticket = await this.googleClient.verifyIdToken({
+                
+
                 idToken: token,
-                audience: process.env.GOOGLE_ID_OAUTH,
+                audience:"387709889089-qrv4bb6ae2r2epf0j84q63u6vr0qc4b5.apps.googleusercontent.com"
             });
 
             return ticket.getPayload();
-        } catch (error) {
-            throw new UnauthorizedException('Token de Google inválido');
-        }
+      
     }
 }
