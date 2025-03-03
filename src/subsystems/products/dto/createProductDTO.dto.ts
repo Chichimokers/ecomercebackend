@@ -3,8 +3,8 @@ import {
     IsString,
     MinLength,
     MaxLength,
-    IsNumber, IsOptional, IsUUID,
-} from 'class-validator';
+    IsNumber, IsOptional, IsUUID, IsPositive
+} from "class-validator";
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
@@ -137,6 +137,15 @@ export class CreateProductSpecialDTO extends BaseDto {
     @IsNotEmpty()
     @IsUUID()
     subCategory?: string;
+
+    @ApiProperty({
+        example: 30.0,
+        description: "Weight of the product"
+    })
+    @IsNumber()
+    @IsNotEmpty()
+    @IsPositive()
+    weight: number;
 
     @ApiProperty({
         example: "Don't include in body please",
