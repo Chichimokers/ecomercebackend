@@ -42,6 +42,7 @@ export class AuthController {
     @Post('google/token-exchange')
     async googleTokenExchange(@Body() body: { token: string }) {
         try {
+            console.log("Entrando token exchange")
             const { token } = body;
 
             // Validar token con Google
