@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostgresDataSource } from 'typeorm.config';
@@ -19,6 +19,8 @@ import { MailsModule } from "./subsystems/mails/mails.module";
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LocationsModule } from './subsystems/locations/locations.module';
+import { MemoryUsageMiddleware } from "./subsystems/middleware/memory.middleware";
+import { LoggingMiddleware } from "./subsystems/middleware/endpoints.middleware";
 
 @Module({
     imports: [
@@ -47,4 +49,8 @@ import { LocationsModule } from './subsystems/locations/locations.module';
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(LoggingMiddleware).forRoutes('*'); // Se aplica a todas las rutas
+    }
+}
