@@ -1,6 +1,6 @@
 import { Check, Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
-import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 import { ProvinceEntity } from './province.entity';
 import { PriceByWeightEntity } from './priceByWeight.entity';
 
@@ -27,14 +27,14 @@ export class MunicipalityEntity extends BaseEntity {
     @IsNotEmpty()
     @IsNumber()
     @IsPositive()
-    @Column('smallint', { name: 'min_hours' })
+    @Column('smallint', { name: 'min_hours', default: 24 })
     minHours: number;
 
-    @IsNotEmpty()
     @IsNumber()
     @IsPositive()
+    @IsOptional()
     @Column('smallint', { name: 'max_hours' })
-    maxHours: number;
+    maxHours?: number;
 
     @IsNotEmpty()
     @OneToMany(

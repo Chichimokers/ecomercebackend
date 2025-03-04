@@ -16,6 +16,7 @@ import { DiscountEntity } from '../../discounts/entity/discounts.entity';
 import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
 import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
 import { notFoundException } from '../../../common/exceptions/modular.exception';
+import { ProvinceEntity } from "../../locations/entity/province.entity";
 
 @Injectable()
 export class ProductService
@@ -35,6 +36,8 @@ export class ProductService
         private readonly subCategoryRepository: Repository<SubCategoryEntity>,
         @InjectRepository(DiscountEntity)
         private readonly discountRepository: Repository<DiscountEntity>,
+        @InjectRepository(ProvinceEntity)
+        private readonly provinceRepository: Repository<ProvinceEntity>,
     ) {
         super(productRepository);
     }
@@ -53,6 +56,12 @@ export class ProductService
     async insertByDTO(dto: CreateProductSpecialDTO) {
         const { category, subCategory } = await this.getCategoryAndSubCategoryByDTO(dto);
 
+        const province: ProvinceEntity = await this.provinceRepository.findOne({
+            where: { id: dto.province },
+        });
+
+        notFoundException(province, 'Province');
+
         const product: ProductEntity = this.productRepository.create({
             name: dto.name,
             price: dto.price,
@@ -63,6 +72,7 @@ export class ProductService
             category: category,
             image: dto.image,
             subCategory: subCategory,
+            province: province,
         });
 
         await this.modifyProductDiscount(dto, product);
@@ -75,6 +85,7 @@ export class ProductService
         const product: ProductEntity = await this.productRepository.findOne({
             where: { id },
         });
+
         notFoundException(product, 'Product');
 
         // Actualizar los campos básicos del producto
@@ -93,6 +104,16 @@ export class ProductService
 
         const { category, subCategory } =
             await this.getCategoryAndSubCategoryByDTO(dto);
+
+        if(dto.province){
+            const province = await this.provinceRepository.findOne({
+                where: { id: dto.province },
+            });
+
+            notFoundException(province, 'Province');
+
+            product.province = province;
+        }
 
         // Se actualizan categorias y subcategorias
         this.setCategoryAndSubCategory(product, category, subCategory);

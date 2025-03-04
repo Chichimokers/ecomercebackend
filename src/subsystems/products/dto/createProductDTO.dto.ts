@@ -155,4 +155,12 @@ export class CreateProductSpecialDTO extends BaseDto {
     @IsOptional()
     @IsNotEmpty()
     image?: string;
+
+    @ApiProperty({
+        example: "a6e0c570-be0e-4a7d-93c5-767a7767890b",
+        description: "ID of province",
+    })
+    @IsNotEmpty()
+    @IsUUID()
+    province: string;
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { MunicipalityService } from '../service/municipality.service';
@@ -9,6 +9,7 @@ import { ProvinceEntity } from '../entity/province.entity';
 import { MunicipalityEntity } from '../entity/municipality.entity';
 import { UpdateMunicipalityDTO } from '../dto/municipalitydto/updateMunicipality.dto';
 import { createMunicipalityDTO } from '../dto/municipalitydto/createMunicipality.dto';
+import { GetMunicipalityDTO } from "../dto/municipalitydto/getMunicipality.dto";
 
 @ApiTags('municipality')
 @ApiBearerAuth()
@@ -24,6 +25,7 @@ export class MunicipalityController {
     }
 
     @Get()
+    @ApiResponse({ status: 200, type: [GetMunicipalityDTO] })
     @Roles(roles.Admin)
     getMunicipalities() {
         return this.municipalityService.findAll();

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostgresDataSource } from 'typeorm.config';
@@ -38,7 +38,10 @@ import { LocationsModule } from './subsystems/locations/locations.module';
         LocationsModule,
         MailsModule,
         ServeStaticModule.forRoot({
-            rootPath: join('./public'), // Ruta al directorio estático
+            rootPath: join('./public'),
+            serveStaticOptions: {
+                fallthrough: false,
+            }// Ruta al directorio estático
         }),
     ],
     controllers: [AppController],

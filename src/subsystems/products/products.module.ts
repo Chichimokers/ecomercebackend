@@ -9,6 +9,7 @@ import {
     SubCategoryEntity,
 } from '../category/entity/category.entity';
 import { DiscountEntity } from '../discounts/entity/discounts.entity';
+import { ProvinceEntity } from "../locations/entity/province.entity";
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { DiscountEntity } from '../discounts/entity/discounts.entity';
             CategoryEntity,
             SubCategoryEntity,
             DiscountEntity,
+            ProvinceEntity,
         ]),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
