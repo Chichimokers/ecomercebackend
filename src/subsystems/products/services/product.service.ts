@@ -1,30 +1,32 @@
 import {
     BadRequestException,
     Injectable,
-    NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
-import { BaseService } from '../../../common/services/base.service';
-import { ProductEntity } from '../entity/product.entity';
-import { UpdateProductDTO } from '../dto/updateProductDTO.dto';
+    NotFoundException
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { In, Repository } from "typeorm";
+import { BaseService } from "../../../common/services/base.service";
+import { ProductEntity } from "../entity/product.entity";
+import { UpdateProductDTO } from "../dto/updateProductDTO.dto";
 import {
     CategoryEntity,
-    SubCategoryEntity,
-} from '../../category/entity/category.entity';
-import { DiscountEntity } from '../../discounts/entity/discounts.entity';
-import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
-import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
-import { notFoundException } from '../../../common/exceptions/modular.exception';
+    SubCategoryEntity
+} from "../../category/entity/category.entity";
+import { DiscountEntity } from "../../discounts/entity/discounts.entity";
+import { IServiceDTOC } from "../../../common/interfaces/base-service.interface";
+import { CreateProductSpecialDTO } from "../dto/createProductDTO.dto";
+import { notFoundException } from "../../../common/exceptions/modular.exception";
 import { ProvinceEntity } from "../../locations/entity/province.entity";
+import { ratingAVG } from "../utils/ratingAVG";
+import { IFilterProduct } from "../../../common/interfaces/filters.interface";
+import { applyFilter } from "../../../common/utils/filters.utils";
 
 @Injectable()
 export class ProductService
     extends BaseService<ProductEntity>
-    implements IServiceDTOC
-{
+    implements IServiceDTOC {
     protected getRepositoryName(): string {
-        return 'tb_products';
+        return "tb_products";
     }
 
     constructor(
@@ -37,30 +39,23 @@ export class ProductService
         @InjectRepository(DiscountEntity)
         private readonly discountRepository: Repository<DiscountEntity>,
         @InjectRepository(ProvinceEntity)
-        private readonly provinceRepository: Repository<ProvinceEntity>,
+        private readonly provinceRepository: Repository<ProvinceEntity>
     ) {
         super(productRepository);
     }
 
-    override async findAll(_start?: number, _end?: number): Promise<any> {
-        // const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
-        // const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
-
-        let query = this.getBaseQuery();
-
-        //query.skip(skip).take(take);
-
-        return this.mapProduct(query);
+    override async findAll(_start: number = 0, _end: number = 50): Promise<any> {
+        return await this.getProductsByORM(undefined, _start, _end);
     }
 
     async insertByDTO(dto: CreateProductSpecialDTO) {
         const { category, subCategory } = await this.getCategoryAndSubCategoryByDTO(dto);
 
         const province: ProvinceEntity = await this.provinceRepository.findOne({
-            where: { id: dto.province },
+            where: { id: dto.province }
         });
 
-        notFoundException(province, 'Province');
+        notFoundException(province, "Province");
 
         const product: ProductEntity = this.productRepository.create({
             name: dto.name,
@@ -72,7 +67,7 @@ export class ProductService
             category: category,
             image: dto.image,
             subCategory: subCategory,
-            province: province,
+            province: province
         });
 
         await this.modifyProductDiscount(dto, product);
@@ -83,19 +78,19 @@ export class ProductService
     async updateByDTO(id: any, dto: UpdateProductDTO): Promise<ProductEntity> {
         // Buscar el producto
         const product: ProductEntity = await this.productRepository.findOne({
-            where: { id },
+            where: { id }
         });
 
-        notFoundException(product, 'Product');
+        notFoundException(product, "Product");
 
         // Actualizar los campos básicos del producto
         [
-            'name',
-            'description',
-            'short_description',
-            'price',
-            'quantity',
-            'image',
+            "name",
+            "description",
+            "short_description",
+            "price",
+            "quantity",
+            "image"
         ].forEach((field: string): void => {
             if (dto[field] !== undefined) {
                 product[field] = dto[field];
@@ -105,12 +100,12 @@ export class ProductService
         const { category, subCategory } =
             await this.getCategoryAndSubCategoryByDTO(dto);
 
-        if(dto.province){
+        if (dto.province) {
             const province = await this.provinceRepository.findOne({
-                where: { id: dto.province },
+                where: { id: dto.province }
             });
 
-            notFoundException(province, 'Province');
+            notFoundException(province, "Province");
 
             product.province = province;
         }
@@ -130,19 +125,19 @@ export class ProductService
 
     private async modifyProductDiscount(
         dto: any,
-        product: ProductEntity,
+        product: ProductEntity
     ): Promise<void> {
         if (dto.discount) {
             if (!dto.discount.min || !dto.discount.reduction) {
                 throw new BadRequestException(
-                    'Some params of discount are incorrect',
+                    "Some params of discount are incorrect"
                 );
             }
 
             const discount: DiscountEntity = this.discountRepository.create({
                 min: dto.discount.min,
                 reduction: dto.discount.reduction,
-                products: product,
+                products: product
             });
 
             await this.discountRepository.save(discount);
@@ -156,28 +151,28 @@ export class ProductService
 
         if (dto.category) {
             category = await this.categoryRepository.findOne({
-                where: { id: dto.category },
+                where: { id: dto.category }
             });
-            notFoundException(category, 'Category');
+            notFoundException(category, "Category");
         }
 
         if (dto.subCategory) {
             subCategory = await this.subCategoryRepository.findOne({
-                where: { id: dto.subCategory },
+                where: { id: dto.subCategory }
             });
-            notFoundException(subCategory, 'Subcategory');
+            notFoundException(subCategory, "Subcategory");
         }
 
         return {
             category: category,
-            subCategory: subCategory,
+            subCategory: subCategory
         };
     }
 
     private setCategoryAndSubCategory(
         product: ProductEntity,
         category: CategoryEntity,
-        subCategory: SubCategoryEntity,
+        subCategory: SubCategoryEntity
     ): void {
         if (category) {
             product.category = category;
@@ -187,6 +182,7 @@ export class ProductService
             product.subCategory = subCategory;
         }
     }
+
 
     private async mapProduct(query, slice = false, offset = 0, limit = 0) {
         let item = await query.getRawMany();
@@ -221,104 +217,66 @@ export class ProductService
         }));
     }
 
-    //      *--- Services for public's Endpoints ---*
-    //      *--- Get Products Pagination ---*
-    public async getProducts(page: number, limit: number) {
-        const offset: number = (page - 1) * limit;
-
-        const query = this.productRepository
-            .createQueryBuilder('product')
-            .leftJoin('product.ratings', 'rating')
-            .leftJoin('product.discounts', 'discount')
-            .leftJoin('product.category', 'category')
-            .leftJoin('product.subCategory', 'subCategory')
-            .addSelect('AVG(rating.rate)', 'averageRating')
-            .addSelect(['discount.min', 'discount.reduction'])
-            .addSelect(['category.name', 'subCategory.name'])
-            .skip(offset)
-            .take(limit)
-            .groupBy('product.id')
-            .addGroupBy('discount.id')
-            .addGroupBy('category.id')
-            .addGroupBy('subCategory.id');
-
-        const products = await this.mapProduct(query, true, offset, limit);
-        const urls: {
-            previousUrl: string;
-            nextUrl: string;
-            totalPages: number;
-        } = await this.getUrls(query, page, limit);
-
-        return {
-            products,
-            urls,
-        };
+    private async mapProductORM(products: ProductEntity[]) {
+        return products.map((product: ProductEntity) => ({
+            id: product.id,
+            image: product.image || undefined,
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            short_description: product.short_description,
+            quantity: product.quantity,
+            weight: product.weight,
+            averageRating: parseFloat(ratingAVG(product.ratings)) || undefined,
+            category:
+                product.category.name || product.category.id || undefined,
+            subCategory:
+                product.subCategory.name ||
+                product.subCategory.id ||
+                undefined,
+            discount:
+                product.discounts === null || product.discounts.reduction === null
+                    ? undefined
+                    : {
+                        min: product.discounts.min,
+                        reduction: product.discounts.reduction,
+                    }
+        }));
     }
 
+    //      *--- Services for public's Endpoints ---*
     //      *--- Get Products Home ---*
     public async getProductsHome(limit: number) {
         const query = this.productRepository
-            .createQueryBuilder('product')
-            .leftJoin('product.ratings', 'rating')
-            .leftJoin('product.discounts', 'discount')
-            .addSelect('AVG(rating.rate)', 'averageRating')
-            .addSelect(['discount.min', 'discount.reduction'])
-            .groupBy('product.id')
-            .addGroupBy('discount.id')
-            .having('COUNT(rating.id) > 0')
-            .orderBy('"averageRating"', 'DESC');
+            .createQueryBuilder("product")
+            .leftJoin("product.ratings", "rating")
+            .leftJoin("product.discounts", "discount")
+            .addSelect("AVG(rating.rate)", "averageRating")
+            .addSelect(["discount.min", "discount.reduction"])
+            .groupBy("product.id")
+            .addGroupBy("discount.id")
+            .having("COUNT(rating.id) > 0")
+            .orderBy("\"averageRating\"", "DESC");
 
         return this.mapProduct(query, true, 0, limit);
     }
 
     //      *--- Get Filtered Products ---*
     public async getFilteredProducts(
-        filters: {
-            categoryIds?: string[];
-            subCategoryIds?: string[];
-            prices?: number[];
-            rate?: number;
-        },
-        page: number,
-        limit: number,
+        filters: IFilterProduct,
+        page: number = 0,
+        limit: number = 30,
     ) {
-        const query = this.getBaseQuery();
-
-        if (filters.categoryIds && filters.categoryIds.length > 0) {
-            query.andWhere('category.id IN (:...categoryIds)', {
-                categoryIds: filters.categoryIds,
-            });
-        }
-
-        if (filters.subCategoryIds && filters.subCategoryIds.length > 0) {
-            query.andWhere('subCategory.id IN (:...subCategoryIds)', {
-                subCategoryIds: filters.subCategoryIds,
-            });
-        }
-
-        if (filters.prices && filters.prices.length > 0) {
-            query.andWhere('product.price BETWEEN :min AND :max', {
-                min: filters.prices[0],
-                max: filters.prices[1],
-            });
-        }
-
-        if (filters.rate) {
-            query.andHaving('AVG(rating.rate) >= :rate', {
-                rate: filters.rate,
-            });
-        }
-
-        const offset: number = (page - 1) * limit;
+        const products: ProductEntity[] = await this.getProductsByORM(filters, page, limit);
 
         const urls: {
             previousUrl: string;
             nextUrl: string;
             totalPages: number;
-        } = await this.getUrls(query, page, limit);
+        } = await this.getUrls(page, limit);
 
         return {
-            products: await this.mapProduct(query, true, offset, limit),
+            products: await this.mapProductORM(products),
             urls,
         };
     }
@@ -340,18 +298,20 @@ export class ProductService
             .groupBy('product.id')
             .addGroupBy('discount.id')
             .addGroupBy('category.id')
-            .addGroupBy('subCategory.id');
+            .addGroupBy('subCategory.id')
+            .skip(0)
+            .take(10);
 
         return this.mapProduct(query);
     }
 
     //      *--- Get Product Detail ---*
     public async getProductDetails(id: string) {
-        const query = this.getBaseQuery();
-        query.where('product.id=(:id)', { id: id });
-        const product: any = await this.mapProduct(query);
+        const filters: IFilterProduct = {
+            id: id,
+        }
 
-        notFoundException(product[0], 'Product');
+        const product = await this.mapProductORM(await this.getProductsByORM(filters));
 
         return product[0];
     }
@@ -359,47 +319,50 @@ export class ProductService
     public async getRelations(id: string) {
         const product: ProductEntity = await this.productRepository.findOne({
             where: { id },
-            relations: ['category', 'subCategory'],
+            relations: ["category", "subCategory"]
         });
 
-        notFoundException(product, 'Product');
+        notFoundException(product, "Product");
 
         const category: CategoryEntity = product.category;
         const subcategory: SubCategoryEntity = product.subCategory;
 
         if (!category && !subcategory) {
-            throw new NotFoundException('Not found relations');
+            throw new NotFoundException("Not found relations");
         }
 
-        const query = this.getBaseQuery();
-
-        query.where('product.id != :id', { id });
-
-        if (category) {
-            query.andWhere('category.id = :categoryId', {
-                categoryId: category.id,
-            });
+        const filters: IFilterProduct = {
+            notId: id,
+            categoryIds: [category.id],
+            subCategoryIds: [subcategory.id],
         }
 
-        if (subcategory) {
-            query.orWhere('subCategory.id = :subCategoryId', {
-                subCategoryId: subcategory.id,
-            });
-        }
+        const products: ProductEntity[] = await this.getProductsByORM(filters, 0, 15);
 
-        return this.mapProduct(query, true, 0, 15);
+        return await this.mapProductORM(products);
     }
 
-    public async countProducts(): Promise<number> {
-        return await this.productRepository.count();
+    public async countProducts(filters?: IFilterProduct): Promise<number> {
+        const whereConditions: any = {}
+
+        if (filters?.categoryIds?.length) {
+            whereConditions.category = { id: In(filters.categoryIds) };
+        }
+
+        if (filters?.subCategoryIds?.length) {
+            whereConditions.subCategory = { id: In(filters.subCategoryIds) };
+        }
+
+        return await this.productRepository.count({
+            where: whereConditions,
+        });
     }
 
     private async getUrls(
-        query: SelectQueryBuilder<ProductEntity>,
         page: number,
-        limit: number,
+        limit: number
     ) {
-        const totalProducts = await query.getCount();
+        const totalProducts = await this.countProducts();
         const totalPages = Math.ceil(totalProducts / limit);
 
         const previousUrl: string =
@@ -412,19 +375,29 @@ export class ProductService
         return { previousUrl, nextUrl, totalPages };
     }
 
-    private getBaseQuery() {
-        return this.productRepository
-            .createQueryBuilder('product')
-            .leftJoin('product.ratings', 'rating')
-            .leftJoin('product.discounts', 'discount')
-            .leftJoin('product.category', 'category')
-            .leftJoin('product.subCategory', 'subCategory')
-            .addSelect('AVG(rating.rate)', 'averageRating')
-            .addSelect(['discount.min', 'discount.reduction'])
-            .addSelect(['category.name', 'subCategory.name'])
-            .groupBy('product.id')
-            .addGroupBy('discount.id')
-            .addGroupBy('category.id')
-            .addGroupBy('subCategory.id');
+    public async getProductsByORM(filters?: IFilterProduct, skip = 0, offset = 5) {
+        const whereConditions: any = applyFilter(filters);
+
+        return await this.productRepository.find({
+            relations: ["province", "category", "subCategory", "ratings", "discounts"],
+            select: {
+                id: true,
+                image: true,
+                name: true,
+                price: true,
+                description: true,
+                short_description: true,
+                quantity: true,
+                weight: true,
+                province: { name: true },
+                category: { name: true },
+                subCategory: { name: true },
+                ratings: { rate: true },
+                discounts: { reduction: true, min: true },
+            },
+            where: whereConditions,
+            skip: skip,
+            take: offset,
+        });
     }
 }

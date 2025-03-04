@@ -8,6 +8,8 @@ import { badRequestException, notFoundException } from "../../../common/exceptio
 import { ProvinceService } from "../../locations/service/province.service";
 import { Cache } from '@nestjs/cache-manager';
 import { roundMinor } from "../utils/roundMinor";
+import { IFilterProduct } from "../../../common/interfaces/filters.interface";
+import { CategoryEntity } from "../../category/entity/category.entity";
 
 @Injectable()
 export class PublicService {
@@ -28,35 +30,13 @@ export class PublicService {
 
     // *--- For Products View ---* //
     public async getProductsPage(
-        page: number,
-        limit: number,
-        filters: {
-            categoryIds?: string[];
-            subCategoryIds?: string[];
-            prices?: number[];
-            rate?: number;
-        } = {}
+        page: number = 0,
+        limit: number = 30,
+        filters: IFilterProduct = {}
     ) {
-        const hasFilters: boolean = !!(
-            filters.categoryIds?.length ||
-            filters.subCategoryIds?.length ||
-            filters.prices?.length ||
-            filters.rate
-        );
+        const productsData = await this.productService.getFilteredProducts(filters, page, limit);
 
-        const productsData = hasFilters
-            ? await this.productService.getFilteredProducts(
-                filters,
-                page,
-                limit
-            )
-            : await this.productService.getProducts(page, limit);
-
-        const categories = hasFilters
-            ? await this.categoryService.getCategoriesWithSubCategories(
-                filters.categoryIds
-            )
-            : await this.categoryService.getCategoriesWithSubCategories();
+        const categories: CategoryEntity[] = await this.categoryService.getCategoriesWithSubCategories(filters.categoryIds);
 
         notFoundException(productsData.products, "Products");
 
@@ -117,5 +97,9 @@ export class PublicService {
         await this.cacheManager.set('counters', data);
 
         return data
+    }
+
+    public async test(){
+        //return await this.categoryService.getTestsCategories();
     }
 }

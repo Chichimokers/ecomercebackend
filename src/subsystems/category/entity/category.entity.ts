@@ -7,7 +7,7 @@ import { IsNotEmpty, IsString } from "class-validator";
 export class CategoryEntity extends BaseEntity {
     @IsNotEmpty()
     @IsString()
-    @Column({ length: 100 })
+    @Column({ unique: true, length: 100 })
     name: string;
 
     @OneToMany(() => ProductEntity, product => product.category)
@@ -21,7 +21,7 @@ export class CategoryEntity extends BaseEntity {
 export class SubCategoryEntity extends BaseEntity {
     @IsNotEmpty()
     @IsString()
-    @Column({ length: 100 })
+    @Column({ unique: true, length: 100 })
     name: string;
 
     @ManyToOne(() => CategoryEntity, category => category.subCategories)

@@ -18,6 +18,7 @@ import {
 } from '../decorators/public.decorator';
 import { PublicQueryInterface } from '../interfaces/basequery.interface';
 import { badRequestException } from '../../../common/exceptions/modular.exception';
+import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 
 @ApiTags('public')
 @Controller('public')
@@ -49,8 +50,8 @@ export class PublicController {
         if (query.subCategoryIds)
             badRequestException(query.subCategoryIds, 'SubCategoryIDS');
         if (query.prices) badRequestException(query.prices, 'Prices');
-
-        const filters = {
+        
+        const filters: IFilterProduct = {
             categoryIds: query.categoryIds,
             subCategoryIds: query.subCategoryIds,
             prices: query.prices,
@@ -58,8 +59,8 @@ export class PublicController {
         };
 
         return this.publicService.getProductsPage(
-            +query.page,
-            +query.limit,
+            +query.page || 0,
+            +query.limit || 30,
             filters,
         );
     }
@@ -118,5 +119,10 @@ export class PublicController {
     @Get('/main')
     public getMainView() {
         return this.publicService.getMainViewInfo();
+    }
+
+    @Get('/test')
+    public getTestView() {
+        return this.publicService.test();
     }
 }
