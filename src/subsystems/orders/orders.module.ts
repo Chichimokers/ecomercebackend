@@ -8,10 +8,11 @@ import { UserService } from '../user/service/user.service';
 import { User } from '../user/entities/user.entity';
 import { ProductEntity } from "../products/entity/product.entity";
 import { OrderProductEntity } from "./entities/order_products.entity";
+import { MunicipalityEntity } from "../locations/entity/municipality.entity";
 
 @Module({
     imports:[
-        TypeOrmModule.forFeature([OrderEntity,OrderProductEntity,ProductEntity,User]),
+        TypeOrmModule.forFeature([OrderEntity,OrderProductEntity,ProductEntity, MunicipalityEntity,User]),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
     providers:[OrderService, UserService],

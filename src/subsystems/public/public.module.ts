@@ -17,6 +17,7 @@ import { DiscountEntity } from '../discounts/entity/discounts.entity';
 import { CacheModule } from "@nestjs/cache-manager";
 import { ProvinceService } from "../locations/service/province.service";
 import { ProvinceEntity } from "../locations/entity/province.entity";
+import { MunicipalityEntity } from "../locations/entity/municipality.entity";
 
 @Module({
     imports:[
@@ -27,6 +28,7 @@ import { ProvinceEntity } from "../locations/entity/province.entity";
             SubCategoryEntity,
             DiscountEntity,
             ProvinceEntity,
+            MunicipalityEntity,
             User,
         ]),
         CacheModule.register({
