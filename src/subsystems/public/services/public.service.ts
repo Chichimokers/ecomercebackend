@@ -99,7 +99,8 @@ export class PublicService {
         return data
     }
 
-    public async test(){
-        //return await this.categoryService.getTestsCategories();
+    // *--- Get Provinces And Municipalitys ---* //
+    public async getProvinces() {
+        return await this.provinceService.getProvincesMapped();
     }
 }

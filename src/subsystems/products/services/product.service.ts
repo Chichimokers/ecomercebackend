@@ -44,8 +44,10 @@ export class ProductService
         super(productRepository);
     }
 
-    override async findAll(_start: number = 0, _end: number = 50): Promise<any> {
-        return await this.getProductsByORM(undefined, _start, _end);
+    override async findAll(_start: number = 0, _end: number = 100): Promise<any> {
+        const prueba: ProductEntity[] = await this.getProductsByORM(undefined, _start, _end);
+
+        return this.mapProductORM(prueba);
     }
 
     async insertByDTO(dto: CreateProductSpecialDTO) {
@@ -228,6 +230,7 @@ export class ProductService
             quantity: product.quantity,
             weight: product.weight,
             averageRating: parseFloat(ratingAVG(product.ratings)) || undefined,
+            province: product.province.name,
             category:
                 product.category.name || product.category.id || undefined,
             subCategory:
@@ -376,7 +379,9 @@ export class ProductService
     }
 
     public async getProductsByORM(filters?: IFilterProduct, skip = 0, offset = 5) {
-        const whereConditions: any = applyFilter(filters);
+        let whereConditions: any
+
+        if( filters ) whereConditions = applyFilter(filters);
 
         return await this.productRepository.find({
             relations: ["province", "category", "subCategory", "ratings", "discounts"],

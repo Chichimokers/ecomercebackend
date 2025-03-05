@@ -16,7 +16,7 @@ export class LoggingMiddleware implements NestMiddleware {
             hour12: true,
         });
 
-        console.log(`[Nest] - [${formattedDate}] LOG [${req.method}] ${req.originalUrl}`);
+        console.log(`[${res.statusCode}] - [${formattedDate}] LOG [${req.method}] ${req.originalUrl}`);
         next();
     }
 }

@@ -181,6 +181,7 @@ export class OrderService extends BaseService<OrderEntity> {
         notFoundException(order, 'Order');
 
         order.status = OrderStatus.Retired;
+        order.deleted_at = new Date();
 
         await this.orderRepository.save(order);
 

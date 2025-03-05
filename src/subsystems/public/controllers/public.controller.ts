@@ -121,8 +121,9 @@ export class PublicController {
         return this.publicService.getMainViewInfo();
     }
 
-    @Get('/test')
-    public getTestView() {
-        return this.publicService.test();
+    // *--- For Get Provinces And Municipalitys ---* //
+    @Get('/provinces')
+    public getProvinces() {
+        return this.publicService.getProvinces();
     }
 }
