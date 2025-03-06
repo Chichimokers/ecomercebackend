@@ -14,7 +14,7 @@ import { CreatedCheckoutDTO, StripeDTO } from "../dto/stripedto.dto";
 export class StripeController{
     constructor(private readonly stripeService: StripeService) { }
 
-    @Roles(roles.Admin)
+    @Roles(roles.User)
     @Post("create-payment")
     @ApiResponse({ status: 201, type: CreatedCheckoutDTO })
     async createPayment(@Body() order: StripeDTO) {

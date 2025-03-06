@@ -65,7 +65,6 @@ export class UserController {
     @Delete(':id')
     @Roles(roles.Admin)
     deleteUser(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-        //return this.userService.deleteUser(+id);
         return this.userService.softDelete(id);
     }
 }

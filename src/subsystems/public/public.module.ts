@@ -17,6 +17,9 @@ import { DiscountEntity } from '../discounts/entity/discounts.entity';
 import { CacheModule } from "@nestjs/cache-manager";
 import { ProvinceService } from "../locations/service/province.service";
 import { ProvinceEntity } from "../locations/entity/province.entity";
+import { MunicipalityEntity } from "../locations/entity/municipality.entity";
+import { MunicipalityService } from "../locations/service/municipality.service";
+import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
 import { PaypalService } from "../payments/service/paypal.service";
 
 @Module({
@@ -28,6 +31,8 @@ import { PaypalService } from "../payments/service/paypal.service";
             SubCategoryEntity,
             DiscountEntity,
             ProvinceEntity,
+            MunicipalityEntity,
+            PriceByWeightEntity,
             User,
         ]),
         CacheModule.register({
@@ -43,6 +48,7 @@ import { PaypalService } from "../payments/service/paypal.service";
         CategoryService,
         ProductService,
         ProvinceService,
+        MunicipalityService,
     ],
     controllers: [PublicController, UserPublicController],
 })

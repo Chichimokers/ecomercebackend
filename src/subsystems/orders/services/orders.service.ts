@@ -10,10 +10,11 @@ import {
     ProductOrderDTO,
 } from '../../public/dto/frontsDTO/ordersDTO/buildorder.dto';
 import { User } from '../../user/entities/user.entity';
-import { calculateDiscount } from '../../../common/utils/global-functions.utils';
 import { OrderProductEntity } from '../entities/order_products.entity';
 import { OrderStatus } from '../enums/orderStatus.enum';
 import { notFoundException } from '../../../common/exceptions/modular.exception';
+import { calculateDiscount } from "../../../common/utils/global-functions.utils";
+import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -28,6 +29,8 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly productRepository: Repository<ProductEntity>,
         @InjectRepository(OrderProductEntity)
         private readonly orderProductRepository: Repository<OrderProductEntity>,
+        @InjectRepository(MunicipalityEntity)
+        private readonly municipalityRepository: Repository<MunicipalityEntity>,
         @Inject(UserService)
         private userService: UserService,
     ) {
@@ -48,7 +51,7 @@ export class OrderService extends BaseService<OrderEntity> {
             relations: ['user'],
         });
     }
-    // TODO FIXME Cambiar Metodo de creacion de orden
+
     async createOrderService(userid: string, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
@@ -61,6 +64,12 @@ export class OrderService extends BaseService<OrderEntity> {
         );
 
         notFoundException(foundProducts, 'Products');
+
+        const municipality: MunicipalityEntity = await this.municipalityRepository.findOneBy(
+            { id: data.municipality }
+        );
+
+        notFoundException(municipality, 'Municipality');
 
         // Mapeo para construir un array con los productos encontrados y sus quantitys
 
@@ -88,6 +97,7 @@ export class OrderService extends BaseService<OrderEntity> {
             CI: data.ci,
             subtotal: subtotal,
             user: user,
+            municipality: municipality,
         });
 
         await this.orderRepository.save(order);
@@ -181,6 +191,7 @@ export class OrderService extends BaseService<OrderEntity> {
         notFoundException(order, 'Order');
 
         order.status = OrderStatus.Retired;
+        order.deleted_at = new Date();
 
         await this.orderRepository.save(order);
 

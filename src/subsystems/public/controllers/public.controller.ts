@@ -18,6 +18,8 @@ import {
 } from '../decorators/public.decorator';
 import { PublicQueryInterface } from '../interfaces/basequery.interface';
 import { badRequestException } from '../../../common/exceptions/modular.exception';
+import { IFilterProduct } from "../../../common/interfaces/filters.interface";
+import { IDDTO } from "../../../common/dto/uuid.validator.dto";
 
 @ApiTags('public')
 @Controller('public')
@@ -49,8 +51,8 @@ export class PublicController {
         if (query.subCategoryIds)
             badRequestException(query.subCategoryIds, 'SubCategoryIDS');
         if (query.prices) badRequestException(query.prices, 'Prices');
-
-        const filters = {
+        
+        const filters: IFilterProduct = {
             categoryIds: query.categoryIds,
             subCategoryIds: query.subCategoryIds,
             prices: query.prices,
@@ -58,8 +60,8 @@ export class PublicController {
         };
 
         return this.publicService.getProductsPage(
-            +query.page,
-            +query.limit,
+            +query.page || 0,
+            +query.limit || 30,
             filters,
         );
     }
@@ -75,13 +77,13 @@ export class PublicController {
     @ApiResponse({ status: 200, type: ProductDTO })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
     public getProductDetails(@Query('id', new ParseUUIDPipe()) id: string) {
-        try {
+        /*try {
             id = String(id);
         } catch (error) {
             throw new BadRequestException(
                 'Incorrect ID format. Required Number',
             );
-        }
+        }*/
 
         return this.publicService.getProductDetails(id);
     }
@@ -100,7 +102,7 @@ export class PublicController {
             id = String(id);
         } catch (error) {
             throw new BadRequestException(
-                'Incorrect ID format. Required Number',
+                'Incorrect ID format. Required UUID',
             );
         }
 
@@ -118,5 +120,22 @@ export class PublicController {
     @Get('/main')
     public getMainView() {
         return this.publicService.getMainViewInfo();
+    }
+
+    // *--- For Get Provinces And Municipalitys ---* //
+    @Get('/provinces')
+    public getProvinces() {
+        return this.publicService.getProvinces();
+    }
+
+    // *--- For Get Municipalitys By A Province ---* //
+    @Get('/municipalities')
+    public getMunicipalities(@Body('id', new ParseUUIDPipe()) id: string) {
+        return this.publicService.getMunicipalities(id);
+    }
+
+    @Get('/municipality')
+    public getMunicipality(@Body('id', new ParseUUIDPipe()) id: string){
+        return this.publicService.getMunicipality(id);
     }
 }

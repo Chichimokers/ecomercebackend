@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { DiscountEntity } from "./entity/discounts.entity";
 //import { OfferEntity } from "./entity/offers.entity";
 //import { OffersController } from "./controller/offers.controller";
@@ -10,14 +10,16 @@ import { ProductService } from "../products/services/product.service";
 import { Repository } from "typeorm";
 import { ProductEntity } from "../products/entity/product.entity";
 import { DiscountsService } from "./service/discounts.service";
-import { CategoryEntity, SubCategoryEntity } from '../category/entity/category.entity';
+import { CategoryEntity, SubCategoryEntity } from "../category/entity/category.entity";
+import { ProvinceEntity } from "../locations/entity/province.entity";
 
 @Module({
-    imports:[
-        TypeOrmModule.forFeature([DiscountEntity, ProductEntity, CategoryEntity, SubCategoryEntity]),
-        ConfigModule.forRoot({ isGlobal: true }),
+    imports: [
+        TypeOrmModule.forFeature([DiscountEntity, ProductEntity, CategoryEntity, SubCategoryEntity, ProvinceEntity]),
+        ConfigModule.forRoot({ isGlobal: true })
     ],
     controllers: [DiscountsController],
-    providers: [ProductService, DiscountsService, Repository],
+    providers: [ProductService, DiscountsService, Repository]
 })
-export class DiscountsModule {}
+export class DiscountsModule {
+}

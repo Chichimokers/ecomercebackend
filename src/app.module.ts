@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostgresDataSource } from 'typeorm.config';
@@ -19,6 +19,8 @@ import { MailsModule } from "./subsystems/mails/mails.module";
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LocationsModule } from './subsystems/locations/locations.module';
+import { MemoryUsageMiddleware } from "./middleware/memory.middleware";
+import { LoggingMiddleware } from "./middleware/endpoints.middleware";
 
 @Module({
     imports: [
@@ -38,10 +40,17 @@ import { LocationsModule } from './subsystems/locations/locations.module';
         LocationsModule,
         MailsModule,
         ServeStaticModule.forRoot({
-            rootPath: join('./public'), // Ruta al directorio estático
+            rootPath: join('./public'),
+            serveStaticOptions: {
+                fallthrough: false,
+            }// Ruta al directorio estático
         }),
     ],
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(LoggingMiddleware).forRoutes('*'); // Se aplica a todas las rutas
+    }
+}

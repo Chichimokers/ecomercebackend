@@ -20,4 +20,13 @@ export class ProvinceService extends BaseService<ProvinceEntity> {
     public async countProvinces(): Promise<number> {
         return await this.provinceRepository.count();
     }
+
+    public async getProvincesMapped() {
+        return await this.provinceRepository.find({
+            select: {
+                id: true,
+                name: true,
+            }
+        })
+    }
 }

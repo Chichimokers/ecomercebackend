@@ -8,6 +8,11 @@ import { badRequestException, notFoundException } from "../../../common/exceptio
 import { ProvinceService } from "../../locations/service/province.service";
 import { Cache } from '@nestjs/cache-manager';
 import { roundMinor } from "../utils/roundMinor";
+import { IFilterProduct } from "../../../common/interfaces/filters.interface";
+import { CategoryEntity } from "../../category/entity/category.entity";
+import { MunicipalityService } from "../../locations/service/municipality.service";
+import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
+import { ProvinceEntity } from "../../locations/entity/province.entity";
 
 @Injectable()
 export class PublicService {
@@ -17,6 +22,8 @@ export class PublicService {
         private readonly categoryService: CategoryService,
         @Inject(ProvinceService)
         private readonly provinceService: ProvinceService,
+        @Inject(MunicipalityService)
+        private readonly municipalityService: MunicipalityService,
         @Inject(Cache) private cacheManager: Cache,
     ) {
     }
@@ -28,35 +35,13 @@ export class PublicService {
 
     // *--- For Products View ---* //
     public async getProductsPage(
-        page: number,
-        limit: number,
-        filters: {
-            categoryIds?: string[];
-            subCategoryIds?: string[];
-            prices?: number[];
-            rate?: number;
-        } = {}
+        page: number = 0,
+        limit: number = 30,
+        filters: IFilterProduct = {}
     ) {
-        const hasFilters: boolean = !!(
-            filters.categoryIds?.length ||
-            filters.subCategoryIds?.length ||
-            filters.prices?.length ||
-            filters.rate
-        );
+        const productsData = await this.productService.getFilteredProducts(filters, page, limit);
 
-        const productsData = hasFilters
-            ? await this.productService.getFilteredProducts(
-                filters,
-                page,
-                limit
-            )
-            : await this.productService.getProducts(page, limit);
-
-        const categories = hasFilters
-            ? await this.categoryService.getCategoriesWithSubCategories(
-                filters.categoryIds
-            )
-            : await this.categoryService.getCategoriesWithSubCategories();
+        const categories: CategoryEntity[] = await this.categoryService.getCategoriesWithSubCategories(filters.categoryIds);
 
         notFoundException(productsData.products, "Products");
 
@@ -72,7 +57,7 @@ export class PublicService {
     }
 
     // *--- Search Product By Name ---* //
-    public async getProductByName(name: string) {
+    public async getProductByName(name: string): Promise<any> {
         badRequestException(name, "Name");
 
         const products = await this.productService.searchProductByName(name);
@@ -96,12 +81,12 @@ export class PublicService {
     }
 
     // *--- Get Categories ---* //
-    public async getCategories() {
+    public async getCategories(): Promise<CategoryEntity[]> {
         return await this.categoryService.getCategoriesWithSubCategories();
     }
 
     // *--- Get Main View Products, Categories, Provinces ---* //
-    public async getMainViewInfo() {
+    public async getMainViewInfo(): Promise<any> {
         const cacheManage: any = await this.cacheManager.get('counters');
 
         if (cacheManage) {
@@ -117,5 +102,19 @@ export class PublicService {
         await this.cacheManager.set('counters', data);
 
         return data
+    }
+
+    // *--- Get Provinces And Municipalitys ---* //
+    public async getProvinces(): Promise<ProvinceEntity[]> {
+        return await this.provinceService.getProvincesMapped();
+    }
+
+    // *--- Get Municipalitys By Province ---* //
+    public async getMunicipalities(id: string): Promise<MunicipalityEntity[]> {
+        return await this.municipalityService.getMunicipalitysByProvince(id);
+    }
+
+    public async getMunicipality(id: string): Promise<MunicipalityEntity> {
+        return await this.municipalityService.getMunicipality(id);
     }
 }
