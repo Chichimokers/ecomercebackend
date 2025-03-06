@@ -1,4 +1,4 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, BadRequestException } from "@nestjs/common";
 import { Observable, from } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import * as sharp from 'sharp';
@@ -21,19 +21,27 @@ export class WebpInterceptor implements NestInterceptor {
                 // Define la ruta de destino (ajusta el path según tu proyecto)
                 const destination = path.join('./public/images', newFileName);
 
-                // Si la imagen no es WebP, la convierte
-                const outputBuffer =
-                    mimetype !== 'image/webp'
-                        ? await sharp(buffer).webp().toBuffer()
-                        : buffer;
+                try {
+                    // Si la imagen no es WebP, la convierte
+                    const outputBuffer =
+                        mimetype !== 'image/webp'
+                            ? await sharp(buffer).webp().toBuffer()
+                            : buffer;
 
-                // Guarda el archivo convertido en disco
-                await fs.writeFile(destination, outputBuffer);
+                    // Guarda el archivo convertido en disco
+                    await fs.writeFile(destination, outputBuffer);
 
-                // Actualiza las propiedades del archivo en la request
-                request.file.buffer = outputBuffer;
-                request.file.filename = process.env.IMAGE_URL + newFileName;
-                request.file.mimetype = 'image/webp';
+                    // Actualiza las propiedades del archivo en la request
+                    request.file.buffer = outputBuffer;
+                    request.file.filename = process.env.IMAGE_URL + newFileName;
+                    request.file.mimetype = 'image/webp';
+                } catch (error) {
+                    console.error('Error al convertir la imagen');
+
+                    throw new BadRequestException(
+                        'La imagen proporcionada no es valida o tiene un formato no soportado'
+                    );
+                }
             };
 
             // Convertimos la promesa en un Observable y continuamos con la ejecución
