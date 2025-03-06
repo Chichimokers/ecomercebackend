@@ -18,6 +18,38 @@ export class PaypalService {
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
     ) {}
+    async cancelorder(token: string): Promise<boolean> {
+        const authd = {
+            username: CLIENTID,
+            password: SECRET_KEY,
+        };
+       
+       const response = await axios.get(
+                `${PAYPAL_HOST}/v2/checkout/orders/${token}`,{        
+
+                    auth: authd,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+
+                });
+
+        if(response.data.status != 'COMPLETED'){
+            
+            const orderid =   response.data.purchase_units[0].payments.captures[0].custom_id
+
+            this.orderService.delete(orderid)
+
+            return true
+
+        }else{
+     return false
+
+        }
+
+     
+        
+    }
 
     async confirmorder(token: string): Promise<boolean> {
         const authd = {
@@ -28,12 +60,13 @@ export class PaypalService {
             `${PAYPAL_HOST}/v2/checkout/orders/${token}/capture`,
             {},
             {
-                auth: authd,
+               auth: authd,
                 headers: {
                     'Content-Type': 'application/json',
                 },
             },
         );
+
         if (response.data.status === 'COMPLETED') {
             await this.orderService.processOrders(
                 response.data.purchase_units[0].payments.captures[0].custom_id,
@@ -71,15 +104,20 @@ export class PaypalService {
                     reference_id: requestId, // Usar el UUID generado
                     amount: {
                         currency_code: moneda,
-                        value: subtotal + precioenvio, // Asignar el subtotal calculado
+                        value: subtotal + precioenvio, // Asignar el subtotal calculado + precio de envio 
 
                         breakdown: {
                             item_total: {
                                 currency_code: moneda,
-                                value: subtotal + precioenvio, // Asignar el subtotal calculado
+                                value: subtotal, // Asignar el subtotal calculado
                             },
+                        shipping: {
+                                currency_code:  moneda,                           
+                                value: precioenvio //Asignar el total de envio
+                              }
                         },
                     },
+                    
                     //TODO Items
                     items: [
                         carts.orderItems.map((item) => ({
@@ -92,18 +130,8 @@ export class PaypalService {
                                 ).toFixed(2), // Asumiendo que cada cart tiene un atributo 'price'
                             },
                             quantity: item.quantity.toString(), // Asumiendo que cada cart tiene un atributo 'quantity'
-                        })),
-
-                        {
-                            name: 'Envio',
-
-                            unit_amount: {
-                                currency_code: moneda,
-                                value: precioenvio,
-                            },
-                            quantity: 1,
-                        },
-                    ],
+                        }))
+                 ],
                 },
             ],
             payment_source: {
@@ -162,6 +190,7 @@ export class PaypalService {
     }
 
     async CreateOrder(orderid: string, userid: string): Promise<string> {
+
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: [

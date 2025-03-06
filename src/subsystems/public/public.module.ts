@@ -20,6 +20,7 @@ import { ProvinceEntity } from "../locations/entity/province.entity";
 import { MunicipalityEntity } from "../locations/entity/municipality.entity";
 import { MunicipalityService } from "../locations/service/municipality.service";
 import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
+import { PaypalService } from "../payments/service/paypal.service";
 
 @Module({
     imports:[
@@ -41,6 +42,7 @@ import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
         ConfigModule.forRoot({ isGlobal: true }),
     ],
     providers: [PublicService,
+        PaypalService,
         OrderService,
         UserService,
         CategoryService,

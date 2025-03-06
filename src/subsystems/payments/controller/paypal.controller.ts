@@ -38,12 +38,14 @@ export class PaypalController {
         @Res() res: Response,
         @Req() req: any,
     ): Promise<void> {
+        
         const link: string = await this.servicePaypal.CreateOrder(
             body.id,
             req.user.Id,
         );
 
-        res.send(link);
+        
+        res.redirect(link)
     }
 
     @Get('capture-order')
@@ -60,7 +62,15 @@ export class PaypalController {
             : { success: false, errorCode: 400 };
     }
 
-    @Roles(roles.User)
     @Post('cancel-order')
-    async cancelorder(): Promise<void> { }
+    async cancelorder(@Query() query: any,@Res() res: Response): Promise<void> {
+
+        const token = query.token; // Parámetro clave
+   
+        const response: boolean = await this.servicePaypal.cancelorder(token);
+
+        res.redirect(process.env.WEB)
+
+
+     }
 }
