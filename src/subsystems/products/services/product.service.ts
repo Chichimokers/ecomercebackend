@@ -270,13 +270,15 @@ export class ProductService
         page: number = 0,
         limit: number = 30,
     ) {
-        const products: ProductEntity[] = await this.getProductsByORM(filters, page, limit);
+
+        const [products, count] = await this.getProductsByORM(filters, page*limit, limit, true);
+
 
         const urls: {
             previousUrl: string;
             nextUrl: string;
             totalPages: number;
-        } = await this.getUrls(page, limit);
+        } = await this.getUrls(page, limit, count);
 
         return {
             products: await this.mapProductORM(products),
@@ -357,10 +359,10 @@ export class ProductService
 
     private async getUrls(
         page: number,
-        limit: number
+        limit: number,
+        count: number,
     ) {
-        const totalProducts = await this.countProducts();
-        const totalPages = Math.ceil(totalProducts / limit);
+        const totalPages = Math.ceil(count / limit) - 1;
 
         const previousUrl: string =
             page - 1 <= 0 ? undefined : `/public/products?page=${page - 1}`;
@@ -372,12 +374,30 @@ export class ProductService
         return { previousUrl, nextUrl, totalPages };
     }
 
-    public async getProductsByORM(filters?: IFilterProduct, skip = 0, offset = 5) {
+
+    public async getProductsByORM(filters?: IFilterProduct, skip?: number, take?: number, count?: false): Promise<ProductEntity[]>;
+    public async getProductsByORM(filters?: IFilterProduct, skip?: number, take?: number, count?: true): Promise<[ProductEntity[], number]>;
+    public async getProductsByORM(
+        filters?: IFilterProduct,
+        skip: number = 0,
+        take: number = 5,
+        count: boolean = false
+    ): Promise<ProductEntity[] | [ProductEntity[], number]> {
+        const object = this.getObjectForORM(filters, skip, take);
+
+        if (!count) {
+            return await this.productRepository.find(object);
+        }
+
+        return await this.productRepository.findAndCount(object);
+    }
+
+    private getObjectForORM(filters: IFilterProduct, skip = 0, take = 5){
         let whereConditions: any;
 
         if( filters ) whereConditions = applyFilter(filters);
 
-        return await this.productRepository.find({
+        return {
             relations: ["province", "category", "subCategory", "ratings", "discounts"],
             select: {
                 id: true,
@@ -396,7 +416,7 @@ export class ProductService
             },
             where: whereConditions,
             skip: skip,
-            take: offset,
-        });
+            take: take,
+        }
     }
 }

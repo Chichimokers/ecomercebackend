@@ -40,7 +40,7 @@ export class PublicService {
         limit: number = 30,
         filters: IFilterProduct = {}
     ) {
-        const productsData = await this.productService.getFilteredProducts(filters, page*limit, limit);
+        const productsData = await this.productService.getFilteredProducts(filters, page, limit);
 
         const categories: CategoryEntity[] = await this.categoryService.getCategoriesWithSubCategories(filters.categoryIds);
 
