@@ -43,7 +43,8 @@ export class PaypalController {
             req.user.Id,
         );
 
-        res.send(link);
+        
+        res.redirect(link)
     }
 
     @Get('capture-order')
@@ -62,5 +63,14 @@ export class PaypalController {
 
     @Roles(roles.User)
     @Post('cancel-order')
-    async cancelorder(): Promise<void> { }
+    async cancelorder(@Query() query: any,@Res() res: Response): Promise<void> {
+
+        const token = query.token; // Parámetro clave
+   
+        const response: boolean = await this.servicePaypal.cancelorder(token);
+
+        res.redirect(process.env.WEB)
+
+
+     }
 }

@@ -18,6 +18,35 @@ export class PaypalService {
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
     ) {}
+    async cancelorder(token: string): Promise<boolean> {
+        const authd = {
+            username: CLIENTID,
+            password: SECRET_KEY,
+        };
+       
+       const response = await axios.get(
+                `${PAYPAL_HOST}/v2/checkout/orders/${token}`,{        
+
+                    auth: authd,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+
+                });
+
+        if(response.data.status === 'COMPLETED'){
+            return false
+
+        }else{
+          const orderid =   response.data.purchase_units[0].payments.captures[0].custom_id
+          this.orderService.delete(orderid)
+          return true
+
+        }
+
+     
+        
+    }
 
     async confirmorder(token: string): Promise<boolean> {
         const authd = {
@@ -28,12 +57,13 @@ export class PaypalService {
             `${PAYPAL_HOST}/v2/checkout/orders/${token}/capture`,
             {},
             {
-                auth: authd,
+               auth: authd,
                 headers: {
                     'Content-Type': 'application/json',
                 },
             },
         );
+
         if (response.data.status === 'COMPLETED') {
             await this.orderService.processOrders(
                 response.data.purchase_units[0].payments.captures[0].custom_id,
