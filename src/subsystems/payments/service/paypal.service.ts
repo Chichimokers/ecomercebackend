@@ -34,13 +34,13 @@ export class PaypalService {
 
                 });
 
-        if(response.data.status === 'COMPLETED'){
-            return false
+        if(response.data.status != 'COMPLETED'){
+            const orderid =   response.data.purchase_units[0].payments.captures[0].custom_id
+            this.orderService.delete(orderid)
+            return true
 
         }else{
-          const orderid =   response.data.purchase_units[0].payments.captures[0].custom_id
-          this.orderService.delete(orderid)
-          return true
+     return false
 
         }
 
@@ -187,6 +187,7 @@ export class PaypalService {
     }
 
     async CreateOrder(orderid: string, userid: string): Promise<string> {
+
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: [
