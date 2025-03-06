@@ -71,15 +71,20 @@ export class PaypalService {
                     reference_id: requestId, // Usar el UUID generado
                     amount: {
                         currency_code: moneda,
-                        value: subtotal + precioenvio, // Asignar el subtotal calculado
+                        value: subtotal + precioenvio, // Asignar el subtotal calculado + precio de envio 
 
                         breakdown: {
                             item_total: {
                                 currency_code: moneda,
-                                value: subtotal + precioenvio, // Asignar el subtotal calculado
+                                value: subtotal, // Asignar el subtotal calculado
                             },
+                        shipping: {
+                                currency_code:  moneda,                           
+                                value: precioenvio //Asignar el total de envio
+                              }
                         },
                     },
+                    
                     //TODO Items
                     items: [
                         carts.orderItems.map((item) => ({
@@ -92,18 +97,8 @@ export class PaypalService {
                                 ).toFixed(2), // Asumiendo que cada cart tiene un atributo 'price'
                             },
                             quantity: item.quantity.toString(), // Asumiendo que cada cart tiene un atributo 'quantity'
-                        })),
-
-                        {
-                            name: 'Envio',
-
-                            unit_amount: {
-                                currency_code: moneda,
-                                value: precioenvio,
-                            },
-                            quantity: 1,
-                        },
-                    ],
+                        }))
+                 ],
                 },
             ],
             payment_source: {
