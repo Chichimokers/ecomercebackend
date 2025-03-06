@@ -11,6 +11,7 @@ import { PaypalService } from 'src/subsystems/payments/service/paypal.service';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CalcEnvioDTO } from '../dto/frontsDTO/ordersDTO/calcenvio.dto';
 
 @ApiTags('userpublic')
 @ApiBearerAuth()
@@ -30,11 +31,11 @@ export class UserPublicController {
 
     @Post('/calcular_envio')
     @Roles(roles.User)
-    async  calcenvio(@Req() request: any,@Body() boduy : any) {
+    async  calcenvio(@Req() request: any,@Body() boduy : CalcEnvioDTO) {
         
         const userid = request.user.Id;
         const orderbd: OrderEntity = await this.orderRepository.findOne({
-            where: { id: boduy.orderid },
+            where: { id: boduy.orderId },
             relations: [
                 'orderItems',
                 'orderItem.product',
