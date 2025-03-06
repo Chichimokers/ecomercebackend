@@ -17,6 +17,7 @@ import { DiscountEntity } from '../discounts/entity/discounts.entity';
 import { CacheModule } from "@nestjs/cache-manager";
 import { ProvinceService } from "../locations/service/province.service";
 import { ProvinceEntity } from "../locations/entity/province.entity";
+import { PaypalService } from "../payments/service/paypal.service";
 
 @Module({
     imports:[
@@ -36,6 +37,7 @@ import { ProvinceEntity } from "../locations/entity/province.entity";
         ConfigModule.forRoot({ isGlobal: true }),
     ],
     providers: [PublicService,
+        PaypalService,
         OrderService,
         UserService,
         CategoryService,
