@@ -134,6 +134,7 @@ export class PublicController {
         return this.publicService.getMunicipalities(id);
     }
 
+    // *--- For Get Municipality info ---* //
     @Get('/municipality/:id')
     public getMunicipality(@Param('id', new ParseUUIDPipe()) id: string){
         return this.publicService.getMunicipality(id);

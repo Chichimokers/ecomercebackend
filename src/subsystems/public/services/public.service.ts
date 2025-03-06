@@ -6,7 +6,7 @@ import { ProductService } from "../../products/services/product.service";
 import { CategoryService } from "../../category/services/category.service";
 import { badRequestException, notFoundException } from "../../../common/exceptions/modular.exception";
 import { ProvinceService } from "../../locations/service/province.service";
-import { Cache } from '@nestjs/cache-manager';
+import { Cache } from "@nestjs/cache-manager";
 import { roundMinor } from "../utils/roundMinor";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { CategoryEntity } from "../../category/entity/category.entity";
@@ -24,7 +24,7 @@ export class PublicService {
         private readonly provinceService: ProvinceService,
         @Inject(MunicipalityService)
         private readonly municipalityService: MunicipalityService,
-        @Inject(Cache) private cacheManager: Cache,
+        @Inject(Cache) private cacheManager: Cache
     ) {
     }
 
@@ -87,7 +87,7 @@ export class PublicService {
 
     // *--- Get Main View Products, Categories, Provinces ---* //
     public async getMainViewInfo(): Promise<any> {
-        const cacheManage: any = await this.cacheManager.get('counters');
+        const cacheManage: any = await this.cacheManager.get("counters");
 
         if (cacheManage) {
             return cacheManage;
@@ -96,12 +96,12 @@ export class PublicService {
         const data = {
             provinces: await this.provinceService.countProvinces(),
             products: roundMinor(await this.productService.countProducts()),
-            category: await this.categoryService.countCategories(),
-        }
+            category: await this.categoryService.countCategories()
+        };
 
-        await this.cacheManager.set('counters', data);
+        await this.cacheManager.set("counters", data);
 
-        return data
+        return data;
     }
 
     // *--- Get Provinces And Municipalitys ---* //
@@ -111,10 +111,18 @@ export class PublicService {
 
     // *--- Get Municipalitys By Province ---* //
     public async getMunicipalities(id: string): Promise<MunicipalityEntity[]> {
-        return await this.municipalityService.getMunicipalitysByProvince(id);
+        const municipalities: MunicipalityEntity[] = await this.municipalityService.getMunicipalitysByProvince(id);
+
+        notFoundException(municipalities, "Municipalities");
+
+        return municipalities;
     }
 
     public async getMunicipality(id: string): Promise<MunicipalityEntity> {
-        return await this.municipalityService.getMunicipality(id);
+        const municipality: MunicipalityEntity = await this.municipalityService.getMunicipality(id);
+
+        notFoundException(municipality, "Municipality");
+
+        return municipality;
     }
 }
