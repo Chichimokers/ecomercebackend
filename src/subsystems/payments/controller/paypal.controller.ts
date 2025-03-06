@@ -61,7 +61,6 @@ export class PaypalController {
             : { success: false, errorCode: 400 };
     }
 
-    @Roles(roles.User)
     @Post('cancel-order')
     async cancelorder(@Query() query: any,@Res() res: Response): Promise<void> {
 
