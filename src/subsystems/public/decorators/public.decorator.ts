@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext, applyDecorators } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, applyDecorators, ParseUUIDPipe } from "@nestjs/common";
 import { ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
 
@@ -9,7 +9,8 @@ export const ProductPublicQuery = createParamDecorator(
 
         return {
             page: query.page ? Number(query.page) : 1,
-            limit: query.limit ? Number(query.limit) : 10,
+            limit: query.limit ? Number(query.limit) : 30,
+            province: query.province ? query.province : undefined,
             categoryIds: query.category
                 ? query.category.split(',').map(String)
                 : undefined,
@@ -54,6 +55,12 @@ export function ProductPublicApiDoc() {
             required: false,
             type: Number,
             description: 'Rate of the product',
+        }),
+        ApiQuery({
+           name: 'province',
+           required: false,
+           type: String,
+           description: 'Province id',
         }),
         ApiResponse({ status: 200, type: ProductsViewDTO }),
         ApiResponse({

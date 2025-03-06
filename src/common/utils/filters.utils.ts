@@ -28,5 +28,9 @@ export function applyFilter(filters: IFilterProduct) {
         whereConditions.id = Not(filters.notId);
     }
 
+    if (filters.provinceId) {
+        whereConditions.province = { id: filters.provinceId };
+    }
+
     return whereConditions;
 }

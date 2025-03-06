@@ -8,4 +8,5 @@ export interface IFilterProduct {
     rate?: number;
     name?: string;
     notId?: string;
+    provinceId?: string;
 }

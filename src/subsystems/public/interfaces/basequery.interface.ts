@@ -10,4 +10,5 @@ export interface PublicQueryInterface {
     subCategoryIds?: any;
     prices?: any;
     rate?: number;
+    province?: string;
 }

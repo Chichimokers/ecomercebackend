@@ -4,7 +4,7 @@ import {
     NotFoundException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, Repository } from "typeorm";
+import { In, Repository, Like } from "typeorm";
 import { BaseService } from "../../../common/services/base.service";
 import { ProductEntity } from "../entity/product.entity";
 import { UpdateProductDTO } from "../dto/updateProductDTO.dto";
@@ -285,27 +285,21 @@ export class ProductService
     }
 
     //      *--- Search Product by Name ---*
-    public async searchProductByName(name: string) {
-        const query = this.productRepository
-            .createQueryBuilder('product')
-            .leftJoin('product.ratings', 'rating')
-            .leftJoin('product.discounts', 'discount')
-            .leftJoin('product.category', 'category')
-            .leftJoin('product.subCategory', 'subCategory')
-            .addSelect('AVG(rating.rate)', 'averageRating')
-            .addSelect(['discount.min', 'discount.reduction'])
-            .addSelect(['category.name', 'subCategory.name'])
-            .where('LOWER(product.name) LIKE LOWER(:name)', {
-                name: `%${name}%`,
-            })
-            .groupBy('product.id')
-            .addGroupBy('discount.id')
-            .addGroupBy('category.id')
-            .addGroupBy('subCategory.id')
-            .skip(0)
-            .take(10);
-
-        return this.mapProduct(query);
+    public async searchProductByName(name: string, province?: string) {
+        return await this.productRepository.find({
+            select: {
+                id: true,
+                name: true,
+                image: true,
+                price: true,
+            },
+            where: {
+                name: Like(`%${name}%`),
+                province: province ? { id: province } : undefined,
+            },
+            skip: 0,
+            take: 10,
+        });
     }
 
     //      *--- Get Product Detail ---*
@@ -379,7 +373,7 @@ export class ProductService
     }
 
     public async getProductsByORM(filters?: IFilterProduct, skip = 0, offset = 5) {
-        let whereConditions: any
+        let whereConditions: any;
 
         if( filters ) whereConditions = applyFilter(filters);
 

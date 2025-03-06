@@ -20,6 +20,7 @@ import { PublicQueryInterface } from '../interfaces/basequery.interface';
 import { badRequestException } from '../../../common/exceptions/modular.exception';
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { IDDTO } from "../../../common/dto/uuid.validator.dto";
+import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
 
 @ApiTags('public')
 @Controller('public')
@@ -37,9 +38,9 @@ export class PublicController {
 
     // *--- For Home View ---* //
     @Post('/search')
-    public searchProduct(@Body('name') name: string) {
-        badRequestException(name, 'Name');
-        return this.publicService.getProductByName(name);
+    public searchProduct(@Body() body: SearchproductDTO) {
+        badRequestException(body.name, 'Name');
+        return this.publicService.getProductByName(body);
     }
 
     // *--- For Products View ---* //
@@ -57,6 +58,7 @@ export class PublicController {
             subCategoryIds: query.subCategoryIds,
             prices: query.prices,
             rate: query.rate,
+            provinceId: query.province,
         };
 
         return this.publicService.getProductsPage(
@@ -77,14 +79,6 @@ export class PublicController {
     @ApiResponse({ status: 200, type: ProductDTO })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
     public getProductDetails(@Query('id', new ParseUUIDPipe()) id: string) {
-        /*try {
-            id = String(id);
-        } catch (error) {
-            throw new BadRequestException(
-                'Incorrect ID format. Required Number',
-            );
-        }*/
-
         return this.publicService.getProductDetails(id);
     }
 
@@ -97,15 +91,7 @@ export class PublicController {
     })
     @ApiResponse({ status: 200, type: [ProductDTO] })
     @ApiResponse({ status: 400, description: 'Missing or invalid id' })
-    public getProductRelation(@Query('id') id: string) {
-        try {
-            id = String(id);
-        } catch (error) {
-            throw new BadRequestException(
-                'Incorrect ID format. Required UUID',
-            );
-        }
-
+    public getProductRelation(@Query('id', new ParseUUIDPipe()) id: string) {
         return this.publicService.getProductRelation(id);
     }
 

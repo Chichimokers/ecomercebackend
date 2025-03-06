@@ -30,7 +30,7 @@ import { extname } from 'path';
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
 import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
-import { WebpInterceptor } from '../Interceptors/imagewebp.interceptor';
+import { WebpInterceptor } from '../interceptors/imagewebp.interceptor';
 
 @ApiTags('products')
 @ApiBearerAuth()

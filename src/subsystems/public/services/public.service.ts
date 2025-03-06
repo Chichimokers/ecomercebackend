@@ -13,6 +13,7 @@ import { CategoryEntity } from "../../category/entity/category.entity";
 import { MunicipalityService } from "../../locations/service/municipality.service";
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 import { ProvinceEntity } from "../../locations/entity/province.entity";
+import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
 
 @Injectable()
 export class PublicService {
@@ -57,10 +58,8 @@ export class PublicService {
     }
 
     // *--- Search Product By Name ---* //
-    public async getProductByName(name: string): Promise<any> {
-        badRequestException(name, "Name");
-
-        const products = await this.productService.searchProductByName(name);
+    public async getProductByName(dto: SearchproductDTO): Promise<any> {
+        const products = await this.productService.searchProductByName(dto.name, dto.province);
 
         notFoundException(products, "Product");
 
