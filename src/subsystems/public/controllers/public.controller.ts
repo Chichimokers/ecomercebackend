@@ -2,11 +2,11 @@ import {
     BadRequestException,
     Body,
     Controller,
-    Get,
+    Get, Param,
     ParseUUIDPipe,
     Post,
-    Query,
-} from '@nestjs/common';
+    Query
+} from "@nestjs/common";
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PublicService } from '../services/public.service';
 import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
@@ -129,13 +129,13 @@ export class PublicController {
     }
 
     // *--- For Get Municipalitys By A Province ---* //
-    @Get('/municipalities')
-    public getMunicipalities(@Query('id', new ParseUUIDPipe()) id: string) {
+    @Get('/municipalities/:id')
+    public getMunicipalities(@Param('id', new ParseUUIDPipe()) id: string) {
         return this.publicService.getMunicipalities(id);
     }
 
-    @Get('/municipality')
-    public getMunicipality(@Query('id', new ParseUUIDPipe()) id: string){
+    @Get('/municipality/:id')
+    public getMunicipality(@Param('id', new ParseUUIDPipe()) id: string){
         return this.publicService.getMunicipality(id);
     }
 }

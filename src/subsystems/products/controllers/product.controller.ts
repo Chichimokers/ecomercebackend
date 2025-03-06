@@ -55,7 +55,6 @@ export class ProductControllers {
         return this.productservice.insertByDTO(createProductDTO);
     }
 
-    //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
     @ApiResponse({ status: 200, type: [ProductDTO] })
@@ -79,13 +78,7 @@ export class ProductControllers {
     @Patch(':id')
     @Roles(roles.Admin)
     @UseInterceptors(FileInterceptor('image', {
-        storage: diskStorage({
-            destination: './public/images',
-            filename: (req, file, cb): void => {
-                const uniqueSuffix: string = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                cb(null, uniqueSuffix + extname(file.originalname));
-            }
-        })
+        storage: memoryStorage(),
     }),  WebpInterceptor)
     async update(
         @Param('id', new ParseUUIDPipe()) id: number,
@@ -94,7 +87,6 @@ export class ProductControllers {
     ) {
         updateProductDTO.image = file ? file.filename : undefined;
         return this.productservice.updateByDTO(id, updateProductDTO)
-
     }
 
     @Delete(':id')
