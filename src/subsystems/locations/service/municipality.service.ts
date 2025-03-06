@@ -68,8 +68,25 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
             relations: {
                 prices: true,
             },
+            select: {
+                id: true,
+                name: true,
+                basePrice: true,
+                minHours: true,
+                maxHours: true,
+                prices: {
+                    id: true,
+                    price: true,
+                    minWeight: true,
+                },
+            },
             where: { id: id },
-        })
+            order: {
+                prices: {
+                    minWeight: 'DESC',
+                },
+            },
+        });
     }
 
     public async getMunicipalitysByProvince(id: string){

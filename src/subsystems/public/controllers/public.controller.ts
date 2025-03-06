@@ -130,12 +130,12 @@ export class PublicController {
 
     // *--- For Get Municipalitys By A Province ---* //
     @Get('/municipalities')
-    public getMunicipalities(@Body('id', new ParseUUIDPipe()) id: string) {
+    public getMunicipalities(@Query('id', new ParseUUIDPipe()) id: string) {
         return this.publicService.getMunicipalities(id);
     }
 
     @Get('/municipality')
-    public getMunicipality(@Body('id', new ParseUUIDPipe()) id: string){
+    public getMunicipality(@Query('id', new ParseUUIDPipe()) id: string){
         return this.publicService.getMunicipality(id);
     }
 }

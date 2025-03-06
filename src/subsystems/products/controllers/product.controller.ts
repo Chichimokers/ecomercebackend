@@ -25,11 +25,12 @@ import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from "multer";
 import { extname } from 'path';
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
 import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
+import { WebpInterceptor } from '../Interceptors/imagewebp.interceptor';
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -45,14 +46,8 @@ export class ProductControllers {
     @Post()
     @Roles(roles.Admin)
     @UseInterceptors(FileInterceptor('image', {
-        storage: diskStorage({
-            destination: './public/images',
-            filename: (req, file, cb): void => {
-                const uniqueSuffix: string = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                cb(null, uniqueSuffix + extname(file.originalname));
-            }
-        })
-    }))
+        storage: memoryStorage(),
+    }),  WebpInterceptor)
     create(@Body() createProductDTO: CreateProductSpecialDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
 
         createProductDTO.image = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
@@ -91,7 +86,7 @@ export class ProductControllers {
                 cb(null, uniqueSuffix + extname(file.originalname));
             }
         })
-    }))
+    }),  WebpInterceptor)
     async update(
         @Param('id', new ParseUUIDPipe()) id: number,
         @Body() updateProductDTO: UpdateProductDTO,
