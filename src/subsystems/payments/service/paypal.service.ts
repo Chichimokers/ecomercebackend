@@ -35,8 +35,11 @@ export class PaypalService {
                 });
 
         if(response.data.status != 'COMPLETED'){
+            
             const orderid =   response.data.purchase_units[0].payments.captures[0].custom_id
+
             this.orderService.delete(orderid)
+
             return true
 
         }else{
