@@ -62,4 +62,25 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
 
         return municipality;
     }
+
+    public async getMunicipality(id: string) {
+        return await this.municipalityRepository.findOne({
+            relations: {
+                prices: true,
+            },
+            where: { id: id },
+        })
+    }
+
+    public async getMunicipalitysByProvince(id: string){
+        return await this.municipalityRepository.find({
+            select: {
+                id: true,
+                name: true,
+            },
+            where: {
+                province: { id: id },
+            }
+        });
+    }
 }

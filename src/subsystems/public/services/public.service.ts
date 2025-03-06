@@ -10,6 +10,9 @@ import { Cache } from '@nestjs/cache-manager';
 import { roundMinor } from "../utils/roundMinor";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { CategoryEntity } from "../../category/entity/category.entity";
+import { MunicipalityService } from "../../locations/service/municipality.service";
+import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
+import { ProvinceEntity } from "../../locations/entity/province.entity";
 
 @Injectable()
 export class PublicService {
@@ -19,6 +22,8 @@ export class PublicService {
         private readonly categoryService: CategoryService,
         @Inject(ProvinceService)
         private readonly provinceService: ProvinceService,
+        @Inject(MunicipalityService)
+        private readonly municipalityService: MunicipalityService,
         @Inject(Cache) private cacheManager: Cache,
     ) {
     }
@@ -52,7 +57,7 @@ export class PublicService {
     }
 
     // *--- Search Product By Name ---* //
-    public async getProductByName(name: string) {
+    public async getProductByName(name: string): Promise<any> {
         badRequestException(name, "Name");
 
         const products = await this.productService.searchProductByName(name);
@@ -76,12 +81,12 @@ export class PublicService {
     }
 
     // *--- Get Categories ---* //
-    public async getCategories() {
+    public async getCategories(): Promise<CategoryEntity[]> {
         return await this.categoryService.getCategoriesWithSubCategories();
     }
 
     // *--- Get Main View Products, Categories, Provinces ---* //
-    public async getMainViewInfo() {
+    public async getMainViewInfo(): Promise<any> {
         const cacheManage: any = await this.cacheManager.get('counters');
 
         if (cacheManage) {
@@ -100,7 +105,16 @@ export class PublicService {
     }
 
     // *--- Get Provinces And Municipalitys ---* //
-    public async getProvinces() {
+    public async getProvinces(): Promise<ProvinceEntity[]> {
         return await this.provinceService.getProvincesMapped();
+    }
+
+    // *--- Get Municipalitys By Province ---* //
+    public async getMunicipalities(id: string): Promise<MunicipalityEntity[]> {
+        return await this.municipalityService.getMunicipalitysByProvince(id);
+    }
+
+    public async getMunicipality(id: string): Promise<MunicipalityEntity> {
+        return await this.municipalityService.getMunicipality(id);
     }
 }
