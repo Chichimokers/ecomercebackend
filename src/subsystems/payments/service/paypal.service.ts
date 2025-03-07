@@ -10,11 +10,14 @@ import {
     getPrice,
 } from 'src/common/utils/global-functions.utils';
 import { notFoundException } from '../../../common/exceptions/modular.exception';
+import { MunicipalityEntity } from 'src/subsystems/locations/entity/municipality.entity';
 
 @Injectable()
 export class PaypalService {
     constructor(
         @Inject(OrderService) public orderService: OrderService,
+        @InjectRepository(MunicipalityEntity)
+        private readonly municipalitirepository:Repository<MunicipalityEntity>,
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
     ) {}
@@ -149,6 +152,39 @@ export class PaypalService {
         };
 
         return order;
+    }
+    async calcularprecio_envio__by_kg_and_municipality(kg:number,municipaliti_id:string): Promise<number> {
+        // Validación de productos
+   
+        // Cálculo de peso total con validación
+        const pesoTotal = kg;
+
+        if (pesoTotal <= 0) throw new Error('Peso total inválido');
+
+        // Validación de estructura de municipio
+        const municipio =await  this.municipalitirepository.findOne({
+            relations: {
+                prices: true,
+            },
+            where: { id: municipaliti_id.toString() },
+        })
+
+
+        if (!municipio?.prices || !municipio.prices?.length) {
+            return municipio?.prices.length || 0; // Si no hay precios especiales
+        }
+
+        // Procesamiento de precios
+        const preciosOrdenados = [...municipio.prices]
+            .filter((p) => p.minWeight !== null && p.minWeight > 0)
+            .sort((a, b) => b.minWeight! - a.minWeight!);
+
+        // Encontrar el primer precio que aplica
+        const precioAplicable = preciosOrdenados.find(
+            (p) => pesoTotal >= p.minWeight!,
+        );
+
+        return precioAplicable?.price ?? municipio.prices[0].price;
     }
 
     // TODO Review and FIX this method

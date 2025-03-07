@@ -32,20 +32,8 @@ export class UserPublicController {
     @Post('/calcular_envio')
     @Roles(roles.User)
     async  calcenvio(@Req() request: any,@Body() boduy : CalcEnvioDTO) {
-        
-        const userid = request.user.Id;
-        const orderbd: OrderEntity = await this.orderRepository.findOne({
-            where: { id: boduy.orderId },
-            relations: [
-                'orderItems',
-                'orderItem.product',
-                'orderItem.product.discounts',
-                'municipality', // Relación directa de OrderEntity -> MunicipalityEntity
-                'municipality.prices', // Relación MunicipalityEntity -> PriceByWeightEntity
-            ],
-        });
 
-        return this.paypalservice.calcularprecio_envio(orderbd)
+        return this.paypalservice.calcularprecio_envio__by_kg_and_municipality(boduy.weight,boduy.municipaliti)
     }
 
     @Post('/retire-order')
