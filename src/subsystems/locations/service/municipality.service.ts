@@ -83,7 +83,7 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
             where: { id: id },
             order: {
                 prices: {
-                    minWeight: 'DESC',
+                    minWeight: 'ASC',
                 },
             },
         });

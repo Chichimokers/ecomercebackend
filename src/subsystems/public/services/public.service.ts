@@ -14,6 +14,7 @@ import { MunicipalityService } from "../../locations/service/municipality.servic
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
+import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
 
 @Injectable()
 export class PublicService {
@@ -123,5 +124,19 @@ export class PublicService {
         notFoundException(municipality, "Municipality");
 
         return municipality;
+    }
+
+    public async getShippingPrice(dto: ShippingDTO) {
+        const municipality: MunicipalityEntity = await this.municipalityService.getMunicipality(dto.municipality);
+        let shippingPrice: number = municipality.basePrice;
+
+        for (const price of municipality.prices) {
+            console.log(price);
+            if(dto.total_weight >= price.minWeight) {
+                shippingPrice = price.price;
+            }
+        }
+
+        return shippingPrice;
     }
 }

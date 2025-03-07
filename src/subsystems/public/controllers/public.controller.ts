@@ -21,6 +21,7 @@ import { badRequestException } from '../../../common/exceptions/modular.exceptio
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { IDDTO } from "../../../common/dto/uuid.validator.dto";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
+import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
 
 @ApiTags('public')
 @Controller('public')
@@ -124,5 +125,11 @@ export class PublicController {
     @Get('/municipality/:id')
     public getMunicipality(@Param('id', new ParseUUIDPipe()) id: string){
         return this.publicService.getMunicipality(id);
+    }
+
+    // *--- Get Prices of Municipality ---* //
+    @Post('/shipping-price')
+    public getShippingPrice(@Body() body: ShippingDTO) {
+        return this.publicService.getShippingPrice(body);
     }
 }
