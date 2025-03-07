@@ -33,7 +33,7 @@ export class UserPublicController {
     @Roles(roles.User)
     async  calcenvio(@Req() request: any,@Body() boduy : CalcEnvioDTO) {
 
-        return this.paypalservice.calcularprecio_envio__by_kg_and_municipality(boduy.weight,boduy.municipaliti)
+        return await this.paypalservice.calcularprecio_envio__by_kg_and_municipality(boduy.weight,boduy.municipaliti)
     }
 
     @Post('/retire-order')
