@@ -223,7 +223,7 @@ export class PaypalService {
             (p) => pesoTotal >= p.minWeight!,
         );
 
-        return precioAplicable?.price ?? municipio.prices[0].price;
+        return precioAplicable?.price ??  municipio.basePrice;
     }
 
     async CreateOrder(orderid: string, userid: string): Promise<string> {
