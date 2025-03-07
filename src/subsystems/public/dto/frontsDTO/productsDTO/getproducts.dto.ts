@@ -37,31 +37,21 @@ export class ProductDTO {
 
     @ApiProperty({
         example: 26,
-        description: "Calificacion total del producto para calcularse con la" +
-            " cantidad de calificaciones."
+        description: "Average rating"
     })
-    average_rating: number;
-
-    @ApiProperty({
-        example: 6,
-        description: "Cantidad de usuarios que calificaron el producto"
-    })
-    qualification_quantity: number;
-
-    /*@ApiProperty({})
-    offers: OfferEntity[];*/
+    averageRating: number;
 
     @ApiProperty({
         example: "Food",
         description: "Product category"
     })
-    product_category: string;
+    category: string;
 
     @ApiProperty({
         example: "Fruits",
         description: "Product subcategory"
     })
-    product_subcategory: string;
+    subCategory: string;
 
     @ApiProperty({
         type: DiscountDTO,

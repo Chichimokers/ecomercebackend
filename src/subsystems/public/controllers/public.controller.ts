@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     Body,
     Controller,
     Get, Param,
@@ -19,9 +18,9 @@ import {
 import { PublicQueryInterface } from '../interfaces/basequery.interface';
 import { badRequestException } from '../../../common/exceptions/modular.exception';
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
-import { IDDTO } from "../../../common/dto/uuid.validator.dto";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
+
 
 @ApiTags('public')
 @Controller('public')
