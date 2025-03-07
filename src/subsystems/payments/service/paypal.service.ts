@@ -164,6 +164,7 @@ export class PaypalService {
         // Validación de estructura de municipio
         const municipio =await  this.municipalitirepository.findOne({
             relations: {
+            
                 prices: true,
             },
             where: { id: municipaliti_id.toString() },
@@ -184,7 +185,7 @@ export class PaypalService {
             (p) => pesoTotal >= p.minWeight!,
         );
 
-        return precioAplicable?.price ?? municipio.prices[0].price;
+        return precioAplicable?.price ?? municipio.basePrice;
     }
 
     // TODO Review and FIX this method
