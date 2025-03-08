@@ -59,6 +59,40 @@ export class ProductService
         };
     }
 
+    override async findOneById(id: string): Promise<any> {
+        const product = await this.productRepository.findOne({
+            relations: {
+                province: true,
+                category: true,
+                subCategory: true,
+                ratings: true,
+                discounts: true,
+            },
+            select: {
+                province: {
+                    name: true
+                },
+                category: {
+                    name: true
+                },
+                subCategory: {
+                    name: true
+                },
+                discounts: {
+                    min: true,
+                    reduction: true,
+                },
+            },
+            where: {
+                id: id
+            }
+        });
+
+        const mapped = await this.mapProductORM([product])
+
+        return mapped[0];
+    }
+
     async insertByDTO(dto: CreateProductSpecialDTO) {
         const { category, subCategory } = await this.getCategoryAndSubCategoryByDTO(dto);
 
