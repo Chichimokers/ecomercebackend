@@ -44,10 +44,19 @@ export class ProductService
         super(productRepository);
     }
 
-    override async findAll(_start: number = 0, _end: number = 100): Promise<any> {
-        const prueba: ProductEntity[] = await this.getProductsByORM(undefined, _start, _end);
+    override async findAll(page: number = 0, limit: number = 30, filters: IFilterProduct = {}): Promise<any> {
+        const [products, count] = await this.getProductsByORM(filters, page * limit, limit, true, true);
 
-        return this.mapProductORM(prueba);
+        const urls: {
+            previousUrl: string;
+            nextUrl: string;
+            totalPages: number;
+        } = await this.getUrls(page, limit, count, '/products');
+
+        return {
+            products: await this.mapProductORM(products),
+            urls
+        };
     }
 
     async insertByDTO(dto: CreateProductSpecialDTO) {
@@ -213,15 +222,18 @@ export class ProductService
                 item.discount_min === null && item.discount_reduction === null
                     ? undefined
                     : {
-                          min: item.discount_min,
-                          reduction: item.discount_reduction,
-                      },
+                        min: item.discount_min,
+                        reduction: item.discount_reduction
+                    }
         }));
     }
 
     private async mapProductORM(products: ProductEntity[]) {
         return products.map((product: ProductEntity) => ({
             id: product.id,
+            created_at: product.created_at || undefined,
+            updated_at: product.updated_at || undefined,
+            deleted_at: product.deleted_at || undefined,
             image: product.image || undefined,
             name: product.name,
             price: product.price,
@@ -238,11 +250,11 @@ export class ProductService
                 product.subCategory.id ||
                 undefined,
             discount:
-                product.discounts === null || product.discounts.reduction === null
+                !product.discounts || product.discounts.reduction === null
                     ? undefined
                     : {
                         min: product.discounts.min,
-                        reduction: product.discounts.reduction,
+                        reduction: product.discounts.reduction
                     }
         }));
     }
@@ -268,21 +280,19 @@ export class ProductService
     public async getFilteredProducts(
         filters: IFilterProduct,
         page: number = 0,
-        limit: number = 30,
+        limit: number = 30
     ) {
-
-        const [products, count] = await this.getProductsByORM(filters, page*limit, limit, true);
-
+        const [products, count] = await this.getProductsByORM(filters, page * limit, limit, false, true);
 
         const urls: {
             previousUrl: string;
             nextUrl: string;
             totalPages: number;
-        } = await this.getUrls(page, limit, count);
+        } = await this.getUrls(page, limit, count, '/public/products');
 
         return {
             products: await this.mapProductORM(products),
-            urls,
+            urls
         };
     }
 
@@ -293,22 +303,22 @@ export class ProductService
                 id: true,
                 name: true,
                 image: true,
-                price: true,
+                price: true
             },
             where: {
                 name: Like(`%${name}%`),
-                province: province ? { id: province } : undefined,
+                province: province ? { id: province } : undefined
             },
             skip: 0,
-            take: 10,
+            take: 10
         });
     }
 
     //      *--- Get Product Detail ---*
     public async getProductDetails(id: string) {
         const filters: IFilterProduct = {
-            id: id,
-        }
+            id: id
+        };
 
         const product = await this.mapProductORM(await this.getProductsByORM(filters));
 
@@ -333,8 +343,8 @@ export class ProductService
         const filters: IFilterProduct = {
             notId: id,
             categoryIds: [category.id],
-            subCategoryIds: [subcategory.id],
-        }
+            subCategoryIds: [subcategory.id]
+        };
 
         const products: ProductEntity[] = await this.getProductsByORM(filters, 0, 15);
 
@@ -342,7 +352,7 @@ export class ProductService
     }
 
     public async countProducts(filters?: IFilterProduct): Promise<number> {
-        const whereConditions: any = {}
+        const whereConditions: any = {};
 
         if (filters?.categoryIds?.length) {
             whereConditions.category = { id: In(filters.categoryIds) };
@@ -353,7 +363,7 @@ export class ProductService
         }
 
         return await this.productRepository.count({
-            where: whereConditions,
+            where: whereConditions
         });
     }
 
@@ -361,29 +371,31 @@ export class ProductService
         page: number,
         limit: number,
         count: number,
+        url: string
     ) {
         const totalPages = Math.ceil(count / limit) - 1;
 
         const previousUrl: string =
-            page - 1 <= 0 ? undefined : `/public/products?page=${page - 1}`;
+            page - 1 <= 0 ? undefined : `${url}?page=${page - 1}`;
         const nextUrl: string =
             page + 1 > totalPages
                 ? undefined
-                : `/public/products?page=${page + 1}`;
+                : `${url}?page=${page + 1}`;
 
         return { previousUrl, nextUrl, totalPages };
     }
 
 
-    public async getProductsByORM(filters?: IFilterProduct, skip?: number, take?: number, count?: false): Promise<ProductEntity[]>;
-    public async getProductsByORM(filters?: IFilterProduct, skip?: number, take?: number, count?: true): Promise<[ProductEntity[], number]>;
+    public async getProductsByORM(filters?: IFilterProduct, skip?: number, take?: number, admin?: boolean, count?: false): Promise<ProductEntity[]>;
+    public async getProductsByORM(filters?: IFilterProduct, skip?: number, take?: number, admin?: boolean, count?: true): Promise<[ProductEntity[], number]>;
     public async getProductsByORM(
         filters?: IFilterProduct,
         skip: number = 0,
         take: number = 5,
+        admin: boolean = false,
         count: boolean = false
     ): Promise<ProductEntity[] | [ProductEntity[], number]> {
-        const object = this.getObjectForORM(filters, skip, take);
+        const object = this.getObjectForORM(filters, skip, take, admin);
 
         if (!count) {
             return await this.productRepository.find(object);
@@ -392,31 +404,42 @@ export class ProductService
         return await this.productRepository.findAndCount(object);
     }
 
-    private getObjectForORM(filters: IFilterProduct, skip = 0, take = 5){
+    private getObjectForORM(filters: IFilterProduct, skip = 0, take = 5, admin: boolean = false) {
         let whereConditions: any;
 
-        if( filters ) whereConditions = applyFilter(filters);
+        if (filters) whereConditions = applyFilter(filters);
 
         return {
-            relations: ["province", "category", "subCategory", "ratings", "discounts"],
+            relations: {
+                province: true,
+                category: true,
+                subCategory: true,
+                ratings: admin ? undefined : true,
+                discounts: admin ? undefined : true,
+            },
             select: {
                 id: true,
-                image: true,
+                image: !admin ? true : undefined,
                 name: true,
                 price: true,
-                description: true,
-                short_description: true,
+                description: !admin ? true : undefined,
+                short_description: !admin ? true : undefined,
                 quantity: true,
                 weight: true,
+                created_at: admin ? true : undefined,
+                updated_at: admin ? true : undefined,
+                deleted_at: admin ? true : undefined,
                 province: { name: true },
                 category: { name: true },
                 subCategory: { name: true },
-                ratings: { rate: true },
-                discounts: { reduction: true, min: true },
+                ...(admin ? {} : {
+                    ratings: { rate: true },
+                    discounts: { reduction: true, min: true }
+                }),
             },
             where: whereConditions,
             skip: skip,
-            take: take,
-        }
+            take: take
+        };
     }
 }

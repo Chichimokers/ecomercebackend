@@ -29,8 +29,11 @@ import { diskStorage, memoryStorage } from "multer";
 import { extname } from 'path';
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
+import { IProductsFilters, IRefineInterface } from "../interfaces/basequery.interface";
 import { WebpInterceptor } from '../interceptors/imagewebp.interceptor';
+import { ProductPublicApiDoc, ProductPublicQuery } from "../decorators/public.decorator";
+import { badRequestException } from "../../../common/exceptions/modular.exception";
+import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -57,10 +60,24 @@ export class ProductControllers {
 
     @Get()
     @Roles(roles.Admin)
+    @ProductPublicApiDoc()
     @ApiResponse({ status: 200, type: [ProductDTO] })
-    public getProducts(@RefineQuery() query: BaseQueryInterface): Promise<ProductEntity[]> {
-        const { _start, _end } = query;
-        return this.productservice.findAll(_start, _end);
+    public getProducts(@ProductPublicQuery() query: IProductsFilters): Promise<ProductEntity[]> {
+        if (query.categoryIds)
+            badRequestException(query.categoryIds, 'CategoryIDS');
+        if (query.subCategoryIds)
+            badRequestException(query.subCategoryIds, 'SubCategoryIDS');
+        if (query.prices) badRequestException(query.prices, 'Prices');
+
+        const filters: IFilterProduct = {
+            categoryIds: query.categoryIds,
+            subCategoryIds: query.subCategoryIds,
+            prices: query.prices,
+            rate: query.rate,
+            provinceId: query.province,
+        };
+
+        return this.productservice.findAll(query.page, query.limit, filters);
     }
 
 

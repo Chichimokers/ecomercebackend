@@ -20,7 +20,7 @@ import { OrderService } from '../services/orders.service';
 import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
+import { IRefineInterface } from '../../products/interfaces/basequery.interface';
 
 @ApiTags('orders')
 @ApiBearerAuth()
@@ -48,7 +48,7 @@ export class OrderControllers {
 
     @Get()
     @Roles(roles.Admin)
-    async getallorders_prodcts(@RefineQuery() query: BaseQueryInterface): Promise<OrderEntity[]> {
+    async getallorders_prodcts(@RefineQuery() query: IRefineInterface): Promise<OrderEntity[]> {
         const { _start, _end } = query;
         return  this.orderService.findAll(_start, _end)
     }

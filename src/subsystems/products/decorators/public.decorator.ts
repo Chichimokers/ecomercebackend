@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext, applyDecorators, ParseUUIDPipe } from "@nestjs/common";
 import { ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { ProductsViewDTO } from '../dto/frontsDTO/views/productsView.dto';
+import { ProductsViewDTO } from '../../public/dto/frontsDTO/views/productsView.dto';
 
 export const ProductPublicQuery = createParamDecorator(
     (data: unknown, ctx: ExecutionContext) => {

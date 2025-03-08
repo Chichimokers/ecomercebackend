@@ -14,8 +14,8 @@ import { GetCategoriesDTO } from '../dto/frontsDTO/categoryDTO/getCategories.dto
 import {
     ProductPublicApiDoc,
     ProductPublicQuery,
-} from '../decorators/public.decorator';
-import { PublicQueryInterface } from '../interfaces/basequery.interface';
+} from '../../products/decorators/public.decorator';
+import { IProductsFilters } from '../../products/interfaces/basequery.interface';
 import { badRequestException } from '../../../common/exceptions/modular.exception';
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
@@ -46,7 +46,7 @@ export class PublicController {
     // *--- For Products View ---* //
     @Get('/products')
     @ProductPublicApiDoc()
-    public getProductView(@ProductPublicQuery() query: PublicQueryInterface) {
+    public getProductView(@ProductPublicQuery() query: IProductsFilters) {
         if (query.categoryIds)
             badRequestException(query.categoryIds, 'CategoryIDS');
         if (query.subCategoryIds)

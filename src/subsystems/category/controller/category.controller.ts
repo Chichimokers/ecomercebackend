@@ -18,7 +18,7 @@ import { CreateCategoryDTO } from '../dto/categorydto/createCategory.dto';
 import { CategoryEntity } from '../entity/category.entity';
 import { UpdateCategoryDTO } from '../dto/categorydto/updateCategory.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
+import { IRefineInterface } from '../../products/interfaces/basequery.interface';
 
 @ApiTags('category')
 @ApiBearerAuth()
@@ -35,7 +35,7 @@ export class CategoryController {
 
     @Get()
     @Roles(roles.Admin)
-    getCategories(@RefineQuery() query: BaseQueryInterface) {
+    getCategories(@RefineQuery() query: IRefineInterface) {
         const { _start, _end } = query;
         return this.categoryService.findAll(_start, _end);
     }
