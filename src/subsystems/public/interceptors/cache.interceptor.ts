@@ -1,0 +1,48 @@
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
+import { Cache } from '@nestjs/cache-manager';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { CACHE_ORM } from '../../../common/constants/cahetimesORM.constants';
+
+@Injectable()
+export class PublicCacheInterceptor implements NestInterceptor {
+  constructor(@Inject(Cache) private cacheManager: Cache) {}
+
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+    // Solo interceptar peticiones GET
+    const request = context.switchToHttp().getRequest();
+    if (request.method !== 'GET') {
+      return next.handle();
+    }
+
+    // Crear una clave de caché basada en la URL y los parámetros
+    const cacheKey = `${request.url}${JSON.stringify(request.query)}`;
+
+    // Intentar obtener datos de caché
+    const cachedData = await this.cacheManager.get(cacheKey);
+    if (cachedData) {
+      return of(cachedData);
+    }
+
+    // Definir tiempos de caché según la URL
+    let ttl = CACHE_ORM.MINUTE * 3; // Por defecto, 1 minuto
+
+    if (request.url.includes('/public/home')) {
+      ttl = CACHE_ORM.HOUR; // Caché de 1 hora para la página principal
+    } else if (request.url.includes('/public/categories')) {
+      ttl = CACHE_ORM.DAY; // Caché de 1 día para categorías
+    } else if (request.url.includes('/public/provinces')) {
+      ttl = CACHE_ORM.DAY; // Caché de 1 día para provincias
+    } else if (request.url.includes('/public/product-details')) {
+      ttl = CACHE_ORM.HOUR * 2; // Caché de 2 horas para detalles de producto
+    }
+
+    // Continuar con la ejecución y guardar resultado en caché
+    return next.handle().pipe(
+      tap(async (responseData) => {
+        await this.cacheManager.set(cacheKey, responseData, ttl);
+      })
+    );
+  }
+}

@@ -20,6 +20,7 @@ import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { ratingAVG } from "../utils/ratingAVG";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { applyFilter } from "../../../common/utils/filters.utils";
+import { CACHE_ORM } from "../../../common/constants/cahetimesORM.constants";
 
 @Injectable()
 export class ProductService
@@ -399,6 +400,10 @@ export class ProductService
         return await this.productRepository.count({
             where: whereConditions
         });
+    }
+
+    public async getMinAndMaxPrice() {
+
     }
 
     private async getUrls(

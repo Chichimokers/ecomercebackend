@@ -21,6 +21,8 @@ import { MunicipalityEntity } from "../locations/entity/municipality.entity";
 import { MunicipalityService } from "../locations/service/municipality.service";
 import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
 import { PaypalService } from "../payments/service/paypal.service";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { PublicCacheInterceptor } from "./interceptors/cache.interceptor";
 
 @Module({
     imports:[
@@ -37,7 +39,7 @@ import { PaypalService } from "../payments/service/paypal.service";
         ]),
         CacheModule.register({
             ttl: 86400,
-            max: 1,
+            max: 5000,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
@@ -49,6 +51,10 @@ import { PaypalService } from "../payments/service/paypal.service";
         ProductService,
         ProvinceService,
         MunicipalityService,
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: PublicCacheInterceptor,
+        }
     ],
     controllers: [PublicController, UserPublicController],
 })

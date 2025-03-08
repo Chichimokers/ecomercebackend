@@ -1,5 +1,5 @@
 import { IFilterProduct } from "../interfaces/filters.interface";
-import { Between, In, MoreThanOrEqual, Not } from "typeorm";
+import { Between, In, MoreThanOrEqual, Not, MoreThan } from "typeorm";
 
 export function applyFilter(filters: IFilterProduct) {
     const whereConditions: any = {}
@@ -31,6 +31,8 @@ export function applyFilter(filters: IFilterProduct) {
     if (filters.provinceId) {
         whereConditions.province = { id: filters.provinceId };
     }
+
+    whereConditions.quantity = MoreThan(0);
 
     return whereConditions;
 }
