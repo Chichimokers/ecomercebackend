@@ -44,14 +44,13 @@ export class UserService extends BaseService<User> {
     async findUserById(id: string): Promise<UserDto> {
         let user: User = await this.repository.findOne({
             where: { id: id, deleted_at: null },
-            relations: ['roles', 'roles.permissions'],
         });
         //let user = await this.findOneById(id)
 
         // Mapea el objeto User a UserDto
-        const userDto: UserDto = mapToDto(user, UserDto);
+        //const userDto: UserDto = mapToDto(user, UserDto);
 
-        return userDto;
+        return user;
     }
 
     findOneByEmail(email: any): Promise<User> {
