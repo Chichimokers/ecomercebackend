@@ -77,4 +77,10 @@ export class GetProductDTO {
 
     @ApiProperty({ example: 5, description: "Total of pages you would get." })
     totalPages: number;
+
+    @ApiProperty({ example: 15.9, description: "Min of prices of products by filters." })
+    minPrice: number;
+
+    @ApiProperty({ example: 997.09, description: "Max of prices of products by filters." })
+    maxPrice: number;
 }
