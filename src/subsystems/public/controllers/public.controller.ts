@@ -23,6 +23,7 @@ import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
 import { Cache } from "@nestjs/cache-manager";
 import { CACHE_ORM } from "../../../common/constants/cahetimesORM.constants";
+import { Scrapper } from "../../../common/utils/externals.utils";
 
 
 @ApiTags("public")
@@ -136,5 +137,12 @@ export class PublicController {
     @Post("/shipping-price")
     public getShippingPrice(@Body() body: ShippingDTO) {
         return this.publicService.getShippingPrice(body);
+    }
+
+    // *--- Get Prices ---* //
+    @Get("/currency")
+    public async getCurrency() {
+        const scrapper = new Scrapper();
+        return await scrapper.get();
     }
 }

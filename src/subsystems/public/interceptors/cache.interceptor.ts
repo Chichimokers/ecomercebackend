@@ -36,6 +36,8 @@ export class PublicCacheInterceptor implements NestInterceptor {
       ttl = CACHE_ORM.DAY; // Caché de 1 día para provincias
     } else if (request.url.includes('/public/product-details')) {
       ttl = CACHE_ORM.HOUR * 2; // Caché de 2 horas para detalles de producto
+    } else if (request.url.includes('/public/currency')) {
+      ttl = CACHE_ORM.HOUR * 8;
     }
 
     // Continuar con la ejecución y guardar resultado en caché
