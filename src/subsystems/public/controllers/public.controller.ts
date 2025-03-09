@@ -1,6 +1,6 @@
 import {
     Body,
-    Controller,
+    Controller, ForbiddenException,
     Get, Inject, Param,
     ParseUUIDPipe,
     Post,
@@ -144,6 +144,9 @@ export class PublicController {
     // *--- Get Prices ---* //
     @Get("/currency")
     public async getCurrency() {
+        if (process.env.SCHEDULES === 'false')
+            throw new ForbiddenException("Schedules are not available now!");
+
         return this.scrapSchedule.get();
     }
 }
