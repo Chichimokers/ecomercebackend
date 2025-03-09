@@ -24,13 +24,15 @@ import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
 import { Cache } from "@nestjs/cache-manager";
 import { CACHE_ORM } from "../../../common/constants/cahetimesORM.constants";
 import { Scrapper } from "../../../common/utils/externals.utils";
+import { ScrapSchedule } from "../schedule/scrap.schedule";
 
 
 @ApiTags("public")
 @Controller("public")
 export class PublicController {
-    constructor(private publicService: PublicService,
-        @Inject(Cache) private cacheManager: Cache,
+    constructor(
+        private publicService: PublicService,
+        private readonly scrapSchedule: ScrapSchedule,
     ) {
     }
 
@@ -142,7 +144,6 @@ export class PublicController {
     // *--- Get Prices ---* //
     @Get("/currency")
     public async getCurrency() {
-        const scrapper = new Scrapper();
-        return await scrapper.get();
+        return this.scrapSchedule.get();
     }
 }

@@ -23,9 +23,12 @@ import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
 import { PaypalService } from "../payments/service/paypal.service";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { PublicCacheInterceptor } from "./interceptors/cache.interceptor";
+import { ScheduleModule } from "@nestjs/schedule";
+import { ScrapSchedule } from "./schedule/scrap.schedule";
 
 @Module({
     imports:[
+        ScheduleModule.forRoot(),
         TypeOrmModule.forFeature([OrderEntity,
             OrderProductEntity,
             ProductEntity,
@@ -54,7 +57,8 @@ import { PublicCacheInterceptor } from "./interceptors/cache.interceptor";
         {
             provide: APP_INTERCEPTOR,
             useClass: PublicCacheInterceptor,
-        }
+        },
+        ScrapSchedule,
     ],
     controllers: [PublicController, UserPublicController],
 })
