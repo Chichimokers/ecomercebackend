@@ -19,8 +19,8 @@ import { notFoundException } from "../../../common/exceptions/modular.exception"
 import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { ratingAVG } from "../utils/ratingAVG";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
-import { applyFilter } from "../../../common/utils/filters.utils";
-import { CACHE_ORM } from "../../../common/constants/cahetimesORM.constants";
+import { applyFilter, applyQueryFilters } from "../../../common/utils/filters.utils";
+
 
 @Injectable()
 export class ProductService
@@ -402,8 +402,29 @@ export class ProductService
         });
     }
 
-    public async getMinAndMaxPrice() {
+    public async getMinAndMaxPrice(filters?: IFilterProduct) {
+        // Crear el queryBuilder para obtener precios mínimo y máximo
+        const queryBuilder = this.productRepository
+            .createQueryBuilder('product')
+            .select('MIN(product.price)', 'minPrice')
+            .addSelect('MAX(product.price)', 'maxPrice');
 
+        // Aplicar joins necesarios para filtros relacionales
+        queryBuilder
+            .leftJoin('product.category', 'category')
+            .leftJoin('product.subCategory', 'subCategory')
+            .leftJoin('product.province', 'province');
+
+        // Aplicar filtros si existen
+        applyQueryFilters(queryBuilder, filters);
+
+        // Ejecutar la consulta y obtener resultados
+        const result = await queryBuilder.getRawOne();
+
+        return {
+            minPrice: result.minPrice !== null ? Number(result.minPrice) : 0,
+            maxPrice: result.maxPrice !== null ? Number(result.maxPrice) : 0
+        };
     }
 
     private async getUrls(

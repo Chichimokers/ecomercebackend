@@ -26,7 +26,7 @@ export class PublicCacheInterceptor implements NestInterceptor {
     }
 
     // Definir tiempos de caché según la URL
-    let ttl = CACHE_ORM.MINUTE * 3; // Por defecto, 1 minuto
+    let ttl = CACHE_ORM.TEN_MINUTES; // Por defecto, 10 minutos
 
     if (request.url.includes('/public/home')) {
       ttl = CACHE_ORM.HOUR; // Caché de 1 hora para la página principal

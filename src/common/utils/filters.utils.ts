@@ -36,3 +36,31 @@ export function applyFilter(filters: IFilterProduct) {
 
     return whereConditions;
 }
+
+export function applyQueryFilters(query: any, filters: IFilterProduct) {
+    if (filters) {
+        if (filters.id) {
+            query.andWhere('product.id = :id', { id: filters.id });
+        }
+
+        if (filters.notId) {
+            query.andWhere('product.id != :notId', { notId: filters.notId });
+        }
+
+        if (filters.categoryIds?.length) {
+            query.andWhere('category.id IN (:...categoryIds)', {
+                categoryIds: filters.categoryIds
+            });
+        }
+
+        if (filters.subCategoryIds?.length) {
+            query.andWhere('subCategory.id IN (:...subCategoryIds)', {
+                subCategoryIds: filters.subCategoryIds
+            });
+        }
+
+        if (filters.provinceId) {
+            query.andWhere('province.id = :provinceId', { provinceId: filters.provinceId });
+        }
+    }
+}

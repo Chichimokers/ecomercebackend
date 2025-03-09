@@ -1,7 +1,4 @@
-import {
-    Inject,
-    Injectable
-} from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { ProductService } from "../../products/services/product.service";
 import { CategoryService } from "../../category/services/category.service";
 import { badRequestException, notFoundException } from "../../../common/exceptions/modular.exception";
@@ -42,7 +39,7 @@ export class PublicService {
         filters: IFilterProduct = {}
     ) {
         const productsData = await this.productService.getFilteredProducts(filters, page, limit);
-
+        const minAndMax = await this.productService.getMinAndMaxPrice(filters);
         const categories: CategoryEntity[] = await this.categoryService.getCategoriesWithSubCategories(filters.categoryIds);
 
         notFoundException(productsData.products, "Products");
@@ -54,6 +51,8 @@ export class PublicService {
             previousUrl: previousUrl,
             nextUrl: nextUrl,
             totalPages: totalPages,
+            minPrice: minAndMax.minPrice,
+            maxPrice: minAndMax.maxPrice,
             categories
         };
     }
@@ -87,21 +86,11 @@ export class PublicService {
 
     // *--- Get Main View Products, Categories, Provinces ---* //
     public async getMainViewInfo(): Promise<any> {
-        const cacheManage: any = await this.cacheManager.get("counters");
-
-        if (cacheManage) {
-            return cacheManage;
-        }
-
-        const data = {
+        return {
             provinces: await this.provinceService.countProvinces(),
             products: roundMinor(await this.productService.countProducts()),
             category: await this.categoryService.countCategories()
         };
-
-        await this.cacheManager.set("counters", data);
-
-        return data;
     }
 
     // *--- Get Provinces And Municipalitys ---* //
