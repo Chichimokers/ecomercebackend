@@ -98,7 +98,7 @@ export class ProductControllers {
         storage: memoryStorage(),
     }),  WebpInterceptor)
     async update(
-        @Param('id', new ParseUUIDPipe()) id: number,
+        @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateProductDTO: UpdateProductDTO,
         @UploadedFile() file?: Express.Multer.File
     ) {

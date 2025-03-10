@@ -13,7 +13,7 @@ import { BaseDto } from 'src/common/dto/base.dto';
 export class UpdateProductDTO extends BaseDto{
     
     @ApiProperty({
-        example: "peso",
+        example: 39,
         description: "peso del producto ",
     })
     @IsNumber()
