@@ -18,13 +18,13 @@ export class ProvinceController {
 
     @Post()
     @Roles(roles.Admin)
-    create(@Body() createProvinceDTO: createProvinceDTO) {
+    create(@Body() createProvinceDTO: createProvinceDTO): Promise<ProvinceEntity> {
         return this.provinceService.create(createProvinceDTO);
     }
 
     @Get()
     @Roles(roles.Admin)
-    getProvinces() {
+    getProvinces(): Promise<ProvinceEntity[]> {
         return this.provinceService.findAll();
     }
 

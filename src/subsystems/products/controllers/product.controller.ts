@@ -18,18 +18,22 @@ import {
 } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';
-import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
+import { CreateProductDTO } from '../dto/createProductDTO.dto';
 import { UpdateProductDTO } from '../dto/updateProductDTO.dto';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from "multer";
 import { extname } from 'path';
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { BaseQueryInterface } from '../../public/interfaces/basequery.interface';
+import { IProductsFilters, IRefineInterface } from "../interfaces/basequery.interface";
+import { WebpInterceptor } from '../interceptors/imagewebp.interceptor';
+import { ProductPublicApiDoc, ProductPublicQuery } from "../decorators/public.decorator";
+import { badRequestException } from "../../../common/exceptions/modular.exception";
+import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -45,28 +49,35 @@ export class ProductControllers {
     @Post()
     @Roles(roles.Admin)
     @UseInterceptors(FileInterceptor('image', {
-        storage: diskStorage({
-            destination: './public/images',
-            filename: (req, file, cb): void => {
-                const uniqueSuffix: string = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                cb(null, uniqueSuffix + extname(file.originalname));
-            }
-        })
-    }))
-    create(@Body() createProductDTO: CreateProductSpecialDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
+        storage: memoryStorage(),
+    }),  WebpInterceptor)
+    create(@Body() createProductDTO: CreateProductDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
 
         createProductDTO.image = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
 
         return this.productservice.insertByDTO(createProductDTO);
     }
 
-    //@UseGuards(JwtAuthGuard)
     @Get()
     @Roles(roles.Admin)
+    @ProductPublicApiDoc()
     @ApiResponse({ status: 200, type: [ProductDTO] })
-    public getProducts(@RefineQuery() query: BaseQueryInterface): Promise<ProductEntity[]> {
-        const { _start, _end } = query;
-        return this.productservice.findAll(_start, _end);
+    public getProducts(@ProductPublicQuery() query: IProductsFilters): Promise<ProductEntity[]> {
+        if (query.categoryIds)
+            badRequestException(query.categoryIds, 'CategoryIDS');
+        if (query.subCategoryIds)
+            badRequestException(query.subCategoryIds, 'SubCategoryIDS');
+        if (query.prices) badRequestException(query.prices, 'Prices');
+
+        const filters: IFilterProduct = {
+            categoryIds: query.categoryIds,
+            subCategoryIds: query.subCategoryIds,
+            prices: query.prices,
+            rate: query.rate,
+            provinceId: query.province,
+        };
+
+        return this.productservice.findAll(query.page, query.limit, filters);
     }
 
 
@@ -84,22 +95,15 @@ export class ProductControllers {
     @Patch(':id')
     @Roles(roles.Admin)
     @UseInterceptors(FileInterceptor('image', {
-        storage: diskStorage({
-            destination: './public/images',
-            filename: (req, file, cb): void => {
-                const uniqueSuffix: string = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                cb(null, uniqueSuffix + extname(file.originalname));
-            }
-        })
-    }))
+        storage: memoryStorage(),
+    }),  WebpInterceptor)
     async update(
-        @Param('id', new ParseUUIDPipe()) id: number,
+        @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateProductDTO: UpdateProductDTO,
         @UploadedFile() file?: Express.Multer.File
     ) {
         updateProductDTO.image = file ? file.filename : undefined;
         return this.productservice.updateByDTO(id, updateProductDTO)
-
     }
 
     @Delete(':id')

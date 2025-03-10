@@ -1,141 +1,149 @@
 import {
-    BadRequestException,
     Body,
-    Controller,
-    Get,
+    Controller, ForbiddenException,
+    Get, Param,
     ParseUUIDPipe,
     Post,
-    Query,
-} from '@nestjs/common';
-import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PublicService } from '../services/public.service';
-import { HomeViewDTO } from '../dto/frontsDTO/views/homeView.dto';
-import { ProductDTO } from '../dto/frontsDTO/productsDTO/getproducts.dto';
-import { GetCategoriesDTO } from '../dto/frontsDTO/categoryDTO/getCategories.dto';
+    Query
+} from "@nestjs/common";
+import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { PublicService } from "../services/public.service";
+import { HomeViewDTO } from "../dto/frontsDTO/views/homeView.dto";
+import { ProductDTO } from "../dto/frontsDTO/productsDTO/getproducts.dto";
+import { GetCategoriesDTO } from "../dto/frontsDTO/categoryDTO/getCategories.dto";
 import {
     ProductPublicApiDoc,
-    ProductPublicQuery,
-} from '../decorators/public.decorator';
-import { PublicQueryInterface } from '../interfaces/basequery.interface';
-import { badRequestException } from '../../../common/exceptions/modular.exception';
+    ProductPublicQuery
+} from "../../products/decorators/public.decorator";
+import { IProductsFilters } from "../../products/interfaces/basequery.interface";
+import { badRequestException } from "../../../common/exceptions/modular.exception";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
-import { IDDTO } from "../../../common/dto/uuid.validator.dto";
+import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
+import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
+import { ScrapSchedule } from "../schedule/scrap.schedule";
+import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 
-@ApiTags('public')
-@Controller('public')
+
+@ApiTags("public")
+@Controller("public")
 export class PublicController {
-    constructor(private publicService: PublicService) {}
+    constructor(
+        private publicService: PublicService,
+        private readonly scrapSchedule: ScrapSchedule,
+    ) {
+    }
 
     // *--- For Home View ---* //
-    @Get('/home')
-    @ApiQuery({ name: 'limit', required: false, type: Number })
+    @Get("/home")
+    @ApiQuery({ name: "limit", required: false, type: Number })
     @ApiResponse({ status: 200, type: HomeViewDTO })
-    public getHomeView(@Query('limit') limit: number = 20) {
+    public getHomeView(@Query("limit") limit: number = 20) {
         limit = Number(limit);
         return this.publicService.getHomeView(limit);
     }
 
     // *--- For Home View ---* //
-    @Post('/search')
-    public searchProduct(@Body('name') name: string) {
-        badRequestException(name, 'Name');
-        return this.publicService.getProductByName(name);
+    @Post("/search")
+    public searchProduct(@Body() body: SearchproductDTO) {
+        badRequestException(body.name, "Name");
+        return this.publicService.getProductByName(body);
     }
 
     // *--- For Products View ---* //
-    @Get('/products')
+    @Get("/products")
     @ProductPublicApiDoc()
-    public getProductView(@ProductPublicQuery() query: PublicQueryInterface) {
+    public async getProductView(@ProductPublicQuery() query: IProductsFilters) {
         if (query.categoryIds)
-            badRequestException(query.categoryIds, 'CategoryIDS');
+            badRequestException(query.categoryIds, "CategoryIDS");
         if (query.subCategoryIds)
-            badRequestException(query.subCategoryIds, 'SubCategoryIDS');
-        if (query.prices) badRequestException(query.prices, 'Prices');
-        
+            badRequestException(query.subCategoryIds, "SubCategoryIDS");
+        if (query.prices) badRequestException(query.prices, "Prices");
+
         const filters: IFilterProduct = {
             categoryIds: query.categoryIds,
             subCategoryIds: query.subCategoryIds,
             prices: query.prices,
             rate: query.rate,
+            provinceId: query.province
         };
 
-        return this.publicService.getProductsPage(
+        return await this.publicService.getProductsPage(
             +query.page || 0,
             +query.limit || 30,
-            filters,
+            filters
         );
     }
 
     // *--- For Products Details View ---* //
-    @Get('/product-details')
+    @Get("/product-details")
     @ApiQuery({
-        name: 'id',
+        name: "id",
         required: true,
         type: String,
-        description: 'ID of the product',
+        description: "ID of the product"
     })
     @ApiResponse({ status: 200, type: ProductDTO })
-    @ApiResponse({ status: 400, description: 'Missing or invalid id' })
-    public getProductDetails(@Query('id', new ParseUUIDPipe()) id: string) {
-        /*try {
-            id = String(id);
-        } catch (error) {
-            throw new BadRequestException(
-                'Incorrect ID format. Required Number',
-            );
-        }*/
-
+    @ApiResponse({ status: 400, description: "Missing or invalid id" })
+    public getProductDetails(@Query("id", new ParseUUIDPipe()) id: string) {
         return this.publicService.getProductDetails(id);
     }
 
-    @Get('/product-relations')
+    @Get("/product-relations")
     @ApiQuery({
-        name: 'id',
+        name: "id",
         required: true,
         type: Number,
-        description: 'ID of the product',
+        description: "ID of the product"
     })
     @ApiResponse({ status: 200, type: [ProductDTO] })
-    @ApiResponse({ status: 400, description: 'Missing or invalid id' })
-    public getProductRelation(@Query('id') id: string) {
-        try {
-            id = String(id);
-        } catch (error) {
-            throw new BadRequestException(
-                'Incorrect ID format. Required UUID',
-            );
-        }
-
+    @ApiResponse({ status: 400, description: "Missing or invalid id" })
+    public getProductRelation(@Query("id", new ParseUUIDPipe()) id: string) {
         return this.publicService.getProductRelation(id);
     }
 
     // *--- For Categories ---* //
-    @Get('/categories')
+    @Get("/categories")
     @ApiResponse({ status: 200, type: [GetCategoriesDTO] })
     public getCategories() {
         return this.publicService.getCategories();
     }
 
     // *--- For Main View Info ---* //
-    @Get('/main')
+    @Get("/main")
     public getMainView() {
         return this.publicService.getMainViewInfo();
     }
 
     // *--- For Get Provinces And Municipalitys ---* //
-    @Get('/provinces')
+    @Get("/provinces")
     public getProvinces() {
         return this.publicService.getProvinces();
     }
 
     // *--- For Get Municipalitys By A Province ---* //
-    @Get('/municipalities')
-    public getMunicipalities(@Body('id', new ParseUUIDPipe()) id: string) {
+    @Get("/municipalities/:id")
+    public getMunicipalities(@Param("id", new ParseUUIDPipe()) id: string): Promise<MunicipalityEntity[]> {
         return this.publicService.getMunicipalities(id);
     }
 
-    @Get('/municipality')
-    public getMunicipality(@Body('id', new ParseUUIDPipe()) id: string){
+    // *--- For Get Municipality info ---* //
+    @Get("/municipality/:id")
+    public getMunicipality(@Param("id", new ParseUUIDPipe()) id: string): Promise<MunicipalityEntity> {
         return this.publicService.getMunicipality(id);
+    }
+
+    // *--- Get Prices of Municipality ---* //
+    @Post("/shipping-price")
+    public getShippingPrice(@Body() body: ShippingDTO): Promise<number> {
+        return this.publicService.getShippingPrice(body);
+    }
+
+    // *--- Get Prices ---* //
+    @Get("/currency")
+    public async getCurrency() {
+        if (process.env.SCHEDULES === 'false')
+            throw new ForbiddenException("Schedules are not available now!");
+
+        return this.scrapSchedule.get();
     }
 }

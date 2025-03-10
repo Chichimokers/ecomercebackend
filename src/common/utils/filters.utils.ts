@@ -1,5 +1,5 @@
 import { IFilterProduct } from "../interfaces/filters.interface";
-import { Between, In, MoreThanOrEqual, Not } from "typeorm";
+import { Between, In, MoreThanOrEqual, Not, MoreThan } from "typeorm";
 
 export function applyFilter(filters: IFilterProduct) {
     const whereConditions: any = {}
@@ -28,5 +28,39 @@ export function applyFilter(filters: IFilterProduct) {
         whereConditions.id = Not(filters.notId);
     }
 
+    if (filters.provinceId) {
+        whereConditions.province = { id: filters.provinceId };
+    }
+
+    whereConditions.quantity = MoreThan(0);
+
     return whereConditions;
+}
+
+export function applyQueryFilters(query: any, filters: IFilterProduct) {
+    if (filters) {
+        if (filters.id) {
+            query.andWhere('product.id = :id', { id: filters.id });
+        }
+
+        if (filters.notId) {
+            query.andWhere('product.id != :notId', { notId: filters.notId });
+        }
+
+        if (filters.categoryIds?.length) {
+            query.andWhere('category.id IN (:...categoryIds)', {
+                categoryIds: filters.categoryIds
+            });
+        }
+
+        if (filters.subCategoryIds?.length) {
+            query.andWhere('subCategory.id IN (:...subCategoryIds)', {
+                subCategoryIds: filters.subCategoryIds
+            });
+        }
+
+        if (filters.provinceId) {
+            query.andWhere('province.id = :provinceId', { provinceId: filters.provinceId });
+        }
+    }
 }

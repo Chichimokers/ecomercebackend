@@ -1,13 +1,14 @@
-export interface BaseQueryInterface {
+export interface IRefineInterface {
     _start?: number;
     _end?: number;
 }
 
-export interface PublicQueryInterface {
+export interface IProductsFilters {
     page: number;
     limit: number;
     categoryIds?: any;
     subCategoryIds?: any;
     prices?: any;
     rate?: number;
+    province?: string;
 }
