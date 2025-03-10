@@ -50,7 +50,9 @@ export class PublicCacheInterceptor implements NestInterceptor {
     // Continuar con la ejecución y guardar resultado en caché
     return next.handle().pipe(
       tap(async (responseData) => {
-        await this.cacheManager.set(cacheKey, responseData, ttl);
+        if (responseData) {
+          await this.cacheManager.set(cacheKey, responseData, ttl);
+        }
       })
     );
   }
