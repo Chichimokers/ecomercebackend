@@ -3,7 +3,7 @@ import {
     NotFoundException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, Repository, Like } from "typeorm";
+import { In, Repository, ILike, MoreThan } from "typeorm";
 import { BaseService } from "../../../common/services/base.service";
 import { ProductEntity } from "../entity/product.entity";
 import { UpdateProductDTO } from "../dto/updateProductDTO.dto";
@@ -343,7 +343,8 @@ export class ProductService
                 price: true
             },
             where: {
-                name: Like(`%${name}%`),
+                name: ILike(`%${name}%`),
+                quantity: MoreThan(0),
                 province: province ? { id: province } : undefined
             },
             skip: 0,
