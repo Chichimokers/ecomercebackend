@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     Injectable,
     NotFoundException
 } from "@nestjs/common";
@@ -124,6 +123,11 @@ export class ProductService
     async updateByDTO(id: any, dto: UpdateProductDTO): Promise<ProductEntity> {
         // Buscar el producto
         const product: ProductEntity = await this.productRepository.findOne({
+            relations: {
+              category: true,
+              subCategory: true,
+              province: true,
+            },
             where: { id }
         });
 
@@ -140,7 +144,11 @@ export class ProductService
             "image"
         ].forEach((field: string): void => {
             if (dto[field] !== undefined) {
-                product[field] = dto[field];
+                if (field === "price" || field === "quantity" || field === "weight") {
+                    product[field] = Number(dto[field]);
+                } else {
+                    product[field] = dto[field];
+                }
             }
         });
 
@@ -165,7 +173,6 @@ export class ProductService
 
         // Actualizar updated_at
         product.updated_at = new Date();
-
         // Guardar los cambios
         return await this.productRepository.save(product);
     }

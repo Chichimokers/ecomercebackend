@@ -1,11 +1,10 @@
 import {
     Body,
     Controller, ForbiddenException,
-    Get, Inject, Param,
+    Get, Param,
     ParseUUIDPipe,
     Post,
-    Query,
-    Req
+    Query
 } from "@nestjs/common";
 import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { PublicService } from "../services/public.service";
@@ -21,10 +20,8 @@ import { badRequestException } from "../../../common/exceptions/modular.exceptio
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
-import { Cache } from "@nestjs/cache-manager";
-import { CACHE_ORM } from "../../../common/constants/cahetimesORM.constants";
-import { Scrapper } from "../../../common/utils/externals.utils";
 import { ScrapSchedule } from "../schedule/scrap.schedule";
+import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 
 
 @ApiTags("public")
@@ -125,19 +122,19 @@ export class PublicController {
 
     // *--- For Get Municipalitys By A Province ---* //
     @Get("/municipalities/:id")
-    public getMunicipalities(@Param("id", new ParseUUIDPipe()) id: string) {
+    public getMunicipalities(@Param("id", new ParseUUIDPipe()) id: string): Promise<MunicipalityEntity[]> {
         return this.publicService.getMunicipalities(id);
     }
 
     // *--- For Get Municipality info ---* //
     @Get("/municipality/:id")
-    public getMunicipality(@Param("id", new ParseUUIDPipe()) id: string) {
+    public getMunicipality(@Param("id", new ParseUUIDPipe()) id: string): Promise<MunicipalityEntity> {
         return this.publicService.getMunicipality(id);
     }
 
     // *--- Get Prices of Municipality ---* //
     @Post("/shipping-price")
-    public getShippingPrice(@Body() body: ShippingDTO) {
+    public getShippingPrice(@Body() body: ShippingDTO): Promise<number> {
         return this.publicService.getShippingPrice(body);
     }
 

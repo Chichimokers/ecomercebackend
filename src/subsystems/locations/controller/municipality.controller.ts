@@ -5,7 +5,6 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { MunicipalityService } from '../service/municipality.service';
 import { Roles } from '../../roles/decorators/roles.decorator';
 import { roles } from '../../roles/enum/roles.enum';
-import { ProvinceEntity } from '../entity/province.entity';
 import { MunicipalityEntity } from '../entity/municipality.entity';
 import { UpdateMunicipalityDTO } from '../dto/municipalitydto/updateMunicipality.dto';
 import { createMunicipalityDTO } from '../dto/municipalitydto/createMunicipality.dto';
@@ -20,14 +19,14 @@ export class MunicipalityController {
 
     @Post()
     @Roles(roles.Admin)
-    create(@Body() createMunicipalityDTO: createMunicipalityDTO) {
+    create(@Body() createMunicipalityDTO: createMunicipalityDTO): Promise<MunicipalityEntity> {
         return this.municipalityService.create(createMunicipalityDTO);
     }
 
     @Get()
     @ApiResponse({ status: 200, type: [GetMunicipalityDTO] })
     @Roles(roles.Admin)
-    getMunicipalities() {
+    getMunicipalities(): Promise<MunicipalityEntity[]> {
         return this.municipalityService.findAll();
     }
 
@@ -41,9 +40,9 @@ export class MunicipalityController {
     @Roles(roles.Admin)
     updateMunicipality(
         @Param('id', new ParseUUIDPipe()) id: string,
-        @Body() updateProvinceDTO: UpdateMunicipalityDTO,
-    ): Promise<Partial<ProvinceEntity>> {
-        return this.municipalityService.update(id, updateProvinceDTO);
+        @Body() updateMunicipalityDTO: UpdateMunicipalityDTO,
+    ): Promise<Partial<MunicipalityEntity>> {
+        return this.municipalityService.update(id, updateMunicipalityDTO);
     }
 
     @Delete(':id')

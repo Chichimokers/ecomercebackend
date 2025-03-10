@@ -16,6 +16,10 @@ export class PublicCacheInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     // Solo interceptar peticiones GET
     const request = context.switchToHttp().getRequest();
+    if (!request.url.startsWith('/public')) {
+      return next.handle(); // No aplicar caché a rutas que no sean /public
+    }
+
     if (request.method !== 'GET') {
       return next.handle();
     }
@@ -31,6 +35,7 @@ export class PublicCacheInterceptor implements NestInterceptor {
     // Intentar obtener datos de caché
     const cachedData = await this.cacheManager.get(cacheKey);
     if (cachedData) {
+      console.log(`Cached! ${cacheKey}`);
       return of(cachedData);
     }
 

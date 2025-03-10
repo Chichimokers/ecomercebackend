@@ -29,13 +29,13 @@ export class CategoryController {
 
     @Post()
     @Roles(roles.Admin)
-    create(@Body() createCategoryDTO: CreateCategoryDTO) {
+    create(@Body() createCategoryDTO: CreateCategoryDTO): Promise<CategoryEntity> {
         return this.categoryService.create(createCategoryDTO);
     }
 
     @Get()
     @Roles(roles.Admin)
-    getCategories(@RefineQuery() query: IRefineInterface) {
+    getCategories(@RefineQuery() query: IRefineInterface): Promise<CategoryEntity[]> {
         const { _start, _end } = query;
         return this.categoryService.findAll(_start, _end);
     }
