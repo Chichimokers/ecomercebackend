@@ -13,9 +13,6 @@ export const PostgresDataSource = new DataSource({
     synchronize:  true,
     logging: false,
     migrationsRun: true,
-    cache: {
-      duration: CACHE_ORM.MINUTE * 3,
-    },
     entities: [__dirname + '/**/*.entity{.ts,.js}'], // Busca todas las entidades
 });
 
