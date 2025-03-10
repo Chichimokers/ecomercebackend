@@ -10,7 +10,7 @@ export class User extends BaseEntity {
     @IsString()
     name: string;
 
-    @Column({ type: 'varchar', length: 40 })
+    @Column({ type: 'varchar', length: 40, unique: true })
     @IsEmail()
     email: string;
     

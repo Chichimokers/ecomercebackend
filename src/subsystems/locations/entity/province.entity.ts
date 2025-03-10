@@ -8,7 +8,7 @@ import { MunicipalityEntity } from './municipality.entity';
 export class ProvinceEntity extends BaseEntity {
     @IsNotEmpty()
     @IsString()
-    @Column({ length: 100 })
+    @Column({ length: 100, unique: true })
     name: string;
 
     @OneToMany(() => MunicipalityEntity, municipality => municipality.province)
