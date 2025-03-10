@@ -7,7 +7,6 @@ import { roles } from "../../roles/enum/roles.enum";
 import { LocalAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../../auth/guards/roles.guard";
 import { DeleteOrderDTO } from "../dto/frontsDTO/ordersDTO/deleteorder.dto";
-import { PaypalService } from "src/subsystems/payments/service/paypal.service";
 
 @ApiTags("userpublic")
 @ApiBearerAuth()
