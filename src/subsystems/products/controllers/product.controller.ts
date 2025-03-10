@@ -18,7 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
 import { ProductEntity } from '../entity/product.entity';
-import { CreateProductSpecialDTO } from '../dto/createProductDTO.dto';
+import { CreateProductDTO } from '../dto/createProductDTO.dto';
 import { UpdateProductDTO } from '../dto/updateProductDTO.dto';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
@@ -51,7 +51,7 @@ export class ProductControllers {
     @UseInterceptors(FileInterceptor('image', {
         storage: memoryStorage(),
     }),  WebpInterceptor)
-    create(@Body() createProductDTO: CreateProductSpecialDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
+    create(@Body() createProductDTO: CreateProductDTO, @UploadedFile() file?: Express.Multer.File): Promise<ProductEntity> {
 
         createProductDTO.image = file ? file.filename : undefined; // Asigna el nombre del archivo si existe
 
@@ -98,7 +98,7 @@ export class ProductControllers {
         storage: memoryStorage(),
     }),  WebpInterceptor)
     async update(
-        @Param('id', new ParseUUIDPipe()) id: number,
+        @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateProductDTO: UpdateProductDTO,
         @UploadedFile() file?: Express.Multer.File
     ) {

@@ -3,70 +3,13 @@ import {
     IsString,
     MinLength,
     MaxLength,
-    IsNumber, IsOptional, IsUUID, IsPositive
+    IsNumber, IsOptional, IsUUID, IsPositive, IsInt
 } from "class-validator";
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dto/base.dto';
-import { DiscountProductDTO } from './updateProductDTO.dto';
 
-export class createProductDTO extends BaseDto {
-    @ApiProperty({
-        example: "Meat",
-        description: "Product name",
-    })
-    @Transform(({ value }) => value.trim())
-    @IsString()
-    @MinLength(2, { message: 'Name must have at least 2 characters.' })
-    @MaxLength(20, { message: 'Name must have max 20 characters.' })
-    @IsNotEmpty()
-    name: string;
-
-    @ApiProperty({
-        example: "peso",
-        description: "peso del producto ",
-    })
-    @IsNumber()
-    @MinLength(2, { message: 'Name must have at least 2 characters.' })
-    @MaxLength(20, { message: 'Name must have max 20 characters.' })
-    @IsNotEmpty()
-    weight: number;
-
-    @ApiProperty({
-        example: "123.25",
-        description: "A valid price",
-    })
-
-    @IsNotEmpty()
-    @IsNumber({}, { message: 'Please provide a valid price.' })
-    price: number;
-
-    @ApiProperty({
-        example: "100",
-        description: "A valid quantity",
-    })
-    @IsNotEmpty()
-    @IsNumber()
-    quantity: number;
-
-    @ApiProperty({
-        example: "Short Description",
-        description: "Short description to show in cards",
-    })
-    @IsNotEmpty()
-    @IsString()
-    short_description: string;
-
-    @ApiProperty({
-        example: "Large Description",
-        description: "Short description to show in cards",
-    })
-    @IsNotEmpty()
-    @IsString()
-    description: string;
-}
-
-export class CreateProductSpecialDTO extends BaseDto {
+export class CreateProductDTO extends BaseDto {
     @ApiProperty({
         example: "Meat",
         description: "Product name",
@@ -111,12 +54,22 @@ export class CreateProductSpecialDTO extends BaseDto {
     description: string;
 
     @ApiProperty({
-        description: "Discounts dto to apply on products",
+        example: 40,
+        description: "Min of products to apply discount",
         required: false,
     })
-    @IsNotEmpty()
+    @IsInt()
     @IsOptional()
-    discount?: DiscountProductDTO;
+    min?: number;
+
+    @ApiProperty({
+        example: 39.5,
+        description: "Reduction of price of the product",
+        required: false,
+    })
+    @IsNumber()
+    @IsOptional()
+    reduction?: number;
 
     @ApiProperty({
         example: "a6e0c570-be0e-4a7d-93c5-767a7767890b",

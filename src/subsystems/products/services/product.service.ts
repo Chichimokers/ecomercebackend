@@ -14,7 +14,7 @@ import {
 } from "../../category/entity/category.entity";
 import { DiscountEntity } from "../../discounts/entity/discounts.entity";
 import { IServiceDTOC } from "../../../common/interfaces/base-service.interface";
-import { CreateProductSpecialDTO } from "../dto/createProductDTO.dto";
+import { CreateProductDTO } from "../dto/createProductDTO.dto";
 import { notFoundException } from "../../../common/exceptions/modular.exception";
 import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { ratingAVG } from "../utils/ratingAVG";
@@ -94,7 +94,7 @@ export class ProductService
         return mapped[0];
     }
 
-    async insertByDTO(dto: CreateProductSpecialDTO) {
+    async insertByDTO(dto: CreateProductDTO) {
         const { category, subCategory } = await this.getCategoryAndSubCategoryByDTO(dto);
 
         const province: ProvinceEntity = await this.provinceRepository.findOne({
@@ -136,6 +136,7 @@ export class ProductService
             "short_description",
             "price",
             "quantity",
+            "weight",
             "image"
         ].forEach((field: string): void => {
             if (dto[field] !== undefined) {
@@ -173,16 +174,10 @@ export class ProductService
         dto: any,
         product: ProductEntity
     ): Promise<void> {
-        if (dto.discount) {
-            if (!dto.discount.min || !dto.discount.reduction) {
-                throw new BadRequestException(
-                    "Some params of discount are incorrect"
-                );
-            }
-
+        if (dto.min && dto.reduction) {
             const discount: DiscountEntity = this.discountRepository.create({
-                min: dto.discount.min,
-                reduction: dto.discount.reduction,
+                min: dto.min,
+                reduction: dto.reduction,
                 products: product
             });
 

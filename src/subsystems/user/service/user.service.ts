@@ -7,6 +7,7 @@ import { UserDto } from "../dto";
 import { mapToDto } from "../../../common/utils/global-functions.utils";
 import { UpdateUserDto } from "../dto";
 import * as bcrypt from 'bcrypt';
+import { notFoundException } from "../../../common/exceptions/modular.exception";
 
 export class UserService extends BaseService<User> {
 
@@ -44,14 +45,14 @@ export class UserService extends BaseService<User> {
     async findUserById(id: string): Promise<UserDto> {
         let user: User = await this.repository.findOne({
             where: { id: id, deleted_at: null },
-            relations: ['roles', 'roles.permissions'],
         });
         //let user = await this.findOneById(id)
 
+        notFoundException(user, 'User');
         // Mapea el objeto User a UserDto
-        const userDto: UserDto = mapToDto(user, UserDto);
+        //const userDto: UserDto = mapToDto(user, UserDto);
 
-        return userDto;
+        return user;
     }
 
     findOneByEmail(email: any): Promise<User> {

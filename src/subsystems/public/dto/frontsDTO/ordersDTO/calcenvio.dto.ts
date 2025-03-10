@@ -3,10 +3,17 @@ import { IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CalcEnvioDTO {
     @ApiProperty({
-        description: 'ID of the order',
+        description: 'weight in KG',
         example: 1
     })
     @IsNotEmpty()
     @IsUUID()
-    orderId: string;
+    weight: number;
+
+    @ApiProperty({
+        description: 'ID of the municipality',
+        example: 1
+    })
+    @IsNotEmpty()
+    municipaliti :string
 }

@@ -7,6 +7,10 @@ import { CACHE_ORM } from '../../../common/constants/cahetimesORM.constants';
 
 @Injectable()
 export class PublicCacheInterceptor implements NestInterceptor {
+  private excludedPaths: string[] = [
+    '/public/currency',
+  ];
+
   constructor(@Inject(Cache) private cacheManager: Cache) { }
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
@@ -16,13 +20,17 @@ export class PublicCacheInterceptor implements NestInterceptor {
       return next.handle();
     }
 
+    const currentPath = request.url.split('?')[0]; // Quita los parámetros de consulta
+    if (this.excludedPaths.some(path => currentPath.startsWith(path))) {
+      return next.handle(); // No aplicar caché para rutas excluidas
+    }
+
     // Crear una clave de caché basada en la URL y los parámetros
     const cacheKey = `${request.url}${JSON.stringify(request.query)}`;
 
     // Intentar obtener datos de caché
     const cachedData = await this.cacheManager.get(cacheKey);
     if (cachedData) {
-      console.log(`Cache hit for ${cacheKey}`);
       return of(cachedData);
     }
 
@@ -37,14 +45,14 @@ export class PublicCacheInterceptor implements NestInterceptor {
       ttl = CACHE_ORM.DAY; // Caché de 1 día para provincias
     } else if (request.url.includes('/public/product-details')) {
       ttl = CACHE_ORM.HOUR * 2; // Caché de 2 horas para detalles de producto
-    } else if (request.url.includes('/public/currency')) {
-      ttl = CACHE_ORM.HOUR * 8;
     }
 
     // Continuar con la ejecución y guardar resultado en caché
     return next.handle().pipe(
       tap(async (responseData) => {
-        await this.cacheManager.set(cacheKey, responseData, ttl);
+        if (responseData) {
+          await this.cacheManager.set(cacheKey, responseData, ttl);
+        }
       })
     );
   }
