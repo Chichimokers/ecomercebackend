@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { MailerService } from '@nestjs-modules/mailer';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class MailsService {
@@ -33,7 +31,9 @@ export class MailsService {
                 to: to, // Dirección de correo del destinatario
                 from: '"Esaki-Shop" <developer1575@gmail.com>', // Remitente
                 subject: 'Verify Your Email', // Asunto del correo
-                text: `Your verification code is: ${verificationCode}`, // Cuerpo del correo
+                //text: `Your verification code is: ${verificationCode}`, // Cuerpo del correo
+                template: 'code',
+                context: { verificationCode: verificationCode },
             });
             console.log('Verification email sent successfully');
             return true;
