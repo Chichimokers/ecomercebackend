@@ -33,7 +33,7 @@ export class WebpInterceptor implements NestInterceptor {
 
                     // Actualiza las propiedades del archivo en la request
                     request.file.buffer = outputBuffer;
-                    request.file.filename = process.env.WEB + 'images/' + newFileName;
+                    request.file.filename = process.env.IMAGES + 'images/' + newFileName;
                     request.file.mimetype = 'image/webp';
                 } catch (error) {
                     console.error('Error al convertir la imagen');
