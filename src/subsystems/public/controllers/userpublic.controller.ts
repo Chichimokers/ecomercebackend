@@ -15,7 +15,7 @@ import { PaypalService } from "src/subsystems/payments/service/paypal.service";
 @UseGuards(LocalAuthGuard, RolesGuard)
 export class UserPublicController {
     constructor(
-        private orderService: OrderService, private paypalservice: PaypalService
+        private orderService: OrderService,
     ) {
     }
 
