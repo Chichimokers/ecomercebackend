@@ -136,6 +136,7 @@ export class ProductService
             "short_description",
             "price",
             "quantity",
+            "weight",
             "image"
         ].forEach((field: string): void => {
             if (dto[field] !== undefined) {
