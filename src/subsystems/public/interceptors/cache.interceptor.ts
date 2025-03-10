@@ -7,7 +7,7 @@ import { CACHE_ORM } from '../../../common/constants/cahetimesORM.constants';
 
 @Injectable()
 export class PublicCacheInterceptor implements NestInterceptor {
-  constructor(@Inject(Cache) private cacheManager: Cache) {}
+  constructor(@Inject(Cache) private cacheManager: Cache) { }
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     // Solo interceptar peticiones GET
@@ -22,6 +22,7 @@ export class PublicCacheInterceptor implements NestInterceptor {
     // Intentar obtener datos de caché
     const cachedData = await this.cacheManager.get(cacheKey);
     if (cachedData) {
+      console.log(`Cache hit for ${cacheKey}`);
       return of(cachedData);
     }
 
