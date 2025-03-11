@@ -23,6 +23,7 @@ export class MailsService {
             to: email,
         });
     }
+
     public async sendOrderConfirmationEmail(order: OrderEntity, email: string) {
         try {
             await this.mailservice.sendMail({
@@ -51,6 +52,7 @@ export class MailsService {
             return false;
         }
     }
+
     public async sendVerificationEmail(to: string, verificationCode: string) {
         try {
             console.log(verificationCode);
@@ -69,4 +71,5 @@ export class MailsService {
             return false;
         }
     }
+    
 }
