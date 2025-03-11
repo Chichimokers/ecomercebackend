@@ -24,6 +24,35 @@ export class MailsService {
         });
     }
 
+    public async sendOrderConfirmationEmail(order: OrderEntity) {
+        try {
+            await this.mailservice.sendMail({
+                to: order.user.email,
+                from: '"Esaki-Shop" <developer1575@gmail.com>',
+                subject: `Confirmación de Pedido #${order.id}`,
+                template: 'order', // Nombre del archivo template (debería coincidir con tu HTML)
+                context: {
+                    nombreCliente: order.user.name, // Ajusta según tu estructura
+                    numeroPedido: order.id,
+                    productos: order.orderItems.map(item => ({
+                        nombre: item.product.name,
+                        cantidad: item.quantity,
+                        precio: item.product.price.toFixed(2),
+                        subtotal: (item.product.price * item.quantity).toFixed(2)
+                    })),
+                    total: order.subtotal.toFixed(2),
+                    direccionEnvio: order.address,
+                    metodoPago: order.address
+                }
+            });
+            console.log(`Order confirmation sent to ${ order.user.email}`);
+            return true;
+        } catch (error) {
+            console.error('Error sending order confirmation:', error);
+            return false;
+        }
+    }
+
     public async sendVerificationEmail(to: string, verificationCode: string) {
         try {
             console.log(verificationCode);
@@ -42,4 +71,5 @@ export class MailsService {
             return false;
         }
     }
+
 }
