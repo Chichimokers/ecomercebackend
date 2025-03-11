@@ -24,10 +24,10 @@ export class MailsService {
         });
     }
 
-    public async sendOrderConfirmationEmail(order: OrderEntity, email: string) {
+    public async sendOrderConfirmationEmail(order: OrderEntity) {
         try {
             await this.mailservice.sendMail({
-                to: email,
+                to: order.user.email,
                 from: '"Esaki-Shop" <developer1575@gmail.com>',
                 subject: `Confirmación de Pedido #${order.id}`,
                 template: 'order', // Nombre del archivo template (debería coincidir con tu HTML)
@@ -45,7 +45,7 @@ export class MailsService {
                     metodoPago: order.address
                 }
             });
-            console.log(`Order confirmation sent to ${email}`);
+            console.log(`Order confirmation sent to ${ order.user.email}`);
             return true;
         } catch (error) {
             console.error('Error sending order confirmation:', error);
@@ -71,5 +71,5 @@ export class MailsService {
             return false;
         }
     }
-    
+
 }

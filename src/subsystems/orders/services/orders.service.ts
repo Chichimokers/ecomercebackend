@@ -15,6 +15,8 @@ import { OrderStatus } from '../enums/orderStatus.enum';
 import { notFoundException } from '../../../common/exceptions/modular.exception';
 import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
+import { MailerService } from '@nestjs-modules/mailer';
+import { MailsService } from 'src/subsystems/mails/services/mails.service';
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -33,6 +35,8 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly municipalityRepository: Repository<MunicipalityEntity>,
         @Inject(UserService)
         private userService: UserService,
+        @Inject(MailerService)
+        private mailService :MailsService
     ) {
         super(orderRepository);
     }
@@ -166,6 +170,8 @@ export class OrderService extends BaseService<OrderEntity> {
 
         // Change order status upon completion
         order.status = OrderStatus.Paid;
+        
+        await this.mailService.sendOrderConfirmationEmail(order)
 
         return await this.orderRepository.save(order);
     }
