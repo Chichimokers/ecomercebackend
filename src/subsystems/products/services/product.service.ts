@@ -336,11 +336,18 @@ export class ProductService
     //      *--- Search Product by Name ---*
     public async searchProductByName(name: string, province?: string) {
         return await this.productRepository.find({
+            relations: {
+                category: true,
+            },
             select: {
                 id: true,
                 name: true,
                 image: true,
-                price: true
+                price: true,
+                short_description: true,
+                category: {
+                    name: true
+                },
             },
             where: {
                 name: ILike(`%${name}%`),
