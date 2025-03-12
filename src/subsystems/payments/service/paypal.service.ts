@@ -13,6 +13,8 @@ import { notFoundException } from '../../../common/exceptions/modular.exception'
 import { MunicipalityEntity } from 'src/subsystems/locations/entity/municipality.entity';
 import { MailsService } from 'src/subsystems/mails/services/mails.service';
 import { captureRejectionSymbol } from 'events';
+import { identity } from 'rxjs';
+import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
 
 @Injectable()
 export class PaypalService {
@@ -23,6 +25,8 @@ export class PaypalService {
         private readonly municipalitirepository:Repository<MunicipalityEntity>,
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
+        @InjectRepository(OrderProductEntity)
+        private readonly orderentitytsts: Repository<OrderProductEntity>,
     ) {}
     async cancelorder(token: string): Promise<boolean> {
         const authd = {
@@ -42,9 +46,22 @@ export class PaypalService {
 
         if(response.data.status != 'COMPLETED'){
             
-            const orderid =   response.data.purchase_units[0].payments.captures[0].custom_id
+            const orderid =   response.data.purchase_units[0].custom_id
 
-            this.orderService.delete(orderid)
+            let entidades: OrderProductEntity[] = await this.orderentitytsts.find({
+                where:{order:{id : orderid}},
+                relations:{
+                order:{}
+            }})
+            entidades.map((item) => {
+
+                 this.orderentitytsts.delete(item.id)
+                
+            })
+            // Eliminar el padre
+            const result = await this.orderService.delete(orderid);
+            
+            console.log(result)
 
             return true
 
