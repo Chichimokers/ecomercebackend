@@ -14,12 +14,12 @@ async function bootstrap() {
 
     DocapiBuilder(app);
 
-    await app.listen(process.env.APP_PORT || 8080);
+    await app.listen(process.env.APP_PORT || 3100);
 
     //console.log("Escuchando en puerto 8000");
 }
 bootstrap().then(() =>
-    console.log('Server running on port ' + process.env.APP_PORT || 8080),
+    console.log('Server running on port ' + process.env.APP_PORT || 3100),
 );
 
 function getOrigins() {

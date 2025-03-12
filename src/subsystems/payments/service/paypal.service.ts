@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CLIENTID, HOST, PAYPAL_HOST, SECRET_KEY } from '../config.payments';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { OrderService } from 'src/subsystems/orders/services/orders.service';
 import {
@@ -12,6 +12,7 @@ import {
 import { notFoundException } from '../../../common/exceptions/modular.exception';
 import { MunicipalityEntity } from 'src/subsystems/locations/entity/municipality.entity';
 import { MailsService } from 'src/subsystems/mails/services/mails.service';
+import { captureRejectionSymbol } from 'events';
 
 @Injectable()
 export class PaypalService {
@@ -110,36 +111,36 @@ export class PaypalService {
                     reference_id: requestId, // Usar el UUID generado
                     amount: {
                         currency_code: moneda,
-                        value: subtotal + precioenvio, // Asignar el subtotal calculado + precio de envio 
+                        value: (Number(subtotal) +Number( precioenvio)).toFixed(2), // Asignar el subtotal calculado + precio de envio 
 
                         breakdown: {
                             item_total: {
                                 currency_code: moneda,
-                                value: subtotal, // Asignar el subtotal calculado
+                                value: Number(subtotal).toFixed(2), // Asignar el subtotal calculado
                             },
                         shipping: {
                                 currency_code:  moneda,                           
-                                value: precioenvio //Asignar el total de envio
+                                value: Number(precioenvio).toFixed(2) //Asignar el total de envio
                               }
                         },
                     },
                     
                     //TODO Items
-                    items: [
-                        carts.orderItems.map((item) => ({
-                            name: item.product.name, // Asumiendo que cada cart tiene un atributo 'productName'
-                            unit_amount: {
-                                currency_code: moneda,
-                                value: getPrice(
-                                    item.product,
-                                    item.quantity,
-                                ).toFixed(2), // Asumiendo que cada cart tiene un atributo 'price'
-                            },
-                            quantity: item.quantity.toString(), // Asumiendo que cada cart tiene un atributo 'quantity'
-                        }))
-                 ],
+                 
                 },
-            ],
+            ],   items: [
+                carts.orderItems.map((item) => ({
+                    name: item.product.name, // Asumiendo que cada cart tiene un atributo 'productName'
+                    unit_amount: {
+                        currency_code: moneda,
+                        value: Number(getPrice(
+                            item.product,
+                            item.quantity,
+                        )).toFixed(2), // Asumiendo que cada cart tiene un atributo 'price'
+                    },
+                    quantity: item.quantity.toString(), // Asumiendo que cada cart tiene un atributo 'quantity'
+                }))
+         ],
             payment_source: {
                 paypal: {
                     experience_context: {
@@ -233,17 +234,24 @@ export class PaypalService {
 
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
-            relations: [
-                'orderItems',
-                'orderItem.product',
-                'orderItem.product.discounts',
-                'municipality', // Relación directa de OrderEntity -> MunicipalityEntity
-                'municipality.prices', // Relación MunicipalityEntity -> PriceByWeightEntity
-            ],
+            relations: {
+                user:true,
+                orderItems:{
+                    product:{
+                        discounts:{
+                            
+                        }
+                    }
+                },
+                municipality:{
+                    prices:true
+                      
+                }
+            }
         });
-
+        console.log(orderbd)
         const precioenvio: number = await this.calcularprecio_envio(orderbd);
-
+   
         let order: string = '';
 
         if (userid.toString() !== orderbd.user.id.toString()) {
@@ -253,7 +261,7 @@ export class PaypalService {
         notFoundException(orderbd, 'Order');
 
         order = await this.CreateJSONOrder(orderbd, 'USD', precioenvio);
-
+        console.log(order)
         //Obteniendo Token
         const paramas = new URLSearchParams();
 
@@ -270,7 +278,7 @@ export class PaypalService {
                 auth: auth,
             },
         );
-
+        try {
         const response = await axios.post(
             `${PAYPAL_HOST}/v2/checkout/orders`,
             order,
@@ -281,7 +289,11 @@ export class PaypalService {
                 },
             },
         );
-
         return response.data.links[1];
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        console.log(axiosError)
+    }
+     
     }
 }

@@ -37,10 +37,10 @@ export class MailsService {
                     productos: order.orderItems.map(item => ({
                         nombre: item.product.name,
                         cantidad: item.quantity,
-                        precio: item.product.price.toFixed(2),
-                        subtotal: (item.product.price * item.quantity).toFixed(2)
+                        precio: item.product.price,
+                        subtotal: (item.product.price * item.quantity)
                     })),
-                    total: order.subtotal.toFixed(2),
+                    total: order.subtotal,
                     direccionEnvio: order.address,
                     metodoPago: order.address
                 }

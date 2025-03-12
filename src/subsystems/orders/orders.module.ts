@@ -10,12 +10,15 @@ import { ProductEntity } from "../products/entity/product.entity";
 import { OrderProductEntity } from "./entities/order_products.entity";
 import { MunicipalityEntity } from "../locations/entity/municipality.entity";
 
+import { MailsService } from '../mails/services/mails.service';
+
 @Module({
     imports:[
         TypeOrmModule.forFeature([OrderEntity,OrderProductEntity,ProductEntity, MunicipalityEntity,User]),
         ConfigModule.forRoot({ isGlobal: true }),
+
     ],
-    providers:[OrderService, UserService],
+    providers:[OrderService, MailsService,UserService],
     controllers:[OrderControllers],
   
 })
