@@ -1,22 +1,19 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { OrderEntity } from '../entities/order.entity';
-import { BaseService } from '../../../common/services/base.service';
-import { UserService } from '../../user/service/user.service';
-import { ProductEntity } from '../../products/entity/product.entity';
-import {
-    BuildOrderDTO,
-    ProductOrderDTO,
-} from '../../public/dto/frontsDTO/ordersDTO/buildorder.dto';
-import { User } from '../../user/entities/user.entity';
-import { OrderProductEntity } from '../entities/order_products.entity';
-import { OrderStatus } from '../enums/orderStatus.enum';
-import { notFoundException } from '../../../common/exceptions/modular.exception';
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { In, Repository } from "typeorm";
+import { OrderEntity } from "../entities/order.entity";
+import { BaseService } from "../../../common/services/base.service";
+import { UserService } from "../../user/service/user.service";
+import { ProductEntity } from "../../products/entity/product.entity";
+import { BuildOrderDTO, ProductOrderDTO } from "../../public/dto/frontsDTO/ordersDTO/buildorder.dto";
+import { User } from "../../user/entities/user.entity";
+import { OrderProductEntity } from "../entities/order_products.entity";
+import { OrderStatus } from "../enums/orderStatus.enum";
+import { notFoundException } from "../../../common/exceptions/modular.exception";
 import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
-import { MailerService } from '@nestjs-modules/mailer';
-import { MailsService } from 'src/subsystems/mails/services/mails.service';
+import { MailerService } from "@nestjs-modules/mailer";
+import { MailsService } from "src/subsystems/mails/services/mails.service";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -202,6 +199,24 @@ export class OrderService extends BaseService<OrderEntity> {
         await this.orderRepository.save(order);
 
         return true;
+    }
+
+    public async completeOrder(orderId: string) {
+        const order: OrderEntity = await this.orderRepository.findOne({
+            where: { id: orderId },
+        });
+
+        notFoundException(order, 'Order');
+
+        if (order.status !== OrderStatus.Paid) {
+            throw new BadRequestException('The order has not yet been paid');
+        }
+
+        order.status = OrderStatus.Completed;
+
+        await this.orderRepository.save(order);
+
+        return { message: 'La orden ha sido completada satisfactoriamente.' }
     }
 }
 
