@@ -184,7 +184,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
         // Change order status upon completion
         order.status = OrderStatus.Paid;
-        
+        //JAVIERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR AQUI ES LO DE EL MAILLLLLLLLLLLLLLLLLLLLLL
         //await this.mailService.sendOrderConfirmationEmail(order)
 
         return await this.orderRepository.save(order);
