@@ -62,7 +62,7 @@ export class PaypalController {
             : { success: false, errorCode: 400 };
     }
 
-    @Post('cancel-order')
+    @Get('cancel-order')
     async cancelorder(@Query() query: any,@Res() res: Response): Promise<void> {
 
         const token = query.token; // Parámetro clave
@@ -70,7 +70,5 @@ export class PaypalController {
         const response: boolean = await this.servicePaypal.cancelorder(token);
 
         res.redirect(process.env.WEB)
-
-
      }
 }

@@ -12,10 +12,11 @@ import { Repository } from "typeorm";
 import { ProductEntity } from "../products/entity/product.entity";
 import { OrderProductEntity } from "../orders/entities/order_products.entity";
 import { MunicipalityEntity } from "../locations/entity/municipality.entity";
+import { MailsService } from '../mails/services/mails.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([OrderEntity, ProductEntity, OrderProductEntity,User, MunicipalityEntity])],
-    providers:[PaypalService, StripeService, OrderService, UserService, Repository],
+    providers:[PaypalService, StripeService, OrderService, UserService, Repository,MailsService],
     controllers:[PaypalController, StripeController]
 })
 export class PaymentsModule {}

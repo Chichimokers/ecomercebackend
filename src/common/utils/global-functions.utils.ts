@@ -73,6 +73,7 @@ export function calculateDiscount(product: ProductEntity, quantity: number) {
  * @param quantity Quantity of the product
  */
 export function getPrice(product: ProductEntity, quantity: number) {
+    
     if (!product.discounts) {
         return product.price
     }
@@ -82,4 +83,5 @@ export function getPrice(product: ProductEntity, quantity: number) {
     }
 
     return product.price - product.discounts.reduction
+
 }

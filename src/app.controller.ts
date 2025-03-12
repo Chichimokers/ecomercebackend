@@ -8,7 +8,7 @@ export class AppController {
     getHello(): string {
         
         
-return "Dp esto";
+return "Asere tengo ganas de terminar esto ya pinga";
 
     }
     

@@ -32,8 +32,7 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly municipalityRepository: Repository<MunicipalityEntity>,
         @Inject(UserService)
         private userService: UserService,
-        @Inject(MailerService)
-        private mailService :MailsService
+        @Inject(MailsService) private mailService: MailsService,
     ) {
         super(orderRepository);
     }
@@ -139,12 +138,27 @@ export class OrderService extends BaseService<OrderEntity> {
     async processOrders(orderid: string): Promise<OrderEntity> {
         // Verificar si la Orden existe
         const order: OrderEntity = await this.orderRepository.findOne({
-            where: { id: orderid },
+            where: { id: orderid },relations:{
+            
+                municipality:{
+                    province:{
+
+                    }
+                },
+                orderItems:{
+                    product:{ 
+
+                    }
+                },
+                user:{
+                
+                }
+            }
         });
 
         notFoundException(order, 'Order');
 
-        if (order.status !== OrderStatus.Accepted) {
+        if (order.status !== OrderStatus.Pending) {
             throw new BadRequestException('Status order is not pending');
         }
 
@@ -167,8 +181,8 @@ export class OrderService extends BaseService<OrderEntity> {
 
         // Change order status upon completion
         order.status = OrderStatus.Paid;
-        
-        await this.mailService.sendOrderConfirmationEmail(order)
+        //JAVIERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR AQUI ES LO DE EL MAILLLLLLLLLLLLLLLLLLLLLL
+        //await this.mailService.sendOrderConfirmationEmail(order)
 
         return await this.orderRepository.save(order);
     }

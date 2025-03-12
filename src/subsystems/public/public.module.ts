@@ -26,6 +26,7 @@ import { PublicCacheInterceptor } from "./interceptors/cache.interceptor";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ScrapSchedule } from "./schedule/scrap.schedule";
 import { CacheService } from "./services/cacheService.service";
+import { MailsService } from "../mails/services/mails.service";
 
 @Module({
     imports:[
@@ -61,6 +62,7 @@ import { CacheService } from "./services/cacheService.service";
         },
         ScrapSchedule,
         CacheService,
+        MailsService,
     ],
     controllers: [PublicController, UserPublicController],
     exports: [CacheService],
