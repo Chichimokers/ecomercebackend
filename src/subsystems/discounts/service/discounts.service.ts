@@ -6,7 +6,7 @@ import { setDiscountToProductDTO } from '../dto/discountsdto/setDiscountToProduc
 import { ProductEntity } from '../../products/entity/product.entity';
 import { ProductService } from '../../products/services/product.service';
 import { BaseService } from '../../../common/services/base.service';
-import { notFoundException } from '../../../common/exceptions/modular.exception';
+import { captureNotFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class DiscountsService extends BaseService<DiscountEntity> {
@@ -32,7 +32,7 @@ export class DiscountsService extends BaseService<DiscountEntity> {
             relations: ['discounts'],
         });
 
-        notFoundException(product, `Product with ID ${discountData.product}`);
+        captureNotFoundException(product, `Product with ID ${discountData.product}`);
 
         const discount: DiscountEntity = this.discountRepository.create({
             min: discountData.min,

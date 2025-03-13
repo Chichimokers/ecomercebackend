@@ -1,5 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsPositive,
+    IsString,
+    IsUUID,
+    Length,
+    ValidateNested
+} from "class-validator";
 import { Type } from "class-transformer";
 import { IsValidCI } from "../../../../orders/decorators/orders.decorator";
 
@@ -81,12 +90,21 @@ export class BuildOrderDTO {
 
     @ApiProperty({
         description: 'Phone number of the receiver',
-        example: '555-1234'
+        example: '+53 --------'
     })
     @IsNotEmpty()
     @IsString()
-    @Length(1, 15)
+    @Length(1, 20)
     phone: string;
+
+    @ApiProperty({
+        description: 'Auxiliary number of the receiver',
+        example: '+53 --------'
+    })
+    @IsOptional()
+    @IsString()
+    @Length(1, 20)
+    aux_phone?: string;
 
     @ApiProperty({
         example: 'a6e0c570-be0e-4a7d-93c5-767a7767890b',

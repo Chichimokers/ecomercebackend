@@ -7,7 +7,7 @@ import { ProductEntity } from '../../products/entity/product.entity';
 @Unique(['user', 'product'])
 @Check(`"rate" >= 0 AND "rate" <= 5`)
 export class RatingEntity extends BaseEntity {
-    @Column()
+    @Column({ type: 'smallint' })
     rate: number;
 
     @ManyToOne(() => User, (user) => user.ratings)

@@ -4,9 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MunicipalityEntity } from '../entity/municipality.entity';
 import { Repository } from 'typeorm';
 import { ProvinceEntity } from '../entity/province.entity';
-import { badRequestException, notFoundException } from '../../../common/exceptions/modular.exception';
+import { captureBadRequestException, captureNotFoundException } from '../../../common/exceptions/modular.exception';
 import { PriceByWeightEntity } from '../entity/priceByWeight.entity';
-import { createMunicipalityDTO } from '../dto/municipalitydto/createMunicipality.dto';
 
 @Injectable()
 export class MunicipalityService extends BaseService<MunicipalityEntity> {
@@ -30,7 +29,7 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
             where: { id: dto.province },
         });
 
-        notFoundException(province, 'Province');
+        captureNotFoundException(province, 'Province');
 
         let pricesWeight: PriceByWeightEntity[] = [];
 
@@ -43,7 +42,7 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
             );
         }
 
-        badRequestException(pricesWeight, 'Prices');
+        captureBadRequestException(pricesWeight, 'Prices');
 
         const municipality: MunicipalityEntity = this.municipalityRepository.create({
             name: dto.name,
@@ -51,7 +50,7 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
             prices: pricesWeight,
         });
 
-        badRequestException(municipality, 'Municipality');
+        captureBadRequestException(municipality, 'Municipality');
 
         for (let i = 0; i < pricesWeight.length; i++) {
             pricesWeight[i].municipality = municipality;

@@ -5,13 +5,12 @@ import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
 import { InjectRepository } from "@nestjs/typeorm";
-import { toNumber } from "../../../common/utils/cast.utils";
 import { OrderProductEntity } from "../../orders/entities/order_products.entity";
 import {
     calculateDiscount,
     getPrice
 } from "../../../common/utils/global-functions.utils";
-import { badRequestException, notFoundException } from "../../../common/exceptions/modular.exception";
+import { captureBadRequestException, captureNotFoundException } from "../../../common/exceptions/modular.exception";
 
 @Injectable()
 export class StripeService {
@@ -39,18 +38,17 @@ export class StripeService {
             ] // Asegúrate de incluir la relación 'carts'
         });
 
-        notFoundException(orderEntity, "Order");
+        captureNotFoundException(orderEntity, "Order");
 
         const order = await this.createJSONOrder(orderEntity, currency);
 
-        console.log(order);
-        order.line_items.map(
-            (item) => {
-                console.log(item);
-            }
-        );
+        let session: Stripe.Response<Stripe.Checkout.Session>;
 
-        const session = await this.stripe.checkout.sessions.create(order);
+        try {
+            session = await this.stripe.checkout.sessions.create(order);
+        } catch (error) {
+            throw new Error('Unable to create checkout session');
+        }
 
         orderEntity.stripe_id = session.id;
 
@@ -91,7 +89,7 @@ export class StripeService {
         });
 
         return {
-            success_url: `${HOST}/visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
+            success_url: `${HOST}visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
             mode: "payment",
             currency: currency,
             payment_method_types: ["card"],
@@ -118,7 +116,7 @@ export class StripeService {
     }
 
     private manageShippingPrice(order: OrderEntity, currency: string = "usd") {
-        badRequestException(order.municipality, "Municipality");
+        captureBadRequestException(order.municipality, "Municipality");
 
         return {
             shipping_rate_data: {
@@ -147,11 +145,13 @@ export class StripeService {
             where: { id: order_id }
         });
 
+        captureNotFoundException(order, 'Order');
+
         const sessionId = order.stripe_id;
 
         const session = await this.stripe.checkout.sessions.retrieve(sessionId);
 
-        console.log(session.payment_status);
+        //console.log(session.payment_status);
         if (session.payment_status !== "paid") {
             return {
                 checkout: {
@@ -163,7 +163,7 @@ export class StripeService {
         }
 
         // Aqui va para procesar la orden!
-        const captured_id = toNumber(session.metadata.order_id);
+        const captured_id = session.metadata.order_id;
 
         await this.orderService.processOrders(captured_id.toString());
 

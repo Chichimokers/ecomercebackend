@@ -15,11 +15,12 @@ import { ProvinceEntity } from "../../locations/entity/province.entity";
 @Entity({ name: "tb_products" })
 @Check(`"price" > 0`)
 @Check(`"quantity" >= 0`)
+@Check(`"weight" >= 0`)
 export class ProductEntity extends BaseEntity {
     @Column({ nullable: true })
     image: string;
 
-    @Column()
+    @Column({ type: "varchar", length: 255 })
     @IsString()
     name: string;
 
@@ -27,7 +28,7 @@ export class ProductEntity extends BaseEntity {
     @IsPositive()
     price: number;
 
-    @Column()
+    @Column({ type: "text" })
     @IsString()
     description: string;
 
@@ -35,15 +36,15 @@ export class ProductEntity extends BaseEntity {
     @IsString()
     short_description: string;
 
-    @Column()
+    @Column({ type: "integer" })
     @IsPositive()
     quantity: number;
 
-    @Column()
+    @Column({ type: "numeric", precision: 10, scale: 2 })
     @IsPositive()
     weight: number;
 
-    @ManyToOne(() => ProvinceEntity, { nullable: false })
+    @ManyToOne(() => ProvinceEntity, { nullable: false, cascade: true })
     @JoinColumn({ name: "province_id" })
     province: ProvinceEntity;
 
@@ -65,14 +66,14 @@ export class ProductEntity extends BaseEntity {
 
     @ManyToOne(
         () => CategoryEntity, (category) => category.products,
-        { nullable: true }
+        { nullable: true, cascade: true }
     )
     @Index()
     category: CategoryEntity;
 
     @ManyToOne(
         () => SubCategoryEntity, (subCategory) => subCategory.products,
-        { nullable: true }
+        { nullable: true, cascade: true }
     )
     @Index()
     subCategory: SubCategoryEntity;

@@ -76,4 +76,10 @@ export class OrderControllers {
     deleteOrder(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
         return this.orderService.softDelete(id);
     }
+
+    @Post('complete-order')
+    @Roles(roles.Delivering, roles.Admin)
+    async completeOrder(@Param('id', new ParseUUIDPipe()) id: string): Promise<{message: string}> {
+        return await this.orderService.completeOrder(id);
+    }
 }

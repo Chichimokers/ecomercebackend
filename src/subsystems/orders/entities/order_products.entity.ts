@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Check, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { OrderEntity } from "./order.entity";
 import { ProductEntity } from "../../products/entity/product.entity";
 import { BaseEntity } from '../../../common/entities/base.entity';
 
 @Entity({ name: 'tb_order_products' })
+@Check(`"quantity" >= 0`)
 export class OrderProductEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: string;
@@ -14,6 +15,6 @@ export class OrderProductEntity extends BaseEntity {
     @ManyToOne(() => ProductEntity, (product) => product)
     product: ProductEntity;
 
-    @Column()
+    @Column({ type: "integer" })
     quantity: number;
 }

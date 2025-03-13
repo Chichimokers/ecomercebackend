@@ -3,7 +3,7 @@ import {
     NotFoundException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, Repository, Like } from "typeorm";
+import { In, Repository, ILike, MoreThan } from "typeorm";
 import { BaseService } from "../../../common/services/base.service";
 import { ProductEntity } from "../entity/product.entity";
 import { UpdateProductDTO } from "../dto/updateProductDTO.dto";
@@ -14,7 +14,7 @@ import {
 import { DiscountEntity } from "../../discounts/entity/discounts.entity";
 import { IServiceDTOC } from "../../../common/interfaces/base-service.interface";
 import { CreateProductDTO } from "../dto/createProductDTO.dto";
-import { notFoundException } from "../../../common/exceptions/modular.exception";
+import { captureNotFoundException } from "../../../common/exceptions/modular.exception";
 import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { ratingAVG } from "../utils/ratingAVG";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
@@ -100,7 +100,7 @@ export class ProductService
             where: { id: dto.province }
         });
 
-        notFoundException(province, "Province");
+        captureNotFoundException(province, "Province");
 
         const product: ProductEntity = this.productRepository.create({
             name: dto.name,
@@ -131,7 +131,7 @@ export class ProductService
             where: { id }
         });
 
-        notFoundException(product, "Product");
+        captureNotFoundException(product, "Product");
 
         // Actualizar los campos básicos del producto
         [
@@ -160,7 +160,7 @@ export class ProductService
                 where: { id: dto.province }
             });
 
-            notFoundException(province, "Province");
+            captureNotFoundException(province, "Province");
 
             product.province = province;
         }
@@ -201,14 +201,14 @@ export class ProductService
             category = await this.categoryRepository.findOne({
                 where: { id: dto.category }
             });
-            notFoundException(category, "Category");
+            captureNotFoundException(category, "Category");
         }
 
         if (dto.subCategory) {
             subCategory = await this.subCategoryRepository.findOne({
                 where: { id: dto.subCategory }
             });
-            notFoundException(subCategory, "Subcategory");
+            captureNotFoundException(subCategory, "Subcategory");
         }
 
         return {
@@ -336,14 +336,22 @@ export class ProductService
     //      *--- Search Product by Name ---*
     public async searchProductByName(name: string, province?: string) {
         return await this.productRepository.find({
+            relations: {
+                category: true,
+            },
             select: {
                 id: true,
                 name: true,
                 image: true,
-                price: true
+                price: true,
+                short_description: true,
+                category: {
+                    name: true
+                },
             },
             where: {
-                name: Like(`%${name}%`),
+                name: ILike(`%${name}%`),
+                quantity: MoreThan(0),
                 province: province ? { id: province } : undefined
             },
             skip: 0,
@@ -368,7 +376,7 @@ export class ProductService
             relations: ["category", "subCategory"]
         });
 
-        notFoundException(product, "Product");
+        captureNotFoundException(product, "Product");
 
         const category: CategoryEntity = product.category;
         const subcategory: SubCategoryEntity = product.subCategory;

@@ -25,14 +25,12 @@ import { LocalAuthGuard } from 'src/subsystems/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage, memoryStorage } from "multer";
-import { extname } from 'path';
+import { memoryStorage } from "multer";
 import { ProductDTO } from '../../public/dto/frontsDTO/productsDTO/getproducts.dto';
-import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { IProductsFilters, IRefineInterface } from "../interfaces/basequery.interface";
+import { IProductsFilters } from "../interfaces/basequery.interface";
 import { WebpInterceptor } from '../interceptors/imagewebp.interceptor';
 import { ProductPublicApiDoc, ProductPublicQuery } from "../decorators/public.decorator";
-import { badRequestException } from "../../../common/exceptions/modular.exception";
+import { captureBadRequestException } from "../../../common/exceptions/modular.exception";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 
 @ApiTags('products')
@@ -64,10 +62,10 @@ export class ProductControllers {
     @ApiResponse({ status: 200, type: [ProductDTO] })
     public getProducts(@ProductPublicQuery() query: IProductsFilters): Promise<ProductEntity[]> {
         if (query.categoryIds)
-            badRequestException(query.categoryIds, 'CategoryIDS');
+            captureBadRequestException(query.categoryIds, 'CategoryIDS');
         if (query.subCategoryIds)
-            badRequestException(query.subCategoryIds, 'SubCategoryIDS');
-        if (query.prices) badRequestException(query.prices, 'Prices');
+            captureBadRequestException(query.subCategoryIds, 'SubCategoryIDS');
+        if (query.prices) captureBadRequestException(query.prices, 'Prices');
 
         const filters: IFilterProduct = {
             categoryIds: query.categoryIds,

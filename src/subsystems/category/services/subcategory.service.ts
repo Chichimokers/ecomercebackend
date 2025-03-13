@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
 import { UpdateSubCategoryDTO } from '../dto/subcategorydto/updateSubCategory.dto';
-import { notFoundException } from '../../../common/exceptions/modular.exception';
+import { captureNotFoundException } from '../../../common/exceptions/modular.exception';
 
 @Injectable()
 export class SubCategoryService
@@ -34,7 +34,7 @@ export class SubCategoryService
             where: { id },
         });
 
-        notFoundException(subcategory, 'SubCategory');
+        captureNotFoundException(subcategory, 'SubCategory');
 
         ['name'].forEach((field: string): void => {
             if (dto[field] !== undefined) {
@@ -47,7 +47,7 @@ export class SubCategoryService
                 where: { id: dto.categoryId },
             });
 
-            notFoundException(category, `Refer Category`);
+            captureNotFoundException(category, `Refer Category`);
 
             subcategory.category = category;
         }

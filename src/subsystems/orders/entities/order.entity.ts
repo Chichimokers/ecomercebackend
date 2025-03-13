@@ -20,21 +20,21 @@ export class OrderEntity  extends BaseEntity{
     @IsString()
     receiver_name: string;
 
-    @Column({ length: 15 })
+    @Column({ length: 25, nullable: false })
     @IsString()
-    phone :string
+    phone :string;
 
-    @Column({ length: 20 })
+    @Column({ length: 25, nullable: true })
     @IsString()
-    province :string
+    aux_phone: string;
 
     @Column({ length: 255 })
     @IsString()
-    address :string
+    address :string;
 
     @Column({ length: 20 })
     @IsString()
-    CI :string
+    CI :string;
 
     @Column({ type: 'numeric', precision: 10, scale: 2 })
     @IsPositive()

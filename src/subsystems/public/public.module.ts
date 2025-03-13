@@ -25,6 +25,7 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
 import { PublicCacheInterceptor } from "./interceptors/cache.interceptor";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ScrapSchedule } from "./schedule/scrap.schedule";
+import { CacheService } from "./services/cacheService.service";
 import { MailsService } from "../mails/services/mails.service";
 
 @Module({
@@ -43,7 +44,7 @@ import { MailsService } from "../mails/services/mails.service";
         ]),
         CacheModule.register({
             ttl: 86400,
-            max: 5000,
+            max: 400,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
@@ -55,13 +56,15 @@ import { MailsService } from "../mails/services/mails.service";
         ProductService,
         ProvinceService,
         MunicipalityService,
-        MailsService,
         {
             provide: APP_INTERCEPTOR,
             useClass: PublicCacheInterceptor,
         },
         ScrapSchedule,
+        CacheService,
+        MailsService,
     ],
     controllers: [PublicController, UserPublicController],
+    exports: [CacheService],
 })
 export class PublicModule {}
