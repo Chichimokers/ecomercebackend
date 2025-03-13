@@ -42,13 +42,6 @@ export class StripeService {
 
         const order = await this.createJSONOrder(orderEntity, currency);
 
-        //console.log(order);
-        order.line_items.map(
-            (item) => {
-                console.log(item);
-            }
-        );
-
         const session = await this.stripe.checkout.sessions.create(order);
 
         orderEntity.stripe_id = session.id;
