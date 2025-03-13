@@ -1,16 +1,36 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
-export function notFoundException(element: any[] | any, varName: string): void {
-    const responseError = `${varName} not found`;
+export function captureNotFoundException(element: any[] | any, varName: string | string[]): void {
+    if (!Array.isArray(varName)) {
+        const responseError = `${varName} not found`;
 
-    if(!Array.isArray(element)){
-        if(!element) throw new NotFoundException(responseError);
+        if(captureNotFound(element)) throw new NotFoundException(responseError);
     } else {
-        if(element.length === 0) throw new NotFoundException(responseError);
+        let names: string = '';
+        let notFound: boolean = false;
+
+        for (let i: number = 0; i < element.length; i++) {
+            if(captureNotFound(element[i])) {
+                names += varName[i] + ' ';
+                notFound = true;
+            }
+        }
+
+        if(notFound) throw new NotFoundException(names + 'not found');
     }
 }
 
-export function badRequestException(param: any, varName: string): void {
+function captureNotFound(element: any[] | any) {
+    if(!Array.isArray(element)){
+        if(!element) return true;
+    } else {
+        if(element.length === 0) return true;
+    }
+
+    return false;
+}
+
+export function captureBadRequestException(param: any, varName: string): void {
     const responseError = `${varName} is required`;
 
     if(!Array.isArray(param)){

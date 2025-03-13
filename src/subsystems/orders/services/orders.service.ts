@@ -6,10 +6,9 @@ import { BaseService } from "../../../common/services/base.service";
 import { UserService } from "../../user/service/user.service";
 import { ProductEntity } from "../../products/entity/product.entity";
 import { BuildOrderDTO, ProductOrderDTO } from "../../public/dto/frontsDTO/ordersDTO/buildorder.dto";
-import { User } from "../../user/entities/user.entity";
 import { OrderProductEntity } from "../entities/order_products.entity";
 import { OrderStatus } from "../enums/orderStatus.enum";
-import { notFoundException } from "../../../common/exceptions/modular.exception";
+import { captureNotFoundException } from "../../../common/exceptions/modular.exception";
 import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 import { MailsService } from "src/subsystems/mails/services/mails.service";
@@ -17,7 +16,7 @@ import { MailsService } from "src/subsystems/mails/services/mails.service";
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
     protected getRepositoryName(): string {
-        return 'tb_orders';
+        return "tb_orders";
     }
 
     constructor(
@@ -31,13 +30,14 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly municipalityRepository: Repository<MunicipalityEntity>,
         @Inject(UserService)
         private userService: UserService,
-        @Inject(MailsService) private mailService: MailsService,
+        @Inject(MailsService) private mailService: MailsService
     ) {
         super(orderRepository);
     }
+
     async getallORderProc() {
         return await this.orderRepository.find({
-            relations: ['orderItems', 'orderItems.product'],
+            relations: ["orderItems", "orderItems.product"]
         });
     }
 
@@ -45,36 +45,28 @@ export class OrderService extends BaseService<OrderEntity> {
         console.log(userid);
         return await this.orderRepository.find({
             where: {
-                user: { id: userid },
+                user: { id: userid }
             },
-            relations: ['user'],
+            relations: ["user"]
         });
     }
 
     async createOrderService(userid: string, data: BuildOrderDTO) {
         //PASOS
         //Capturar USER (Validacion)
-        const user: User = await this.userService.findOneById(userid);
+        const [user, foundProducts, municipality] = await Promise.all([
+            this.userService.findUserById(userid),
+            this.validateProducts(data.products),
+            this.municipalityRepository.findOneBy({ id: data.municipality })
+        ]);
 
-        notFoundException(user, 'User');
-
-        const foundProducts: ProductEntity[] = await this.validateProducts(
-            data.products,
-        );
-
-        notFoundException(foundProducts, 'Products');
-
-        const municipality: MunicipalityEntity = await this.municipalityRepository.findOneBy(
-            { id: data.municipality }
-        );
-
-        notFoundException(municipality, 'Municipality');
+        captureNotFoundException([user, foundProducts, municipality], ["User", "Products", "Municipality"]);
 
         // Mapeo para construir un array con los productos encontrados y sus quantitys
 
         const productsWithQuantities = data.products.map((productOrder) => {
             const product = foundProducts.find(
-                (p) => p.id === productOrder.product_id,
+                (p) => p.id === productOrder.product_id
             );
             return { product, quantity: productOrder.quantity };
         });
@@ -84,22 +76,19 @@ export class OrderService extends BaseService<OrderEntity> {
             (total, { product, quantity }) => {
                 return total + calculateDiscount(product, quantity);
             },
-            0,
+            0
         );
 
         //Crear Orden
         const order: OrderEntity = this.orderRepository.create({
             phone: data.phone,
-            province: data.province,
             address: data.address,
             receiver_name: data.receiver_name,
             CI: data.ci,
             subtotal: subtotal,
             user: user,
-            municipality: municipality,
+            municipality: municipality
         });
-
-        await this.orderRepository.save(order);
 
         //Crear Order_Products
         const orderProducts = productsWithQuantities.map(
@@ -107,24 +96,27 @@ export class OrderService extends BaseService<OrderEntity> {
                 return this.orderProductRepository.create({
                     order: order,
                     product: product,
-                    quantity: quantity,
+                    quantity: quantity
                 });
-            },
+            }
         );
 
-        await this.orderProductRepository.save(orderProducts);
+        await Promise.all([
+            this.orderRepository.save(order),
+            this.orderProductRepository.save(orderProducts)
+        ]);
 
         return order;
     }
 
     private async validateProducts(
-        products: ProductOrderDTO[],
+        products: ProductOrderDTO[]
     ): Promise<ProductEntity[]> | null {
         const ids: string[] = products.map((elemnt) => elemnt.product_id);
         const foundProducts: ProductEntity[] =
             await this.productRepository.find({
                 where: { id: In(ids) },
-                relations: ['discounts'],
+                relations: ["discounts"]
             });
 
         if (ids.length === foundProducts.length) {
@@ -137,34 +129,28 @@ export class OrderService extends BaseService<OrderEntity> {
     async processOrders(orderid: string): Promise<OrderEntity> {
         // Verificar si la Orden existe
         const order: OrderEntity = await this.orderRepository.findOne({
-            where: { id: orderid },relations:{
-            
-                municipality:{
-                    province:{
+            where: { id: orderid }, relations: {
 
-                    }
+                municipality: {
+                    province: {}
                 },
-                orderItems:{
-                    product:{ 
-
-                    }
+                orderItems: {
+                    product: {}
                 },
-                user:{
-                
-                }
+                user: {}
             }
         });
 
-        notFoundException(order, 'Order');
+        captureNotFoundException(order, "Order");
 
         if (order.status !== OrderStatus.Pending) {
-            throw new BadRequestException('Status order is not pending');
+            throw new BadRequestException("Status order is not pending");
         }
 
         const productOrderRelation: OrderProductEntity[] =
             await this.orderProductRepository.find({
                 where: { order: { id: orderid } },
-                relations: ['product'],
+                relations: ["product"]
             });
 
         // Go through all the products related to the order to verify if there is still enough stock
@@ -172,7 +158,7 @@ export class OrderService extends BaseService<OrderEntity> {
 
         for (const relation of productOrderRelation) {
             if (relation.quantity > relation.product.quantity) {
-                throw new BadRequestException('There is not enough stock');
+                throw new BadRequestException("There is not enough stock");
             }
 
             relation.product.quantity -= relation.quantity;
@@ -194,10 +180,10 @@ export class OrderService extends BaseService<OrderEntity> {
     public async getOrderByUser(userId: string) {
         const orders: OrderEntity[] = await this.orderRepository.find({
             where: { user: { id: userId } },
-            relations: ['orderItems', 'orderItems.product'],
+            relations: ["orderItems", "orderItems.product"]
         });
 
-        notFoundException(orders, 'Orders');
+        captureNotFoundException(orders, "Orders");
         // TODO Build a MAPPER
 
         return orders;
@@ -205,10 +191,10 @@ export class OrderService extends BaseService<OrderEntity> {
 
     public async retireOrderByUser(userId: string, orderId: string) {
         const order: OrderEntity = await this.orderRepository.findOne({
-            where: { user: { id: userId }, id: orderId },
+            where: { user: { id: userId }, id: orderId }
         });
 
-        notFoundException(order, 'Order');
+        captureNotFoundException(order, "Order");
 
         order.status = OrderStatus.Retired;
         order.deleted_at = new Date();
@@ -220,23 +206,23 @@ export class OrderService extends BaseService<OrderEntity> {
 
     public async completeOrder(orderId: string) {
         const order: OrderEntity = await this.orderRepository.findOne({
-            where: { id: orderId },
+            where: { id: orderId }
         });
 
-        notFoundException(order, 'Order');
+        captureNotFoundException(order, "Order");
 
         if (order.status !== OrderStatus.Paid) {
-            throw new BadRequestException('The order has not yet been paid');
+            throw new BadRequestException("The order has not yet been paid");
         }
 
         order.status = OrderStatus.Completed;
 
         await Promise.all([
             this.orderRepository.save(order),
-            this.mailService.sendOrderConfirmationEmail(order),
+            this.mailService.sendOrderConfirmationEmail(order)
         ]);
 
-        return { message: 'La orden ha sido completada satisfactoriamente.' }
+        return { message: "La orden ha sido completada satisfactoriamente." };
     }
 }
 

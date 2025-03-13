@@ -16,7 +16,7 @@ import {
     ProductPublicQuery
 } from "../../products/decorators/public.decorator";
 import { IProductsFilters } from "../../products/interfaces/basequery.interface";
-import { badRequestException } from "../../../common/exceptions/modular.exception";
+import { captureBadRequestException } from "../../../common/exceptions/modular.exception";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
@@ -45,7 +45,7 @@ export class PublicController {
     // *--- For Home View ---* //
     @Post("/search")
     public searchProduct(@Body() body: SearchproductDTO) {
-        badRequestException(body.name, "Name");
+        captureBadRequestException(body.name, "Name");
         return this.publicService.getProductByName(body);
     }
 
@@ -54,10 +54,10 @@ export class PublicController {
     @ProductPublicApiDoc()
     public async getProductView(@ProductPublicQuery() query: IProductsFilters) {
         if (query.categoryIds)
-            badRequestException(query.categoryIds, "CategoryIDS");
+            captureBadRequestException(query.categoryIds, "CategoryIDS");
         if (query.subCategoryIds)
-            badRequestException(query.subCategoryIds, "SubCategoryIDS");
-        if (query.prices) badRequestException(query.prices, "Prices");
+            captureBadRequestException(query.subCategoryIds, "SubCategoryIDS");
+        if (query.prices) captureBadRequestException(query.prices, "Prices");
 
         const filters: IFilterProduct = {
             categoryIds: query.categoryIds,

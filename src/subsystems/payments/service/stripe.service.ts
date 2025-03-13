@@ -10,7 +10,7 @@ import {
     calculateDiscount,
     getPrice
 } from "../../../common/utils/global-functions.utils";
-import { badRequestException, notFoundException } from "../../../common/exceptions/modular.exception";
+import { captureBadRequestException, captureNotFoundException } from "../../../common/exceptions/modular.exception";
 
 @Injectable()
 export class StripeService {
@@ -38,7 +38,7 @@ export class StripeService {
             ] // Asegúrate de incluir la relación 'carts'
         });
 
-        notFoundException(orderEntity, "Order");
+        captureNotFoundException(orderEntity, "Order");
 
         const order = await this.createJSONOrder(orderEntity, currency);
 
@@ -110,7 +110,7 @@ export class StripeService {
     }
 
     private manageShippingPrice(order: OrderEntity, currency: string = "usd") {
-        badRequestException(order.municipality, "Municipality");
+        captureBadRequestException(order.municipality, "Municipality");
 
         return {
             shipping_rate_data: {
@@ -139,7 +139,7 @@ export class StripeService {
             where: { id: order_id }
         });
 
-        notFoundException(order, 'Order');
+        captureNotFoundException(order, 'Order');
 
         const sessionId = order.stripe_id;
 

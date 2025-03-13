@@ -4,7 +4,7 @@ import { RatingEntity } from "../entity/rating.entity";
 import { Repository, In } from "typeorm";
 import { RateProductDTO } from "../dto/rateProduct.dto";
 import { User } from "../../user/entities/user.entity";
-import { notFoundException } from "../../../common/exceptions/modular.exception";
+import { captureNotFoundException } from "../../../common/exceptions/modular.exception";
 
 @Injectable()
 export class RatingService {
@@ -21,7 +21,7 @@ export class RatingService {
             where: { id: userId },
         });
 
-        notFoundException(user, 'User');
+        captureNotFoundException(user, 'User');
 
         const existingRatings = await this.ratingRepository.find({
             where: {

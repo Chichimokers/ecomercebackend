@@ -14,7 +14,7 @@ import {
 import { DiscountEntity } from "../../discounts/entity/discounts.entity";
 import { IServiceDTOC } from "../../../common/interfaces/base-service.interface";
 import { CreateProductDTO } from "../dto/createProductDTO.dto";
-import { notFoundException } from "../../../common/exceptions/modular.exception";
+import { captureNotFoundException } from "../../../common/exceptions/modular.exception";
 import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { ratingAVG } from "../utils/ratingAVG";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
@@ -100,7 +100,7 @@ export class ProductService
             where: { id: dto.province }
         });
 
-        notFoundException(province, "Province");
+        captureNotFoundException(province, "Province");
 
         const product: ProductEntity = this.productRepository.create({
             name: dto.name,
@@ -131,7 +131,7 @@ export class ProductService
             where: { id }
         });
 
-        notFoundException(product, "Product");
+        captureNotFoundException(product, "Product");
 
         // Actualizar los campos básicos del producto
         [
@@ -160,7 +160,7 @@ export class ProductService
                 where: { id: dto.province }
             });
 
-            notFoundException(province, "Province");
+            captureNotFoundException(province, "Province");
 
             product.province = province;
         }
@@ -201,14 +201,14 @@ export class ProductService
             category = await this.categoryRepository.findOne({
                 where: { id: dto.category }
             });
-            notFoundException(category, "Category");
+            captureNotFoundException(category, "Category");
         }
 
         if (dto.subCategory) {
             subCategory = await this.subCategoryRepository.findOne({
                 where: { id: dto.subCategory }
             });
-            notFoundException(subCategory, "Subcategory");
+            captureNotFoundException(subCategory, "Subcategory");
         }
 
         return {
@@ -376,7 +376,7 @@ export class ProductService
             relations: ["category", "subCategory"]
         });
 
-        notFoundException(product, "Product");
+        captureNotFoundException(product, "Product");
 
         const category: CategoryEntity = product.category;
         const subcategory: SubCategoryEntity = product.subCategory;

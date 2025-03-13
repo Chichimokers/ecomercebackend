@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ProductService } from "../../products/services/product.service";
 import { CategoryService } from "../../category/services/category.service";
-import { badRequestException, notFoundException } from "../../../common/exceptions/modular.exception";
+import { captureBadRequestException, captureNotFoundException } from "../../../common/exceptions/modular.exception";
 import { ProvinceService } from "../../locations/service/province.service";
 import { roundMinor } from "../utils/roundMinor";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
@@ -43,7 +43,7 @@ export class PublicService {
             this.categoryService.getCategoriesWithSubCategories(filters.categoryIds),
         ]);
 
-        notFoundException(productsData.products, "Products");
+        captureNotFoundException(productsData.products, "Products");
 
         const { previousUrl, nextUrl, totalPages } = productsData.urls;
 
@@ -62,20 +62,20 @@ export class PublicService {
     public async getProductByName(dto: SearchproductDTO): Promise<any> {
         const products: ProductEntity[] = await this.productService.searchProductByName(dto.name, dto.province);
 
-        notFoundException(products, "Product");
+        captureNotFoundException(products, "Product");
 
         return products;
     }
 
     // *--- Get Product Detail ---* //
     public async getProductDetails(id: string) {
-        badRequestException(id, "ID");
+        captureBadRequestException(id, "ID");
 
         return await this.productService.getProductDetails(id);
     }
 
     public async getProductRelation(id: string) {
-        badRequestException(id, "ID");
+        captureBadRequestException(id, "ID");
 
         return await this.productService.getRelations(id);
     }
@@ -109,7 +109,7 @@ export class PublicService {
     public async getMunicipalities(id: string): Promise<MunicipalityEntity[]> {
         const municipalities: MunicipalityEntity[] = await this.municipalityService.getMunicipalitysByProvince(id);
 
-        notFoundException(municipalities, "Municipalities");
+        captureNotFoundException(municipalities, "Municipalities");
 
         return municipalities;
     }
@@ -117,7 +117,7 @@ export class PublicService {
     public async getMunicipality(id: string): Promise<MunicipalityEntity> {
         const municipality: MunicipalityEntity = await this.municipalityService.getMunicipality(id);
 
-        notFoundException(municipality, "Municipality");
+        captureNotFoundException(municipality, "Municipality");
 
         return municipality;
     }
