@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 import { BaseDto } from "../../../common/dto/base.dto";
 import { User } from '../../user/entities/user.entity';
 
@@ -17,7 +17,16 @@ export class CreateOrderDTO extends BaseDto {
     })
     @IsNotEmpty()
     @IsString()
-    phone :string
+    phone: string
+
+    @ApiProperty({
+        example: "+5358126024",
+        description: "a phone number",
+    })
+    @IsOptional()
+    @IsString()
+    aux_phone?: string
+
     @ApiProperty({
         example: "Finca tirabeque edificio 2 apartamento 5 ",
         description: "an adress",

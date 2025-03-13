@@ -39,5 +39,6 @@ export class User extends BaseEntity {
 
     @OneToMany(() => RatingEntity, (rating) => rating.user)
     ratings: RatingEntity[];
+    username: string;
 }
 

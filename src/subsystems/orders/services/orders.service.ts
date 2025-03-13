@@ -35,14 +35,13 @@ export class OrderService extends BaseService<OrderEntity> {
         super(orderRepository);
     }
 
-    async getallORderProc() {
+    async getallORderProc(): Promise<OrderEntity[]> {
         return await this.orderRepository.find({
             relations: ["orderItems", "orderItems.product"]
         });
     }
 
     async getHistory(userid: string): Promise<OrderEntity[]> {
-        console.log(userid);
         return await this.orderRepository.find({
             where: {
                 user: { id: userid }
@@ -51,7 +50,7 @@ export class OrderService extends BaseService<OrderEntity> {
         });
     }
 
-    async createOrderService(userid: string, data: BuildOrderDTO) {
+    async createOrderService(userid: string, data: BuildOrderDTO): Promise<OrderEntity> {
         //PASOS
         //Capturar USER (Validacion)
         const [user, foundProducts, municipality] = await Promise.all([
@@ -82,6 +81,7 @@ export class OrderService extends BaseService<OrderEntity> {
         //Crear Orden
         const order: OrderEntity = this.orderRepository.create({
             phone: data.phone,
+            aux_phone: data.aux_phone,
             address: data.address,
             receiver_name: data.receiver_name,
             CI: data.ci,
@@ -130,7 +130,6 @@ export class OrderService extends BaseService<OrderEntity> {
         // Verificar si la Orden existe
         const order: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid }, relations: {
-
                 municipality: {
                     province: {}
                 },

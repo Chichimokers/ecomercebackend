@@ -1,6 +1,6 @@
 import { BaseDto } from "../../../common/dto/base.dto";
 import { Transform } from "class-transformer";
-import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class OrderDto extends BaseDto {
@@ -22,6 +22,14 @@ export class OrderDto extends BaseDto {
         description: "Phone number",
     })
     phone: string;
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({
+        example: "+1 123 456 7890",
+        description: "Aux Phone number",
+    })
+    aux_phone: string;
 
     @IsString()
     @IsNotEmpty()
