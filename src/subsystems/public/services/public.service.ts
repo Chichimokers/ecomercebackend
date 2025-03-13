@@ -3,7 +3,6 @@ import { ProductService } from "../../products/services/product.service";
 import { CategoryService } from "../../category/services/category.service";
 import { badRequestException, notFoundException } from "../../../common/exceptions/modular.exception";
 import { ProvinceService } from "../../locations/service/province.service";
-import { Cache } from "@nestjs/cache-manager";
 import { roundMinor } from "../utils/roundMinor";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { CategoryEntity } from "../../category/entity/category.entity";
@@ -12,6 +11,7 @@ import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
+import { ProductEntity } from "../../products/entity/product.entity";
 
 @Injectable()
 export class PublicService {
@@ -23,7 +23,6 @@ export class PublicService {
         private readonly provinceService: ProvinceService,
         @Inject(MunicipalityService)
         private readonly municipalityService: MunicipalityService,
-        @Inject(Cache) private cacheManager: Cache
     ) {
     }
 
@@ -38,9 +37,11 @@ export class PublicService {
         limit: number = 30,
         filters: IFilterProduct = {}
     ) {
-        const productsData = await this.productService.getFilteredProducts(filters, page, limit);
-        const minAndMax = await this.productService.getMinAndMaxPrice(filters);
-        const categories: CategoryEntity[] = await this.categoryService.getCategoriesWithSubCategories(filters.categoryIds);
+        const [productsData, minAndMax, categories] = await Promise.all([
+            this.productService.getFilteredProducts(filters, page, limit),
+            this.productService.getMinAndMaxPrice(filters),
+            this.categoryService.getCategoriesWithSubCategories(filters.categoryIds),
+        ]);
 
         notFoundException(productsData.products, "Products");
 
@@ -59,7 +60,7 @@ export class PublicService {
 
     // *--- Search Product By Name ---* //
     public async getProductByName(dto: SearchproductDTO): Promise<any> {
-        const products = await this.productService.searchProductByName(dto.name, dto.province);
+        const products: ProductEntity[] = await this.productService.searchProductByName(dto.name, dto.province);
 
         notFoundException(products, "Product");
 
@@ -86,10 +87,16 @@ export class PublicService {
 
     // *--- Get Main View Products, Categories, Provinces ---* //
     public async getMainViewInfo(): Promise<any> {
+        const [provinces, products, category] = await Promise.all([
+            this.provinceService.countProvinces(),
+            this.productService.countProducts(),
+            this.categoryService.countCategories(),
+        ]);
+
         return {
-            provinces: await this.provinceService.countProvinces(),
-            products: roundMinor(await this.productService.countProducts()),
-            category: await this.categoryService.countCategories()
+            provinces: provinces,
+            products: roundMinor(products),
+            category: category,
         };
     }
 
@@ -120,7 +127,6 @@ export class PublicService {
         let shippingPrice: number = municipality.basePrice;
 
         for (const price of municipality.prices) {
-            console.log(price);
             if(dto.total_weight >= price.minWeight) {
                 shippingPrice = price.price;
             }

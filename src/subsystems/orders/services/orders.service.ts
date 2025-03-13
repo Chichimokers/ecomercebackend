@@ -12,7 +12,6 @@ import { OrderStatus } from "../enums/orderStatus.enum";
 import { notFoundException } from "../../../common/exceptions/modular.exception";
 import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
-import { MailerService } from "@nestjs-modules/mailer";
 import { MailsService } from "src/subsystems/mails/services/mails.service";
 
 @Injectable()
@@ -169,15 +168,19 @@ export class OrderService extends BaseService<OrderEntity> {
             });
 
         // Go through all the products related to the order to verify if there is still enough stock
+        const productsToUpdate: ProductEntity[] = [];
+
         for (const relation of productOrderRelation) {
             if (relation.quantity > relation.product.quantity) {
                 throw new BadRequestException('There is not enough stock');
             }
 
             relation.product.quantity -= relation.quantity;
-
-            await this.productRepository.save(relation.product);
+            productsToUpdate.push(relation.product);
         }
+
+        // Guardar todos los productos de una sola vez
+        await this.productRepository.save(productsToUpdate);
 
         // Change order status upon completion
         order.status = OrderStatus.Paid;
@@ -228,7 +231,10 @@ export class OrderService extends BaseService<OrderEntity> {
 
         order.status = OrderStatus.Completed;
 
-        await this.orderRepository.save(order);
+        await Promise.all([
+            this.orderRepository.save(order),
+            this.mailService.sendOrderConfirmationEmail(order),
+        ]);
 
         return { message: 'La orden ha sido completada satisfactoriamente.' }
     }

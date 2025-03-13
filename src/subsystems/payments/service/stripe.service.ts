@@ -5,7 +5,6 @@ import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
 import { InjectRepository } from "@nestjs/typeorm";
-import { toNumber } from "../../../common/utils/cast.utils";
 import { OrderProductEntity } from "../../orders/entities/order_products.entity";
 import {
     calculateDiscount,
@@ -43,7 +42,7 @@ export class StripeService {
 
         const order = await this.createJSONOrder(orderEntity, currency);
 
-        console.log(order);
+        //console.log(order);
         order.line_items.map(
             (item) => {
                 console.log(item);
@@ -147,11 +146,13 @@ export class StripeService {
             where: { id: order_id }
         });
 
+        notFoundException(order, 'Order');
+
         const sessionId = order.stripe_id;
 
         const session = await this.stripe.checkout.sessions.retrieve(sessionId);
 
-        console.log(session.payment_status);
+        //console.log(session.payment_status);
         if (session.payment_status !== "paid") {
             return {
                 checkout: {
@@ -163,7 +164,7 @@ export class StripeService {
         }
 
         // Aqui va para procesar la orden!
-        const captured_id = toNumber(session.metadata.order_id);
+        const captured_id = session.metadata.order_id;
 
         await this.orderService.processOrders(captured_id.toString());
 

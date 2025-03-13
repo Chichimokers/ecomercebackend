@@ -44,7 +44,7 @@ import { MailsService } from "../mails/services/mails.service";
         ]),
         CacheModule.register({
             ttl: 86400,
-            max: 5000,
+            max: 400,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
     ],
