@@ -43,7 +43,7 @@ export class ProductEntity extends BaseEntity {
     @IsPositive()
     weight: number;
 
-    @ManyToOne(() => ProvinceEntity, { nullable: false })
+    @ManyToOne(() => ProvinceEntity, { nullable: false, cascade: true })
     @JoinColumn({ name: "province_id" })
     province: ProvinceEntity;
 
@@ -65,14 +65,14 @@ export class ProductEntity extends BaseEntity {
 
     @ManyToOne(
         () => CategoryEntity, (category) => category.products,
-        { nullable: true }
+        { nullable: true, cascade: true }
     )
     @Index()
     category: CategoryEntity;
 
     @ManyToOne(
         () => SubCategoryEntity, (subCategory) => subCategory.products,
-        { nullable: true }
+        { nullable: true, cascade: true }
     )
     @Index()
     subCategory: SubCategoryEntity;
