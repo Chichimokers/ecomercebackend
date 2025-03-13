@@ -29,7 +29,7 @@ export class PaypalController {
         @Inject(PaypalService)
         public servicePaypal: PaypalService,
     ) { }
-
+    //Endpoint para empezar a pagar la orden solo se le mnada el id de la orden en el body de la peticion
     @UseGuards(LocalAuthGuard, RolesGuard)
     @Roles(roles.User)
     @Post('create-order')
@@ -61,7 +61,7 @@ export class PaypalController {
             ? { success: true }
             : { success: false, errorCode: 400 };
     }
-
+    //Cancelar orden cuando el usuario cancela desde paypal 
     @Get('cancel-order')
     async cancelorder(@Query() query: any,@Res() res: Response): Promise<void> {
 
