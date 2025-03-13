@@ -19,7 +19,6 @@ import { MailsModule } from "./subsystems/mails/mails.module";
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LocationsModule } from './subsystems/locations/locations.module';
-import { MemoryUsageMiddleware } from "./middleware/memory.middleware";
 import { LoggingMiddleware } from "./middleware/endpoints.middleware";
 import { AdminModule } from "./subsystems/admin/admin.module";
 

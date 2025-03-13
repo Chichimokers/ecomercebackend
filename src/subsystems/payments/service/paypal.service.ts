@@ -11,9 +11,6 @@ import {
 } from 'src/common/utils/global-functions.utils';
 import { notFoundException } from '../../../common/exceptions/modular.exception';
 import { MunicipalityEntity } from 'src/subsystems/locations/entity/municipality.entity';
-import { MailsService } from 'src/subsystems/mails/services/mails.service';
-import { captureRejectionSymbol } from 'events';
-import { identity } from 'rxjs';
 import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
 
 @Injectable()

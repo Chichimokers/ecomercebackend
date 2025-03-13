@@ -2,11 +2,10 @@ import {
     BadRequestException,
     Body,
     Controller,
-    Get,
     Inject,
     Post,
     UnauthorizedException,
-    UseGuards,
+
 
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';

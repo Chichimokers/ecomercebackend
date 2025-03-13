@@ -67,7 +67,7 @@ export class PaypalController {
 
         const token = query.token; // Parámetro clave
    
-        const response: boolean = await this.servicePaypal.cancelorder(token);
+        await this.servicePaypal.cancelorder(token);
 
         res.redirect(process.env.WEB)
      }

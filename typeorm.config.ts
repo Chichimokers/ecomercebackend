@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
-import { CACHE_ORM } from "./src/common/constants/cahetimesORM.constants";
 
 
 export const PostgresDataSource = new DataSource({

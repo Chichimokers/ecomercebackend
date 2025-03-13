@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { ProvinceEntity } from '../entity/province.entity';
 import { badRequestException, notFoundException } from '../../../common/exceptions/modular.exception';
 import { PriceByWeightEntity } from '../entity/priceByWeight.entity';
-import { createMunicipalityDTO } from '../dto/municipalitydto/createMunicipality.dto';
 
 @Injectable()
 export class MunicipalityService extends BaseService<MunicipalityEntity> {
