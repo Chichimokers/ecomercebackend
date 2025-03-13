@@ -42,7 +42,13 @@ export class StripeService {
 
         const order = await this.createJSONOrder(orderEntity, currency);
 
-        const session = await this.stripe.checkout.sessions.create(order);
+        let session: Stripe.Response<Stripe.Checkout.Session>;
+
+        try {
+            session = await this.stripe.checkout.sessions.create(order);
+        } catch (error) {
+            throw new Error('Unable to create checkout session');
+        }
 
         orderEntity.stripe_id = session.id;
 
