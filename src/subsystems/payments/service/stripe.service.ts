@@ -89,7 +89,7 @@ export class StripeService {
         });
 
         return {
-            success_url: `${HOST}/visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
+            success_url: `${HOST}visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
             mode: "payment",
             currency: currency,
             payment_method_types: ["card"],

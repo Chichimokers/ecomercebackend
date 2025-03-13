@@ -18,9 +18,9 @@ export class StripeController{
     @Roles(roles.User)
     @Post("create-payment")
     @ApiResponse({ status: 201, type: CreatedCheckoutDTO })
-    async createPayment(@Body() order: StripeDTO, @Res() re: Response) {
+    async createPayment(@Body() order: StripeDTO, @Res() res: Response) {
         const checkout = await this.stripeService.createCheckoutSession(order.id);
-        re.redirect(checkout.url);
+        return res.redirect(checkout.url);
     }
 
     @Roles(roles.User)
@@ -28,7 +28,6 @@ export class StripeController{
     @ApiResponse({ status: 200, description: "Return success: true" })
     @ApiResponse({ status: 400, description: "Return success: false" })
     async capturePayment(@Query('order_id') orderid: string) {
-        console.log(orderid);
         const response = await this.stripeService.CaptureCheckoutSession(orderid);
         return response.checkout.status ? { success: true } : { success: false, errorCode: 400 };
     }

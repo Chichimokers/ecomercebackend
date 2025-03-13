@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, ParseUUIDPipe } from "@nestjs/common";
 
 export function captureNotFoundException(element: any[] | any, varName: string | string[]): void {
     if (!Array.isArray(varName)) {
@@ -37,5 +37,13 @@ export function captureBadRequestException(param: any, varName: string): void {
         if(!param) throw new BadRequestException(responseError);
     } else {
         if(param.length === 0) throw new BadRequestException(responseError);
+    }
+}
+
+export function validateUUID(value: string) {
+    try {
+        return new ParseUUIDPipe().transform(value, { type: 'query' });
+    } catch (error) {
+        throw new BadRequestException(`El valor '${value}' no es un UUID válido`);
     }
 }

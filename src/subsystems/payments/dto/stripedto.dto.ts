@@ -1,7 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsUUID } from "class-validator";
 
 export class StripeDTO {
     @ApiProperty({ example: 1, description: "ID of the order to pay" })
+    @IsUUID()
     id: string
 }
 
