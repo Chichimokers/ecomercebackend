@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { MailerService } from '@nestjs-modules/mailer';
+import { UserService } from "../../user/service/user.service";
+import { User } from "src/subsystems/user/entities/user.entity";
 
 @Injectable()
 export class MailsService {
@@ -8,6 +10,8 @@ export class MailsService {
         public mailservice: MailerService,
         /*@InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,*/
+        @Inject(UserService)
+        private readonly userService: UserService,
     ) {}
 
     public async sendOrderAcceptedMail(order: OrderEntity, email: string) {
@@ -72,4 +76,54 @@ export class MailsService {
         }
     }
 
+    // *--- For Notifications Admins ---* //
+
+    public async sendNotificationEmails(orderCounts: number): Promise<void> {
+        const admins: User[] = await this.userService.getAdminsEmails();
+
+        if (!admins || admins.length === 0) {
+            return;
+        }
+
+        const failedEmails = [];
+
+        const subject = `Notificación: ${orderCounts} órdenes pendientes de atención`;
+        const template = `
+            <h2>Notificación automática del sistema</h2>
+            <p>Hay <strong>${orderCounts}</strong> órdenes con estado PAGADO pendientes de atender.</p>
+            <p>Por favor, procese estas órdenes lo antes posible.</p>
+        `;
+
+        for (const admin of admins) {
+            try {
+                await this.mailservice.sendMail({
+                    to: admin.email,
+                    subject: subject,
+                    html: template,
+                });
+            } catch (error) {
+                failedEmails.push({ email: admin.email, error: error.message });
+            }
+        }
+
+        // Reintentar enviar a los correos que fallaron
+        if (failedEmails.length > 0) {
+            await this.retryFailedEmails(failedEmails, subject, template);
+        }
+    }
+
+    private async retryFailedEmails(failedEmails, subject: string, template: string): Promise<void> {
+        for (const item of failedEmails) {
+            try {
+                await this.mailservice.sendMail({
+                    to: item.email,
+                    subject: `${subject}`,
+                    html: template,
+                });
+            } catch (error) {
+                // Aquí podrías implementar un sistema de alertas para administradores
+                // o guardar en base de datos para futuros reintentos
+            }
+        }
+    }
 }
