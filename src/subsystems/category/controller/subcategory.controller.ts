@@ -21,7 +21,7 @@ export class SubCategoryController {
     @Post()
     @Roles(roles.Admin)
     create(@Body() createSubCategoryDTO: CreateSubCategoryDTO ) {
-        return this.subCategoryService.create(createSubCategoryDTO);
+        return this.subCategoryService.insertByDTO(createSubCategoryDTO);
     }
 
     @Get()

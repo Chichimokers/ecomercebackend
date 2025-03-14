@@ -1,5 +1,6 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -7,8 +8,8 @@ import {
     Param, ParseUUIDPipe,
     Patch,
     Post,
-    UseGuards,
-} from '@nestjs/common';
+    UseGuards
+} from "@nestjs/common";
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { CategoryService } from '../services/category.service';
@@ -30,7 +31,11 @@ export class CategoryController {
     @Post()
     @Roles(roles.Admin)
     create(@Body() createCategoryDTO: CreateCategoryDTO): Promise<CategoryEntity> {
-        return this.categoryService.create(createCategoryDTO);
+        try {
+            return this.categoryService.create(createCategoryDTO);
+        } catch (QueryFailedError) {
+            throw new BadRequestException('The name already exists');
+        }
     }
 
     @Get()
