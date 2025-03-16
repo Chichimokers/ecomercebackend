@@ -51,16 +51,13 @@ export class AuthController {
             if (!socialUser?.email) {
                 throw new UnauthorizedException('Token de Google inválido');
             }
-            console.log(socialUser)
 
             const user = await this.authservice.validateOAuthuser({
                 email: socialUser.email,
                 name: socialUser.name,
             });
-            console.log(user)
 
             const tokens = await this.authservice.login(user);
-            console.log(tokens)
 
             return {
                 access_token: tokens.access_token,
@@ -109,7 +106,7 @@ export class AuthController {
     }
 
     @Post('/login')
-    async Login(@Body() loginBody: LoginBody): Promise<string> {
+    async Login(@Body() loginBody: LoginBody) {
         try {
             const resultLogin: User = await this.authservice.validateUser(
                 loginBody.email,
@@ -117,21 +114,19 @@ export class AuthController {
             );
 
             if (resultLogin != null) {
-                return JSON.stringify(
-                    await this.authservice.login(resultLogin),
-                );
+                return await this.authservice.login(resultLogin);
             } else {
-                return JSON.stringify({
+                return {
                     error: 'login error some parameter are incorrects',
-                });
+                };
             }
         } catch (UnauthorizedException) {
-            return JSON.stringify({ error: UnauthorizedException });
+            return { error: UnauthorizedException };
         }
     }
 
     @Post('/signup')
-    async SingUp(@Body() logindata: SingUpBody): Promise<string> {
+    async SingUp(@Body() logindata: SingUpBody) {
         try {
             const userdata: CreateUserDto =
                 this.authservice.getUserDataDTO(logindata);
@@ -140,12 +135,12 @@ export class AuthController {
                 await this.authservice.sendVerificationEmailSignUp(userdata);
 
             if (signupresult != null) {
-                return JSON.stringify({ user: signupresult });
+                return { user: signupresult };
             } else {
-                return JSON.stringify({ error: 'Error sending email' });
+                return { error: 'Error sending email' };
             }
         } catch (UnauthorizedException) {
-            return JSON.stringify({ error: UnauthorizedException });
+            return { error: UnauthorizedException };
         }
     }
     // Endpoint para verificar el registro
