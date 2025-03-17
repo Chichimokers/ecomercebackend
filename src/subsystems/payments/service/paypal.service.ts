@@ -70,7 +70,7 @@ export class PaypalService {
      
         
     }
-
+    //Confimar orden con el token de paypal
     async confirmorder(token: string): Promise<boolean> {
 
         const authd = {
@@ -96,7 +96,7 @@ export class PaypalService {
 
         return response.data.status === 'COMPLETED';
     }
-
+    //Crear el json del a orden a partir de la entidad de la orden
     async CreateJSONOrder(
         carts: OrderEntity,
         moneda: string,
