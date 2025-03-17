@@ -40,38 +40,41 @@ export class AuthController {
 
     @Post('google/token-exchange')
     async googleTokenExchange(@Body() body: { token: string }) {
-       
-            console.log("Entrando token exchange")
-            const { token } = body;
 
-            // Validar token con Google
-            const socialUser =
-                await this.authservice.validateGoogleToken(token);
+        console.log("Entrando token exchange")
+        const { token } = body;
 
-            if (!socialUser?.email) {
-                throw new UnauthorizedException('Token de Google inválido');
-            }
+        // Validar token con Google
+        const socialUser =
+            await this.authservice.validateGoogleToken(token);
 
-            const user = await this.authservice.validateOAuthuser({
-                email: socialUser.email,
-                name: socialUser.name,
-            });
+        if (!socialUser?.email) {
+            throw new UnauthorizedException('Token de Google inválido');
+        }
+        console.log(socialUser)
 
-            const tokens = await this.authservice.login(user);
+        const user = await this.authservice.validateOAuthuser({
+            email: socialUser.email,
+            name: socialUser.name,
+        });
+        console.log(user)
 
-            return {
-                access_token: tokens.access_token,
-                refresh_token: tokens.refresh_token,
-                expiresIn: 900,
-                user: {
-                    email: user.email,
-                    name: user.name,
-                    id: user.id,
-                },
-            };
+        const tokens = await this.authservice.login(user);
+        console.log(tokens)
 
-        
-        
+        return {
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token,
+            expiresIn: 900,
+            user: {
+                email: user.email,
+                name: user.name,
+                id: user.id,
+            },
+        };
+
+
+
     }
 
     // Mejorar el endpoint de refresh
@@ -106,7 +109,7 @@ export class AuthController {
     }
 
     @Post('/login')
-    async Login(@Body() loginBody: LoginBody) {
+    async Login(@Body() loginBody: LoginBody): Promise<string> {
         try {
             const resultLogin: User = await this.authservice.validateUser(
                 loginBody.email,
@@ -114,19 +117,21 @@ export class AuthController {
             );
 
             if (resultLogin != null) {
-                return await this.authservice.login(resultLogin);
+                return JSON.stringify(
+                    await this.authservice.login(resultLogin),
+                );
             } else {
-                return {
+                return JSON.stringify({
                     error: 'login error some parameter are incorrects',
-                };
+                });
             }
         } catch (UnauthorizedException) {
-            return { error: UnauthorizedException };
+            return JSON.stringify({ error: UnauthorizedException });
         }
     }
 
     @Post('/signup')
-    async SingUp(@Body() logindata: SingUpBody) {
+    async SingUp(@Body() logindata: SingUpBody): Promise<string> {
         try {
             const userdata: CreateUserDto =
                 this.authservice.getUserDataDTO(logindata);
@@ -135,12 +140,12 @@ export class AuthController {
                 await this.authservice.sendVerificationEmailSignUp(userdata);
 
             if (signupresult != null) {
-                return { user: signupresult };
+                return JSON.stringify({ user: signupresult });
             } else {
-                return { error: 'Error sending email' };
+                return JSON.stringify({ error: 'Error sending email' });
             }
         } catch (UnauthorizedException) {
-            return { error: UnauthorizedException };
+            return JSON.stringify({ error: UnauthorizedException });
         }
     }
     // Endpoint para verificar el registro

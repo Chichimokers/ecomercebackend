@@ -24,8 +24,6 @@ import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { RolesGuard } from 'src/subsystems/auth/guards/roles.guard';
 import { GetUserDto } from "../dto/get-user.dto";
 import { UserDto } from "../dto";
-import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { IRefineInterface } from '../../products/interfaces/basequery.interface';
 import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('user')

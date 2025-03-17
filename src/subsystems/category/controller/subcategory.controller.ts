@@ -8,8 +8,6 @@ import { SubCategoryEntity } from "../entity/category.entity";
 import { SubCategoryService } from "../services/subcategory.service";
 import { UpdateSubCategoryDTO } from "../dto/subcategorydto/updateSubCategory.dto";
 import { CreateSubCategoryDTO } from "../dto/subcategorydto/createSubCategory.dto";
-import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { IRefineInterface } from '../../products/interfaces/basequery.interface';
 import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('sub_category')

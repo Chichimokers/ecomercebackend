@@ -22,8 +22,7 @@ export class ProductOrderDTO {
         example: 1
     })
     @IsNotEmpty()
-    @IsNumber()
-    @IsPositive()
+    @IsUUID()
     product_id: string;
 
     @ApiProperty({
@@ -108,7 +107,7 @@ export class BuildOrderDTO {
 
     @ApiProperty({
         example: 'a6e0c570-be0e-4a7d-93c5-767a7767890b',
-        description: 'The id of the province',
+        description: 'The id of the municipality',
     })
     @IsNotEmpty()
     @IsUUID()
