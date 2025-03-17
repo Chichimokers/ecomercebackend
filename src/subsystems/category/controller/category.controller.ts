@@ -7,7 +7,7 @@ import {
     Get,
     Param, ParseUUIDPipe,
     Patch,
-    Post,
+    Post, Query,
     UseGuards
 } from "@nestjs/common";
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -18,8 +18,7 @@ import { roles } from '../../roles/enum/roles.enum';
 import { CreateCategoryDTO } from '../dto/categorydto/createCategory.dto';
 import { CategoryEntity } from '../entity/category.entity';
 import { UpdateCategoryDTO } from '../dto/categorydto/updateCategory.dto';
-import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
-import { IRefineInterface } from '../../products/interfaces/basequery.interface';
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('category')
 @ApiBearerAuth()
@@ -40,9 +39,8 @@ export class CategoryController {
 
     @Get()
     @Roles(roles.Admin)
-    getCategories(@RefineQuery() query: IRefineInterface): Promise<CategoryEntity[]> {
-        const { _start, _end } = query;
-        return this.categoryService.findAll(_start, _end);
+    getCategories(@Query() pagination?: IPagination): Promise<CategoryEntity[]> {
+        return this.categoryService.findAll(pagination);
     }
 
     @Get(':id')

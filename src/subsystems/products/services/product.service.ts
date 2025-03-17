@@ -19,6 +19,7 @@ import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { ratingAVG } from "../utils/ratingAVG";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
 import { applyFilter, applyQueryFilters } from "../../../common/utils/filters.utils";
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 
 @Injectable()
@@ -44,14 +45,19 @@ export class ProductService
         super(productRepository);
     }
 
-    override async findAll(page: number = 0, limit: number = 30, filters: IFilterProduct = {}): Promise<any> {
-        const [products, count] = await this.getProductsByORM(filters, page * limit, limit, true, true);
+    override async findAll(pagination?: IPagination, filters: IFilterProduct = {}): Promise<any> {
+        const [products, count] = await this.getProductsByORM(filters,
+            pagination.page * pagination.limit,
+            pagination.limit,
+            true,
+            true
+        );
 
         const urls: {
             previousUrl: string;
             nextUrl: string;
             totalPages: number;
-        } = await this.getUrls(page, limit, count, '/products');
+        } = await this.getUrls(count, '/products', pagination);
 
         return {
             products: await this.mapProductORM(products),
@@ -316,16 +322,20 @@ export class ProductService
     //      *--- Get Filtered Products ---*
     public async getFilteredProducts(
         filters: IFilterProduct,
-        page: number = 0,
-        limit: number = 30
+        pagination?: IPagination,
     ) {
-        const [products, count] = await this.getProductsByORM(filters, page * limit, limit, false, true);
+        const [products, count] = await this.getProductsByORM(filters,
+            pagination.page * pagination.limit,
+            pagination.limit,
+            false,
+            true
+        );
 
         const urls: {
             previousUrl: string;
             nextUrl: string;
             totalPages: number;
-        } = await this.getUrls(page, limit, count, '/public/products');
+        } = await this.getUrls(count, '/public/products', pagination);
 
         return {
             products: await this.mapProductORM(products),
@@ -438,19 +448,18 @@ export class ProductService
     }
 
     private async getUrls(
-        page: number,
-        limit: number,
         count: number,
-        url: string
+        url: string,
+        pagination?: IPagination,
     ) {
-        const totalPages = Math.ceil(count / limit) - 1;
+        const totalPages = Math.ceil(count / pagination.limit) - 1;
 
         const previousUrl: string =
-            page - 1 <= 0 ? undefined : `${url}?page=${page - 1}`;
+            pagination.page - 1 <= 0 ? undefined : `${url}?page=${pagination.page - 1}`;
         const nextUrl: string =
-            page + 1 > totalPages
+            pagination.page + 1 > totalPages
                 ? undefined
-                : `${url}?page=${page + 1}`;
+                : `${url}?page=${pagination.page + 1}`;
 
         return { previousUrl, nextUrl, totalPages };
     }

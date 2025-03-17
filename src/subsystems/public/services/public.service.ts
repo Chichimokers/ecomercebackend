@@ -12,6 +12,7 @@ import { ProvinceEntity } from "../../locations/entity/province.entity";
 import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto";
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
 import { ProductEntity } from "../../products/entity/product.entity";
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @Injectable()
 export class PublicService {
@@ -33,12 +34,11 @@ export class PublicService {
 
     // *--- For Products View ---* //
     public async getProductsPage(
-        page: number = 0,
-        limit: number = 30,
+        pagination: IPagination,
         filters: IFilterProduct = {}
     ) {
         const [productsData, minAndMax, categories] = await Promise.all([
-            this.productService.getFilteredProducts(filters, page, limit),
+            this.productService.getFilteredProducts(filters, pagination),
             this.productService.getMinAndMaxPrice(filters),
             this.categoryService.getCategoriesWithSubCategories(filters.categoryIds),
         ]);

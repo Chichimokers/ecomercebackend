@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from "../../roles/decorators/roles.decorator";
@@ -10,6 +10,7 @@ import { UpdateSubCategoryDTO } from "../dto/subcategorydto/updateSubCategory.dt
 import { CreateSubCategoryDTO } from "../dto/subcategorydto/createSubCategory.dto";
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
 import { IRefineInterface } from '../../products/interfaces/basequery.interface';
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('sub_category')
 @ApiBearerAuth()
@@ -26,9 +27,8 @@ export class SubCategoryController {
 
     @Get()
     @Roles(roles.Admin)
-    getSubCategories(@RefineQuery() query: IRefineInterface){
-        const { _start, _end } = query;
-        return this.subCategoryService.findAll(_start, _end);
+    getSubCategories(@Query() pagination?: IPagination){
+        return this.subCategoryService.findAll(pagination);
     }
 
     @Get(':id')

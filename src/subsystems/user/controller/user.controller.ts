@@ -6,8 +6,8 @@ import {
     Body,
     Patch,
     Param,
-    Delete, ParseUUIDPipe,
-} from '@nestjs/common';
+    Delete, ParseUUIDPipe, Query
+} from "@nestjs/common";
 import {
     ApiTags,
     ApiBearerAuth,
@@ -26,6 +26,7 @@ import { GetUserDto } from "../dto/get-user.dto";
 import { UserDto } from "../dto";
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
 import { IRefineInterface } from '../../products/interfaces/basequery.interface';
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -45,9 +46,8 @@ export class UserController {
     @Get()
     @Roles(roles.Admin)
     @ApiResponse({ status: 200 ,type: [GetUserDto] })
-    public getUsers(@RefineQuery() query: IRefineInterface): Promise<User[]> {
-        const { _start, _end } = query;
-        return this.userService.findAll(_start, _end);
+    public getUsers(@Query() pagination: IPagination): Promise<User[]> {
+        return this.userService.findAll(pagination);
     }
 
     @Get(':id')

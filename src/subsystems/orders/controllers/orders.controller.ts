@@ -6,8 +6,8 @@ import {
     Body,
     Patch,
     Param,
-    Delete, ParseUUIDPipe,
-} from '@nestjs/common';
+    Delete, ParseUUIDPipe, Query
+} from "@nestjs/common";
 import {
     ApiTags,
     ApiBearerAuth
@@ -21,6 +21,7 @@ import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
 import { RefineQuery } from '../../../common/decorators/queryadmin.decorator';
 import { IRefineInterface } from '../../products/interfaces/basequery.interface';
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('orders')
 @ApiBearerAuth()
@@ -48,9 +49,8 @@ export class OrderControllers {
 
     @Get()
     @Roles(roles.Admin)
-    async getallorders_prodcts(@RefineQuery() query: IRefineInterface): Promise<OrderEntity[]> {
-        const { _start, _end } = query;
-        return  this.orderService.findAll(_start, _end)
+    async getallorders_prodcts(@Query() pagination?: IPagination): Promise<OrderEntity[]> {
+        return  this.orderService.findAll(pagination)
     }
 
     @Post('process_order')
