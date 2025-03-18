@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { Inject, Injectable } from "@nestjs/common";
-import { HOST, STRIPE_SECRET_KEY } from "../config.payments";
+import { HOST, STRIPE_SECRET_KEY, SUCCESS_URL } from "../config.payments";
 import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
@@ -89,7 +89,7 @@ export class StripeService {
         });
 
         return {
-            success_url: `${HOST}visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
+            success_url: `${SUCCESS_URL}?order_id=${order.id.toString()}`,
             mode: "payment",
             currency: currency,
             payment_method_types: ["card"],

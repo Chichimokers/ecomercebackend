@@ -35,17 +35,15 @@ export class PaypalController {
     @Post('create-order')
     async createOrder(
         @Body() body: any,
-        @Res() res: Response,
         @Req() req: any,
-    ): Promise<void> {
+    ): Promise<any> {
         
         const link: string = await this.servicePaypal.CreateOrder(
             body.id,
             req.user.Id,
         );
 
-        
-        res.redirect(link)
+        return link
     }
 
     @Get('capture-order')
@@ -63,12 +61,12 @@ export class PaypalController {
     }
     //Cancelar orden cuando el usuario cancela desde paypal 
     @Get('cancel-order')
-    async cancelorder(@Query() query: any,@Res() res: Response): Promise<void> {
+    async cancelorder(@Query() query: any) : Promise<any>{
 
         const token = query.token; // Parámetro clave
    
         await this.servicePaypal.cancelorder(token);
 
-        res.redirect(process.env.WEB)
+        return process.env.WEB
      }
 }
