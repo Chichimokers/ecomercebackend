@@ -3,6 +3,7 @@ import { BaseService } from "../../../common/services/base.service";
 import { CategoryEntity } from "../entity/category.entity";
 import { In, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @Injectable()
 export class CategoryService extends BaseService<CategoryEntity> {
@@ -17,14 +18,11 @@ export class CategoryService extends BaseService<CategoryEntity> {
         super(categoryRepository);
     }
 
-    override async findAll(_start?: number, _end?: number){
-        //const take = _end ? Number(_end) - Number(_start) : 10; // Cantidad de elementos por página
-        //const skip = _start ? Number(_start) : 0; // Desde qué índice empezar
-
+    override async findAll(pagination: IPagination){
         return await this.categoryRepository.find({
             relations: ['subCategories'],
-            //skip: skip,
-            //take: take,
+            skip: pagination.page * pagination.limit,
+            take: pagination.limit,
         });
     }
 

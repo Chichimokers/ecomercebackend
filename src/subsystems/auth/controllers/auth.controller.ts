@@ -40,41 +40,41 @@ export class AuthController {
 
     @Post('google/token-exchange')
     async googleTokenExchange(@Body() body: { token: string }) {
-       
-            console.log("Entrando token exchange")
-            const { token } = body;
 
-            // Validar token con Google
-            const socialUser =
-                await this.authservice.validateGoogleToken(token);
+        console.log("Entrando token exchange")
+        const { token } = body;
 
-            if (!socialUser?.email) {
-                throw new UnauthorizedException('Token de Google inválido');
-            }
-            console.log(socialUser)
+        // Validar token con Google
+        const socialUser =
+            await this.authservice.validateGoogleToken(token);
 
-            const user = await this.authservice.validateOAuthuser({
-                email: socialUser.email,
-                name: socialUser.name,
-            });
-            console.log(user)
+        if (!socialUser?.email) {
+            throw new UnauthorizedException('Token de Google inválido');
+        }
+        console.log(socialUser)
 
-            const tokens = await this.authservice.login(user);
-            console.log(tokens)
+        const user = await this.authservice.validateOAuthuser({
+            email: socialUser.email,
+            name: socialUser.name,
+        });
+        console.log(user)
 
-            return {
-                access_token: tokens.access_token,
-                refresh_token: tokens.refresh_token,
-                expiresIn: 900,
-                user: {
-                    email: user.email,
-                    name: user.name,
-                    id: user.id,
-                },
-            };
+        const tokens = await this.authservice.login(user);
+        console.log(tokens)
 
-        
-        
+        return {
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token,
+            expiresIn: 900,
+            user: {
+                email: user.email,
+                name: user.name,
+                id: user.id,
+            },
+        };
+
+
+
     }
 
     // Mejorar el endpoint de refresh

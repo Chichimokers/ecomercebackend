@@ -10,5 +10,4 @@ export class CreateCategoryDTO {
     @IsNotEmpty()
     @MaxLength(100)
     name: string;
-
 }

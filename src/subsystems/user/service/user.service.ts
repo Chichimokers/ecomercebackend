@@ -8,6 +8,7 @@ import { mapToDto } from "../../../common/utils/global-functions.utils";
 import { UpdateUserDto } from "../dto";
 import * as bcrypt from 'bcrypt';
 import { captureNotFoundException } from "../../../common/exceptions/modular.exception";
+import { roles } from "../../roles/enum/roles.enum";
 
 export class UserService extends BaseService<User> {
 
@@ -85,5 +86,16 @@ export class UserService extends BaseService<User> {
             select: ['id', 'name', 'email', 'password'],
         });
 
+    }
+
+    public async getAdminsEmails(): Promise<User[]> {
+        return await this.repository.find({
+            select: {
+                email: true,
+            },
+            where: {
+                rol: roles.Admin,
+            }
+        });
     }
 }

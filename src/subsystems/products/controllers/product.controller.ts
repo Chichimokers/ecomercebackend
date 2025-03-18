@@ -32,6 +32,7 @@ import { WebpInterceptor } from '../interceptors/imagewebp.interceptor';
 import { ProductPublicApiDoc, ProductPublicQuery } from "../decorators/public.decorator";
 import { captureBadRequestException } from "../../../common/exceptions/modular.exception";
 import { IFilterProduct } from "../../../common/interfaces/filters.interface";
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -75,7 +76,12 @@ export class ProductControllers {
             provinceId: query.province,
         };
 
-        return this.productservice.findAll(query.page, query.limit, filters);
+        const pagination: IPagination = {
+            page: query.page,
+            limit: query.limit,
+        }
+
+        return this.productservice.findAll(pagination, filters);
     }
 
 

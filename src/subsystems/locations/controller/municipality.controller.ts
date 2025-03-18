@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -9,6 +9,7 @@ import { MunicipalityEntity } from '../entity/municipality.entity';
 import { UpdateMunicipalityDTO } from '../dto/municipalitydto/updateMunicipality.dto';
 import { createMunicipalityDTO } from '../dto/municipalitydto/createMunicipality.dto';
 import { GetMunicipalityDTO } from "../dto/municipalitydto/getMunicipality.dto";
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('municipality')
 @ApiBearerAuth()
@@ -26,8 +27,8 @@ export class MunicipalityController {
     @Get()
     @ApiResponse({ status: 200, type: [GetMunicipalityDTO] })
     @Roles(roles.Admin)
-    getMunicipalities(): Promise<MunicipalityEntity[]> {
-        return this.municipalityService.findAll();
+    getMunicipalities(@Query() pagination?: IPagination): Promise<MunicipalityEntity[]> {
+        return this.municipalityService.findAll(pagination);
     }
 
     @Get(':id')

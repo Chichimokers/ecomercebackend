@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { BaseService } from '../../../common/services/base.service';
 import { CategoryEntity, SubCategoryEntity } from '../entity/category.entity';
 import { Repository } from 'typeorm';
@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IServiceDTOC } from '../../../common/interfaces/base-service.interface';
 import { UpdateSubCategoryDTO } from '../dto/subcategorydto/updateSubCategory.dto';
 import { captureNotFoundException } from '../../../common/exceptions/modular.exception';
+import { CreateSubCategoryDTO } from "../dto/subcategorydto/createSubCategory.dto";
 
 @Injectable()
 export class SubCategoryService
@@ -25,8 +26,24 @@ export class SubCategoryService
         super(subCategoryRepository);
     }
 
-    async insertByDTO(dto: any) {
-        throw new Error(`Method not implemented. ${dto}`);
+    async insertByDTO(dto: CreateSubCategoryDTO) {
+        // QueryFailedError
+        const category: CategoryEntity = await this.categoryRepository.findOne({
+            where: { id: dto.categoryId },
+        });
+
+        captureNotFoundException(category, 'Category');
+
+        try {
+            const subCategory: SubCategoryEntity = this.subCategoryRepository.create({
+                name: dto.name,
+                category: category,
+            });
+
+            return await this.subCategoryRepository.save(subCategory);
+        } catch (QueryFailedError) {
+            throw new BadRequestException('The name already exists');
+        }
     }
 
     async updateByDTO(id: string, dto: UpdateSubCategoryDTO): Promise<Partial<SubCategoryEntity>> {

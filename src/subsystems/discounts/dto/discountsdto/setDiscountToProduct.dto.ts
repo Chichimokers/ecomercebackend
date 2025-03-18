@@ -1,13 +1,12 @@
-import { IsNumber, IsPositive } from "class-validator";
+import { IsNumber, IsPositive, IsUUID } from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
 
 export class setDiscountToProductDTO {
     @ApiProperty({
-        example: 1,
+        example: 'uuid4',
         description: 'Product ID to establish relationship'
     })
-    @IsNumber()
-    @IsPositive()
+    @IsUUID()
     product: string;
 
     @ApiProperty({

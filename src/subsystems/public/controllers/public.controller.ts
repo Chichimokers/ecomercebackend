@@ -22,6 +22,7 @@ import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
 import { ScrapSchedule } from "../schedule/scrap.schedule";
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 
 @ApiTags("public")
@@ -67,9 +68,13 @@ export class PublicController {
             provinceId: query.province
         };
 
+        const pagination: IPagination = {
+            page: query.page ? query.page : 0,
+            limit: query.limit ? query.limit : 30,
+        }
+
         return await this.publicService.getProductsPage(
-            +query.page || 0,
-            +query.limit || 30,
+            pagination,
             filters
         );
     }

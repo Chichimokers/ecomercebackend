@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -8,6 +8,7 @@ import { roles } from '../../roles/enum/roles.enum';
 import { createProvinceDTO } from '../dto/provincedto/createProvince.dto';
 import { ProvinceEntity } from '../entity/province.entity';
 import { UpdateProvinceDTO } from '../dto/provincedto/updateProvince.dto';
+import { IPagination } from "../../../common/interfaces/pagination.interface";
 
 @ApiTags('province')
 @ApiBearerAuth()
@@ -24,8 +25,8 @@ export class ProvinceController {
 
     @Get()
     @Roles(roles.Admin)
-    getProvinces(): Promise<ProvinceEntity[]> {
-        return this.provinceService.findAll();
+    getProvinces(@Query() pagination: IPagination): Promise<ProvinceEntity[]> {
+        return this.provinceService.findAll(pagination);
     }
 
     @Get(':id')

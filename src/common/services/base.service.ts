@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, ObjectLiteral, FindOptionsWhere, BaseEntity } from 'typeorm';
 import { IBaseService } from '../interfaces/base-service.interface';
+import { IPagination } from "../interfaces/pagination.interface";
 
 
 
@@ -23,9 +24,9 @@ export abstract class BaseService<BaseEntity extends ObjectLiteral> implements I
      */
     protected abstract getRepositoryName(): string;
 
-    async findAll(_start?: number, _end?: number): Promise<BaseEntity[]> {
-        const take = _end ? Number(_end) - Number(_start) : undefined; // Cantidad de elementos por página
-        const skip = _start ? Number(_start) : undefined; // Desde qué índice empezar
+    async findAll(pagination?: IPagination): Promise<BaseEntity[]> {
+        const take = pagination.page ? pagination.page * pagination.limit : undefined;
+        const skip = pagination.limit ? pagination.limit : undefined; // Desde qué índice empezar
 
         return await this.repository.find({
             skip: skip,

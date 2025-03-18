@@ -1,12 +1,11 @@
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsNotEmpty, IsString, IsUUID, MaxLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { CategoryEntity } from "../../entity/category.entity";
-import { Type } from "class-transformer";
 
 export class CreateSubCategoryDTO {
     @ApiProperty({
         example: "Fruits",
-        description: "The name of the category"
+        description: "The name of the category",
+        required: true,
     })
     @IsString()
     @IsNotEmpty()
@@ -14,10 +13,11 @@ export class CreateSubCategoryDTO {
     name: string;
 
     @ApiProperty({
-        example: "1",
-        description: "The id of the category"
+        example: "b667f2af-19ad-4da6-a609-5c72cfe23630",
+        description: "The id of the category",
+        required: true,
     })
     @IsNotEmpty()
-    @Type(() => CategoryEntity)
-    categoryId: CategoryEntity;
+    @IsUUID()
+    categoryId: string;
 }
