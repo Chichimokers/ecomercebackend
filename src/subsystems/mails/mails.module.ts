@@ -4,9 +4,12 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { join } from 'path';
 import { UserService } from '../user/service/user.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../user/entities/user.entity';
 
 @Module({
     imports: [
+        TypeOrmModule.forFeature([User]),
         MailerModule.forRoot({
             transport: {
                 host: 'smtp.gmail.com',
