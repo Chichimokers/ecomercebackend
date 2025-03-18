@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { Inject, Injectable } from "@nestjs/common";
-import { HOST, STRIPE_SECRET_KEY, SUCCESS_URL } from "../config.payments";
+import { STRIPE_SECRET_KEY, SUCCESS_URL } from "../config.payments";
 import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
