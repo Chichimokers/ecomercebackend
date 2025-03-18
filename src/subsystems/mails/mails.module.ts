@@ -2,13 +2,10 @@ import { Module } from '@nestjs/common';
 import { MailsService } from './services/mails.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
-import { UserService } from "../user/service/user.service";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "../user/entities/user.entity";
+import { join } from 'path';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User]),
         MailerModule.forRoot({
             transport: {
                 host: 'smtp.gmail.com',
@@ -23,7 +20,7 @@ import { User } from "../user/entities/user.entity";
                 from: '"Esaki-Shop" <developer1575@gmail.com>', // Remitente por defecto
             },
             template: {
-                dir: __dirname + '/templates/mails',
+                dir: join(__dirname , 'templates/mails'),
                 adapter: new HandlebarsAdapter(),
                 options: {
                     strict: true,
@@ -31,6 +28,6 @@ import { User } from "../user/entities/user.entity";
             },
         }),
     ],
-    providers: [MailsService, UserService],
+    providers: [MailsService],
 })
 export class MailsModule {}

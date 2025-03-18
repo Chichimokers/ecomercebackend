@@ -253,7 +253,7 @@ export class PaypalService {
                 orderItems:{
                     product:{
                         discounts:{
-                            
+                            products: true
                         }
                     }
                 },

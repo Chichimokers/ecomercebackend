@@ -9,6 +9,7 @@ import { CodeService } from './code.service';
 import { SingUpBody } from '../dto/signupDTO.dto';
 import { roles } from '../../roles/enum/roles.enum';
 import { OAuth2Client } from 'google-auth-library';
+import { jwtConstants } from '../constants';
 
 @Injectable()
 export class AuthService {
@@ -131,11 +132,11 @@ export class AuthService {
 
         const [access_token, refresh_token] = await Promise.all([
             this.jwt.signAsync(payload, {
-                secret: process.env.JWT_ACCESS_SECRET,
+                secret: process.env.JWT_ACCESS_SECRET || jwtConstants.secret ,
                 expiresIn: '60m',
             }),
             this.jwt.signAsync(payload, {
-                secret: process.env.JWT_REFRESH_SECRET,
+                secret: process.env.JWT_REFRESH_SECRET|| jwtConstants.refresh ,
                 expiresIn: '7d',
             }),
         ]);

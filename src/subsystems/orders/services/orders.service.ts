@@ -89,6 +89,8 @@ export class OrderService extends BaseService<OrderEntity> {
             user: user,
             municipality: municipality
         });
+        
+        await  this.orderRepository.save(order)
 
         //Crear Order_Products
         const orderProducts = productsWithQuantities.map(
@@ -96,13 +98,14 @@ export class OrderService extends BaseService<OrderEntity> {
                 return this.orderProductRepository.create({
                     order: order,
                     product: product,
-                    quantity: quantity
+                    quantity: quantity,
+        
                 });
             }
         );
 
         await Promise.all([
-            this.orderRepository.save(order),
+            
             this.orderProductRepository.save(orderProducts)
         ]);
 

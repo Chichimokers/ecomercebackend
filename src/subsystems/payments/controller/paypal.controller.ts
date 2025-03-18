@@ -53,13 +53,13 @@ export class PaypalController {
     async captureOrder(
         @Query('token') token: string,
         @Query('PayerID') payerId: string,
+        
+        @Res() res: Response,
     ) {
         // Usa el token y payerId según sea necesario
         const response: boolean = await this.servicePaypal.confirmorder(token);
 
-        return response
-            ? { success: true }
-            : { success: false, errorCode: 400 };
+        res.redirect("https://esaki-jrr.com/order-confirmation/success")
     }
     //Cancelar orden cuando el usuario cancela desde paypal 
     @Get('cancel-order')
