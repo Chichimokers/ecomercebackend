@@ -16,6 +16,7 @@ export class CodeService {
     ) {}
 
     async sendVerificationEmail(user: CreateUserDto) {
+        
         const verificationCode = randomBytes(3).toString('hex'); // Genera un código aleatorio de 6 caracteres
         // Aquí podrías almacenar el código y el correo del usuario en una base de datos o en memoria por un tiempo limitado
         const sendmail= await this.mailService.sendVerificationEmail(user.email, verificationCode);
