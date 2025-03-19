@@ -21,9 +21,9 @@ import { PaypalService } from '../service/paypal.service';
 import { Response } from 'express';
 
 // Controller
-@ApiTags('payments')
+@ApiTags('paypal')
 @ApiBearerAuth()
-@Controller('payments')
+@Controller('paypal')
 export class PaypalController {
     constructor(
         @Inject(PaypalService)
