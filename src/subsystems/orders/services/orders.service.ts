@@ -12,6 +12,7 @@ import { captureNotFoundException } from "../../../common/exceptions/modular.exc
 import { calculateDiscount } from "../../../common/utils/global-functions.utils";
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 import { MailsService } from "src/subsystems/mails/services/mails.service";
+import { MunicipalityService } from "../../locations/service/municipality.service";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -30,7 +31,10 @@ export class OrderService extends BaseService<OrderEntity> {
         private readonly municipalityRepository: Repository<MunicipalityEntity>,
         @Inject(UserService)
         private userService: UserService,
-        @Inject(MailsService) private mailService: MailsService
+        @Inject(MailsService)
+        private mailService: MailsService,
+        @Inject(MunicipalityService)
+        private readonly municipalityService: MunicipalityService,
     ) {
         super(orderRepository);
     }
@@ -56,7 +60,7 @@ export class OrderService extends BaseService<OrderEntity> {
         const [user, foundProducts, municipality] = await Promise.all([
             this.userService.findUserById(userid),
             this.validateProducts(data.products),
-            this.municipalityRepository.findOneBy({ id: data.municipality })
+            this.municipalityService.getMunicipality(data.municipality),
         ]);
 
         captureNotFoundException([user, foundProducts, municipality], ["User", "Products", "Municipality"]);
@@ -78,19 +82,39 @@ export class OrderService extends BaseService<OrderEntity> {
             0
         );
 
+        // Calcular el peso total de los productos
+        const totalWeight: number = productsWithQuantities.reduce(
+            (total, { product, quantity }) => {
+                return total + (product.weight || 0) * quantity;
+            },
+            0
+        );
+
+        // Encontrar el precio de envío basado en el peso total
+        let shippingPrice = municipality.prices.find(
+            price => totalWeight >= price.minWeight
+        );
+
+        // Si no se encuentra un precio específico para el peso, usar el precio base del municipio
+        const shippingCost = shippingPrice ? shippingPrice.price : municipality.basePrice;
+
+        // Calcular el total (subtotal + envío)
+        const total: number = Number(subtotal) + Number(shippingCost);
+
         //Crear Orden
         const order: OrderEntity = this.orderRepository.create({
             phone: data.phone,
-            aux_phone: data.aux_phone,
+            aux_phone: data .aux_phone,
             address: data.address,
             receiver_name: data.receiver_name,
             CI: data.ci,
-            subtotal: subtotal,
+            subtotal: total,
+            shipping_price: shippingCost,
             user: user,
             municipality: municipality
         });
         
-        await  this.orderRepository.save(order)
+        await this.orderRepository.save(order)
 
         //Crear Order_Products
         const orderProducts = productsWithQuantities.map(
@@ -104,10 +128,7 @@ export class OrderService extends BaseService<OrderEntity> {
             }
         );
 
-        await Promise.all([
-            
-            this.orderProductRepository.save(orderProducts)
-        ]);
+        await this.orderProductRepository.save(orderProducts)
 
         return order;
     }

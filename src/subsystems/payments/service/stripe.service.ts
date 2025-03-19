@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { Inject, Injectable } from "@nestjs/common";
-import { HOST, STRIPE_SECRET_KEY } from "../config.payments";
+import { STRIPE_SECRET_KEY, SUCCESS_URL } from "../config.payments";
 import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
@@ -11,9 +11,10 @@ import {
     getPrice
 } from "../../../common/utils/global-functions.utils";
 import { captureBadRequestException, captureNotFoundException } from "../../../common/exceptions/modular.exception";
+import { IPaymentCheck } from "../interfaces/payment.interface";
 
 @Injectable()
-export class StripeService {
+export class StripeService implements IPaymentCheck {
     private stripe: Stripe;
 
     constructor(
@@ -27,6 +28,7 @@ export class StripeService {
     }
 
     async createCheckoutSession(orderid: string, currency: string = "usd") {
+        console.log('Finding Order');
         const orderEntity: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: [
@@ -40,11 +42,14 @@ export class StripeService {
 
         captureNotFoundException(orderEntity, "Order");
 
+        console.log('Creating JSON ORDER');
         const order = await this.createJSONOrder(orderEntity, currency);
 
+        console.log('Session?');
         let session: Stripe.Response<Stripe.Checkout.Session>;
 
         try {
+            console.log('Creating SESSION!');
             session = await this.stripe.checkout.sessions.create(order);
         } catch (error) {
             throw new Error('Unable to create checkout session');
@@ -52,8 +57,10 @@ export class StripeService {
 
         orderEntity.stripe_id = session.id;
 
+        console.log('Saving Order!');
         await this.orderRepository.save(orderEntity);
 
+        console.log('Returning JSONRESPONSE');
         return await this.createJSONResponse(session);
     }
 
@@ -89,7 +96,7 @@ export class StripeService {
         });
 
         return {
-            success_url: `${HOST}visa-mastercard/capture-payment?order_id=${order.id.toString()}`,
+            success_url: `${SUCCESS_URL}?order_id=${order.id.toString()}`,
             mode: "payment",
             currency: currency,
             payment_method_types: ["card"],
@@ -123,7 +130,7 @@ export class StripeService {
                 display_name: "Envío",
                 type: "fixed_amount",
                 fixed_amount: {
-                    amount: order.municipality.basePrice * 100,// Calcular precio de municipio
+                    amount: order.shipping_price * 100,// Calcular precio de municipio
                     currency: currency
                 },
                 delivery_estimate: {
@@ -174,5 +181,24 @@ export class StripeService {
                 message: "El pago ha sido realizado con éxito."
             }
         };
+    }
+
+    async checkPayment(order: OrderEntity): Promise<boolean> {
+        const sessionId = order.stripe_id;
+
+        const session = await this.stripe.checkout.sessions.retrieve(sessionId);
+
+        //console.log(session.payment_status);
+        if (session.payment_status !== "paid") {
+            return false;
+        }
+
+        // Aqui va para procesar la orden!
+        const captured_id = session.metadata.order_id;
+
+        await this.orderService.processOrders(captured_id.toString());
+
+        // End process order
+        return true;
     }
 }

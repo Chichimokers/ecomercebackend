@@ -107,7 +107,7 @@ export class PublicService {
 
     // *--- Get Municipalitys By Province ---* //
     public async getMunicipalities(id: string): Promise<MunicipalityEntity[]> {
-        const municipalities: MunicipalityEntity[] = await this.municipalityService.getMunicipalitysByProvince(id);
+        const municipalities: MunicipalityEntity[] = await this.municipalityService.getMunicipalitiesByProvince(id);
 
         captureNotFoundException(municipalities, "Municipalities");
 

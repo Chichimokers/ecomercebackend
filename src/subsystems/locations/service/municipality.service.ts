@@ -88,7 +88,7 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
         });
     }
 
-    public async getMunicipalitysByProvince(id: string){
+    public async getMunicipalitiesByProvince(id: string){
         return await this.municipalityRepository.find({
             select: {
                 id: true,

@@ -13,10 +13,32 @@ import { ProductEntity } from "../products/entity/product.entity";
 import { OrderProductEntity } from "../orders/entities/order_products.entity";
 import { MunicipalityEntity } from "../locations/entity/municipality.entity";
 import { MailsService } from '../mails/services/mails.service';
+import { MunicipalityService } from "../locations/service/municipality.service";
+import { ProvinceEntity } from "../locations/entity/province.entity";
+import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([OrderEntity, ProductEntity, OrderProductEntity,User, MunicipalityEntity])],
-    providers:[PaypalService, StripeService, OrderService, UserService, Repository,MailsService],
-    controllers:[PaypalController, StripeController]
+    imports: [TypeOrmModule.forFeature([
+        OrderEntity,
+        ProductEntity,
+        OrderProductEntity,
+        PriceByWeightEntity,
+        ProvinceEntity,
+        User,
+        MunicipalityEntity
+    ])],
+    providers:[
+        PaypalService,
+        StripeService,
+        OrderService,
+        UserService,
+        Repository,
+        MunicipalityService,
+        MailsService
+    ],
+    controllers:[
+        PaypalController,
+        StripeController
+    ]
 })
 export class PaymentsModule {}

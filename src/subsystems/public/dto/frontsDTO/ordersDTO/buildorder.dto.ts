@@ -51,15 +51,6 @@ export class BuildOrderDTO {
     products: ProductOrderDTO[];
 
     @ApiProperty({
-        description: 'Province of the receiver',
-        example: 'Havana'
-    })
-    @IsNotEmpty()
-    @IsString()
-    @Length(1, 20)
-    province: string;
-
-    @ApiProperty({
         description: 'Address of the receiver',
         example: '123 Main St, Apt 4B'
     })

@@ -1,4 +1,3 @@
-import { IsPositive, IsString } from "class-validator";
 import { BaseEntity } from "../../../common/entities/base.entity";
 import { User } from '../../user/entities/user.entity';
 import {
@@ -17,28 +16,25 @@ export class OrderEntity  extends BaseEntity{
     user: User;
 
     @Column({ length: 70, nullable: false })
-    @IsString()
     receiver_name: string;
 
     @Column({ length: 25, nullable: false })
-    @IsString()
     phone :string;
 
     @Column({ length: 25, nullable: true })
-    @IsString()
     aux_phone: string;
 
     @Column({ length: 255 })
-    @IsString()
     address :string;
 
     @Column({ length: 20 })
-    @IsString()
     CI :string;
 
     @Column({ type: 'numeric', precision: 10, scale: 2 })
-    @IsPositive()
     subtotal: number;
+
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
+    shipping_price: number;
 
     @Column({
         type: "enum",
@@ -48,7 +44,6 @@ export class OrderEntity  extends BaseEntity{
     status: OrderStatus;
 
     @Column({length: 255, nullable: true, default: null})
-    @IsString()
     stripe_id: string;
     
     @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.order)
