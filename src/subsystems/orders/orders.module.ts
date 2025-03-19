@@ -12,14 +12,17 @@ import { MunicipalityEntity } from "../locations/entity/municipality.entity";
 
 import { MailsService } from "../mails/services/mails.service";
 import { OrderAdminSchedule } from "./schedule/orderadmin.schedule";
+import { MunicipalityService } from "../locations/service/municipality.service";
+import { ProvinceEntity } from "../locations/entity/province.entity";
+import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([OrderEntity, OrderProductEntity, ProductEntity, MunicipalityEntity, User]),
+        TypeOrmModule.forFeature([OrderEntity, OrderProductEntity, ProductEntity, ProvinceEntity, PriceByWeightEntity, MunicipalityEntity, User]),
         ConfigModule.forRoot({ isGlobal: true })
 
     ],
-    providers: [OrderService, MailsService, UserService,OrderAdminSchedule],
+    providers: [OrderService, MailsService, UserService, MunicipalityService, OrderAdminSchedule],
     controllers: [OrderControllers]
 
 })
