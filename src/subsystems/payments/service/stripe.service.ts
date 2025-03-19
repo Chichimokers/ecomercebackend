@@ -11,9 +11,10 @@ import {
     getPrice
 } from "../../../common/utils/global-functions.utils";
 import { captureBadRequestException, captureNotFoundException } from "../../../common/exceptions/modular.exception";
+import { IPaymentCheck } from "../interfaces/payment.interface";
 
 @Injectable()
-export class StripeService {
+export class StripeService implements IPaymentCheck {
     private stripe: Stripe;
 
     constructor(
@@ -180,5 +181,24 @@ export class StripeService {
                 message: "El pago ha sido realizado con éxito."
             }
         };
+    }
+
+    async checkPayment(order: OrderEntity): Promise<boolean> {
+        const sessionId = order.stripe_id;
+
+        const session = await this.stripe.checkout.sessions.retrieve(sessionId);
+
+        //console.log(session.payment_status);
+        if (session.payment_status !== "paid") {
+            return false;
+        }
+
+        // Aqui va para procesar la orden!
+        const captured_id = session.metadata.order_id;
+
+        await this.orderService.processOrders(captured_id.toString());
+
+        // End process order
+        return true;
     }
 }
