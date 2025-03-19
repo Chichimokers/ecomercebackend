@@ -27,6 +27,7 @@ export class StripeService {
     }
 
     async createCheckoutSession(orderid: string, currency: string = "usd") {
+        console.log('Finding Order');
         const orderEntity: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: [
@@ -40,11 +41,14 @@ export class StripeService {
 
         captureNotFoundException(orderEntity, "Order");
 
+        console.log('Creating JSON ORDER');
         const order = await this.createJSONOrder(orderEntity, currency);
 
+        console.log('Session?');
         let session: Stripe.Response<Stripe.Checkout.Session>;
 
         try {
+            console.log('Creating SESSION!');
             session = await this.stripe.checkout.sessions.create(order);
         } catch (error) {
             throw new Error('Unable to create checkout session');
@@ -52,8 +56,10 @@ export class StripeService {
 
         orderEntity.stripe_id = session.id;
 
+        console.log('Saving Order!');
         await this.orderRepository.save(orderEntity);
 
+        console.log('Returning JSONRESPONSE');
         return await this.createJSONResponse(session);
     }
 
@@ -123,7 +129,7 @@ export class StripeService {
                 display_name: "Envío",
                 type: "fixed_amount",
                 fixed_amount: {
-                    amount: order.municipality.basePrice * 100,// Calcular precio de municipio
+                    amount: order.shipping_price * 100,// Calcular precio de municipio
                     currency: currency
                 },
                 delivery_estimate: {
