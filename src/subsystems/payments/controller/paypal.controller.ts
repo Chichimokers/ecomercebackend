@@ -48,7 +48,7 @@ export class PaypalController {
     }
 
     @Get('capture-order')
-    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.MOVED_PERMANENTLY)
     async captureOrder(
         @Query('token') token: string,
         @Query('PayerID') payerId: string,
