@@ -1,9 +1,7 @@
-import { OrderEntity } from "../../orders/entities/order.entity";
-
 export interface IPaymentCheck {
     /**
-     * A Boolean function to verify if the order has been paid or not
-     * @param order Order entity to get information!
+     * A Boolean function to verify if the payment_id has been paid or not
+     * @param payment_id Payment id to get information!
      */
-    checkPayment(order: OrderEntity): Promise<boolean>;
+    checkPayment(payment_id: string): Promise<boolean>;
 }
