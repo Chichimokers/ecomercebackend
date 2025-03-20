@@ -42,25 +42,16 @@ export class StripeService implements IPaymentCheck {
 
         captureNotFoundException(orderEntity, "Order");
 
-        console.log('Creating JSON ORDER');
         const order = await this.createJSONOrder(orderEntity, currency);
 
-        console.log('Session?');
         let session: Stripe.Response<Stripe.Checkout.Session>;
 
-        try {
-            console.log('Creating SESSION!');
-            session = await this.stripe.checkout.sessions.create(order);
-        } catch (error) {
-            throw new Error('Unable to create checkout session');
-        }
+        session = await this.stripe.checkout.sessions.create(order);
 
         orderEntity.stripe_id = session.id;
 
-        console.log('Saving Order!');
         await this.orderRepository.save(orderEntity);
 
-        console.log('Returning JSONRESPONSE');
         return await this.createJSONResponse(session);
     }
 
@@ -130,7 +121,7 @@ export class StripeService implements IPaymentCheck {
                 display_name: "Envío",
                 type: "fixed_amount",
                 fixed_amount: {
-                    amount: order.shipping_price * 100,// Calcular precio de municipio
+                    amount: parseInt((order.shipping_price * 100).toFixed(0)), // Convertir a centavos (entero),// Calcular precio de municipio
                     currency: currency
                 },
                 delivery_estimate: {
