@@ -19,6 +19,7 @@ import { Roles } from 'src/subsystems/roles/decorators/roles.decorator';
 import { roles } from 'src/subsystems/roles/enum/roles.enum';
 import { PaypalService } from '../service/paypal.service';
 import { Response } from 'express';
+import { ConfirmOrder } from '../interfaces/confirmOrderPaypal';
 
 // Controller
 @ApiTags('paypal')
@@ -55,9 +56,11 @@ export class PaypalController {
         @Res() res: Response,
     ) {
         // Usa el token y payerId según sea necesario
-        const response: boolean = await this.servicePaypal.confirmorder(token);
-
-        res.redirect(process.env.SUCCESS_URL)
+        const response: ConfirmOrder = await this.servicePaypal.confirmorder(token);
+        if(response.paid){
+            res.redirect(process.env.SUCCESS_URL+"?order_id="+response.orderid)
+        }
+    
     }
     //Cancelar orden cuando el usuario cancela desde paypal 
     @Get('cancel-order')

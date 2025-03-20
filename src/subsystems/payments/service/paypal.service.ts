@@ -12,6 +12,7 @@ import {
 import { captureNotFoundException } from '../../../common/exceptions/modular.exception';
 import { MunicipalityEntity } from 'src/subsystems/locations/entity/municipality.entity';
 import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
+import { ConfirmOrder } from '../interfaces/confirmOrderPaypal';
 
 @Injectable()
 export class PaypalService {
@@ -71,7 +72,7 @@ export class PaypalService {
         
     }
     //Confimar orden con el token de paypal
-    async confirmorder(token: string): Promise<boolean> {
+    async confirmorder(token: string): Promise<ConfirmOrder> {
 
         const authd = {
             username: CLIENTID,
@@ -94,7 +95,7 @@ export class PaypalService {
             );
         }
 
-        return response.data.status === 'COMPLETED';
+        return {paid : response.data.status === 'COMPLETED',orderid: response.data.purchase_units[0].payments.captures[0].custom_id};
     }
     //Crear el json del a orden a partir de la entidad de la orden
     async CreateJSONOrder(
