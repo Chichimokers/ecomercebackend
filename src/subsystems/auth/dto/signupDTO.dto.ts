@@ -7,7 +7,7 @@ export class SingUpBody  extends BaseDto {
     @Transform(({ value }) => value.trim())
     @IsString()
     @MinLength(2, { message: 'Name must have atleast 2 characters.' })
-    @MaxLength(20, { message: 'Name must have max 20 characters.' })
+    @MaxLength(128, { message: 'Name must have max 128 characters.' })
     @IsNotEmpty()
     @ApiProperty({
         example: "ernest",

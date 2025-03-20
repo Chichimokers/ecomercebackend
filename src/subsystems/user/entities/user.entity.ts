@@ -6,7 +6,7 @@ import { RatingEntity } from "../../rating/entity/rating.entity";
 @Entity({ name: 'tb_user' })
 @Check(`"rol" > 0`)
 export class User extends BaseEntity {
-    @Column({ type: 'varchar', length: 30 })
+    @Column({ type: 'varchar', length: 128 })
     @IsString()
     name: string;
 
