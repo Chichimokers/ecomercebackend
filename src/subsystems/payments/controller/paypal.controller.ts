@@ -38,7 +38,7 @@ export class PaypalController {
         @Body() body: any,
         @Req() req: any,
     ): Promise<any> {
-        
+
         const link: string = await this.servicePaypal.CreateOrder(
             body.id,
             req.user.Id,
@@ -52,24 +52,24 @@ export class PaypalController {
     async captureOrder(
         @Query('token') token: string,
         @Query('PayerID') payerId: string,
-        
+
         @Res() res: Response,
     ) {
         // Usa el token y payerId según sea necesario
         const response: ConfirmOrder = await this.servicePaypal.confirmorder(token);
-        if(response.paid){
-            res.redirect(process.env.SUCCESS_URL+"?order_id="+response.orderid)
+        if (response.paid) {
+            res.redirect(process.env.SUCCESS_URL + "?order_id=" + response.orderid)
         }
-    
+
     }
     //Cancelar orden cuando el usuario cancela desde paypal 
     @Get('cancel-order')
-    async cancelorder(@Query() query: any) : Promise<any>{
+    async cancelorder(@Query() query: any): Promise<any> {
 
         const token = query.token; // Parámetro clave
-   
+
         await this.servicePaypal.cancelorder(token);
 
         return process.env.WEB
-     }
+    }
 }
