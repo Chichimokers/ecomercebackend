@@ -298,13 +298,14 @@ export class PaypalService {
         console.log(order)
         //Obteniendo Token
         const paramas = new URLSearchParams();
-
-        paramas.append('grant_type', 'client_credentials');
-
         const auth = {
             username: CLIENTID,
             password: SECRET_KEY,
         };
+        paramas.append('grant_type', 'client_credentials');
+        console.log("tirando peticion a " +`${PAYPAL_HOST}/v1/oauth2/token`)
+        console.log(auth)
+ 
         const { data } = await axios.post(
             `${PAYPAL_HOST}/v1/oauth2/token`,
             paramas,
