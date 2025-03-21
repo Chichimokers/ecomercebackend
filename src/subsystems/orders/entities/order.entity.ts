@@ -43,8 +43,8 @@ export class OrderEntity  extends BaseEntity{
     })
     status: OrderStatus;
 
-    @Column({length: 255, nullable: true, default: null})
-    stripe_id: string;
+    @Column({length: 512, nullable: true, default: null})
+    payment_id: string;
     
     @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.order)
     orderItems: OrderProductEntity[];

@@ -18,8 +18,9 @@ export class StripeController{
     @Roles(roles.User)
     @Post("create-payment")
     @ApiResponse({ status: 201, type: CreatedCheckoutDTO })
-    async createPayment(@Body() order: StripeDTO) {
-        return await this.stripeService.createCheckoutSession(order.id);
+    async createPayment(@Body() order: StripeDTO, @Res() re: Response) {
+        const checkout = await this.stripeService.createCheckoutSession(order.id);
+        re.redirect(checkout.url);
     }
 
     @Roles(roles.User)

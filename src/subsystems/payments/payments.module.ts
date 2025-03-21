@@ -16,6 +16,8 @@ import { MailsService } from '../mails/services/mails.service';
 import { MunicipalityService } from "../locations/service/municipality.service";
 import { ProvinceEntity } from "../locations/entity/province.entity";
 import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
+import { PaymentsController } from "./controller/payments.controller";
+import { PaymentsService } from "./service/payments.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
@@ -34,11 +36,13 @@ import { PriceByWeightEntity } from "../locations/entity/priceByWeight.entity";
         UserService,
         Repository,
         MunicipalityService,
+        PaymentsService,
         MailsService
     ],
     controllers:[
         PaypalController,
-        StripeController
+        StripeController,
+        PaymentsController,
     ]
 })
 export class PaymentsModule {}

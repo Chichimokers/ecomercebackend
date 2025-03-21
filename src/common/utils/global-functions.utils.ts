@@ -85,3 +85,12 @@ export function getPrice(product: ProductEntity, quantity: number) {
     return product.price - product.discounts.reduction
 
 }
+
+/**
+ * Function to add prefix to specified ids
+ * @param id
+ * @param prefix
+ */
+export function addPrefixId(id: string, prefix: string): string {
+    return `${prefix}_${id}`;
+}

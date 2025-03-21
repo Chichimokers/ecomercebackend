@@ -98,9 +98,6 @@ export class OrderService extends BaseService<OrderEntity> {
         // Si no se encuentra un precio específico para el peso, usar el precio base del municipio
         const shippingCost = shippingPrice ? shippingPrice.price : municipality.basePrice;
 
-        // Calcular el total (subtotal + envío)
-        const total: number = Number(subtotal) + Number(shippingCost);
-
         //Crear Orden
         const order: OrderEntity = this.orderRepository.create({
             phone: data.phone,
@@ -108,7 +105,7 @@ export class OrderService extends BaseService<OrderEntity> {
             address: data.address,
             receiver_name: data.receiver_name,
             CI: data.ci,
-            subtotal: total,
+            subtotal: subtotal,
             shipping_price: shippingCost,
             user: user,
             municipality: municipality

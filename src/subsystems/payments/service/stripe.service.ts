@@ -1,17 +1,16 @@
 import Stripe from "stripe";
-import { Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { STRIPE_SECRET_KEY, SUCCESS_URL } from "../config.payments";
 import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
 import { OrderService } from "../../orders/services/orders.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { OrderProductEntity } from "../../orders/entities/order_products.entity";
-import {
-    calculateDiscount,
-    getPrice
-} from "../../../common/utils/global-functions.utils";
+import { addPrefixId, calculateDiscount, getPrice } from "../../../common/utils/global-functions.utils";
 import { captureBadRequestException, captureNotFoundException } from "../../../common/exceptions/modular.exception";
 import { IPaymentCheck } from "../interfaces/payment.interface";
+import { PAYMENT_TYPE } from "../enums/prefix.constants";
+import { validateAndQuitPrefix } from "../utils/prefixs.utils";
 
 @Injectable()
 export class StripeService implements IPaymentCheck {
@@ -42,25 +41,18 @@ export class StripeService implements IPaymentCheck {
 
         captureNotFoundException(orderEntity, "Order");
 
-        console.log('Creating JSON ORDER');
         const order = await this.createJSONOrder(orderEntity, currency);
 
-        console.log('Session?');
         let session: Stripe.Response<Stripe.Checkout.Session>;
 
-        try {
-            console.log('Creating SESSION!');
-            session = await this.stripe.checkout.sessions.create(order);
-        } catch (error) {
-            throw new Error('Unable to create checkout session');
-        }
+        session = await this.stripe.checkout.sessions.create(order);
 
-        orderEntity.stripe_id = session.id;
+        console.log(session);
 
-        console.log('Saving Order!');
+        orderEntity.payment_id = addPrefixId(session.id, PAYMENT_TYPE.STRIPE);
+
         await this.orderRepository.save(orderEntity);
 
-        console.log('Returning JSONRESPONSE');
         return await this.createJSONResponse(session);
     }
 
@@ -130,7 +122,7 @@ export class StripeService implements IPaymentCheck {
                 display_name: "Envío",
                 type: "fixed_amount",
                 fixed_amount: {
-                    amount: order.shipping_price * 100,// Calcular precio de municipio
+                    amount: parseInt((order.shipping_price * 100).toFixed(0)), // Convertir a centavos (entero),// Calcular precio de municipio
                     currency: currency
                 },
                 delivery_estimate: {
@@ -154,7 +146,15 @@ export class StripeService implements IPaymentCheck {
 
         captureNotFoundException(order, 'Order');
 
-        const sessionId = order.stripe_id;
+        const parseSessionId = validateAndQuitPrefix(order.payment_id);
+
+        captureNotFoundException(parseSessionId, 'Payment ID not found!')
+
+        if (parseSessionId.type !== PAYMENT_TYPE.STRIPE) {
+            throw new BadRequestException('Esta orden no esta pagada con stripe!');
+        }
+
+        const sessionId = order.payment_id;
 
         const session = await this.stripe.checkout.sessions.retrieve(sessionId);
 
@@ -170,7 +170,7 @@ export class StripeService implements IPaymentCheck {
         }
 
         // Aqui va para procesar la orden!
-        const captured_id = session.metadata.order_id;
+        const captured_id: string = session.metadata.order_id;
 
         await this.orderService.processOrders(captured_id.toString());
 
@@ -183,10 +183,8 @@ export class StripeService implements IPaymentCheck {
         };
     }
 
-    async checkPayment(order: OrderEntity): Promise<boolean> {
-        const sessionId = order.stripe_id;
-
-        const session = await this.stripe.checkout.sessions.retrieve(sessionId);
+    async checkPayment(payment_id: string): Promise<boolean> {
+        const session = await this.stripe.checkout.sessions.retrieve(payment_id);
 
         //console.log(session.payment_status);
         if (session.payment_status !== "paid") {
