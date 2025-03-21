@@ -11,8 +11,8 @@ import {
     getPrice,
 } from 'src/common/utils/global-functions.utils';
 import { captureNotFoundException } from '../../../common/exceptions/modular.exception';
-import { MunicipalityEntity } from 'src/subsystems/locations/entity/municipality.entity';
-import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
+import * as municipalityEntity from 'src/subsystems/locations/entity/municipality.entity';
+import * as order_productsEntity from 'src/subsystems/orders/entities/order_products.entity';
 import { ConfirmOrder } from '../interfaces/confirmOrderPaypal';
 import { PAYMENT_TYPE } from '../enums/prefix.constants';
 
@@ -20,58 +20,59 @@ import { PAYMENT_TYPE } from '../enums/prefix.constants';
 export class PaypalService {
     constructor(
         @Inject(OrderService) public orderService: OrderService,
-      
-        @InjectRepository(MunicipalityEntity)
-        private readonly municipalitirepository:Repository<MunicipalityEntity>,
+
+        @InjectRepository(municipalityEntity.MunicipalityEntity)
+        private readonly municipalitirepository: Repository<municipalityEntity.MunicipalityEntity>,
         @InjectRepository(OrderEntity)
         private readonly orderRepository: Repository<OrderEntity>,
-        @InjectRepository(OrderProductEntity)
-        private readonly orderentitytsts: Repository<OrderProductEntity>,
-    ) {}
+        @InjectRepository(order_productsEntity.OrderProductEntity)
+        private readonly orderentitytsts: Repository<order_productsEntity.OrderProductEntity>,
+    ) { }
     async cancelorder(token: string): Promise<boolean> {
         const authd = {
             username: CLIENTID,
             password: SECRET_KEY,
         };
-       
-       const response = await axios.get(
-                `${PAYPAL_HOST}/v2/checkout/orders/${token}`,{        
 
-                    auth: authd,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+        const response = await axios.get(
+            `${PAYPAL_HOST}/v2/checkout/orders/${token}`, {
 
-                });
+            auth: authd,
+            headers: {
+                'Content-Type': 'application/json',
+            },
 
-        if(response.data.status != 'COMPLETED'){
-            
-            const orderid =   response.data.purchase_units[0].custom_id
+        });
 
-            let entidades: OrderProductEntity[] = await this.orderentitytsts.find({
-                where:{order:{id : orderid}},
-                relations:{
-                order:{}
-            }})
+        if (response.data.status != 'COMPLETED') {
+
+            const orderid = response.data.purchase_units[0].custom_id
+
+            let entidades: order_productsEntity.OrderProductEntity[] = await this.orderentitytsts.find({
+                where: { order: { id: orderid } },
+                relations: {
+                    order: {}
+                }
+            })
             entidades.map((item) => {
 
-                 this.orderentitytsts.delete(item.id)
-                
+                this.orderentitytsts.delete(item.id)
+
             })
             // Eliminar el padre
             const result = await this.orderService.delete(orderid);
-            
+
             console.log(result)
 
             return true
 
-        }else{
-     return false
+        } else {
+            return false
 
         }
 
-     
-        
+
+
     }
     //Confimar orden con el token de paypal
     async confirmorder(token: string): Promise<ConfirmOrder> {
@@ -84,7 +85,7 @@ export class PaypalService {
             `${PAYPAL_HOST}/v2/checkout/orders/${token}/capture`,
             {},
             {
-               auth: authd,
+                auth: authd,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -103,16 +104,17 @@ export class PaypalService {
             }
         });
 
-        order.payment_id = addPrefixId(token, PAYMENT_TYPE.PAYPAL);
+        order.payment_id = await addPrefixId(token, PAYMENT_TYPE.PAYPAL);
+
         this.orderRepository.save(order)
-        
+
         if (response.data.status === 'COMPLETED') {
             await this.orderService.processOrders(
                 response.data.purchase_units[0].payments.captures[0].custom_id,
             );
         }
 
-        return {paid : response.data.status === 'COMPLETED',orderid: response.data.purchase_units[0].payments.captures[0].custom_id};
+        return { paid: response.data.status === 'COMPLETED', orderid: response.data.purchase_units[0].payments.captures[0].custom_id };
     }
     //Crear el json del a orden a partir de la entidad de la orden
     async CreateJSONOrder(
@@ -143,24 +145,24 @@ export class PaypalService {
                     reference_id: requestId, // Usar el UUID generado
                     amount: {
                         currency_code: moneda,
-                        value: (Number(subtotal) +Number( precioenvio)).toFixed(2), // Asignar el subtotal calculado + precio de envio 
+                        value: (Number(subtotal) + Number(precioenvio)).toFixed(2), // Asignar el subtotal calculado + precio de envio 
 
                         breakdown: {
                             item_total: {
                                 currency_code: moneda,
                                 value: Number(subtotal).toFixed(2), // Asignar el subtotal calculado
                             },
-                        shipping: {
-                                currency_code:  moneda,                           
+                            shipping: {
+                                currency_code: moneda,
                                 value: Number(precioenvio).toFixed(2) //Asignar el total de envio
-                              }
+                            }
                         },
                     },
-                    
+
                     //TODO Items
-                 
+
                 },
-            ],   items: [
+            ], items: [
                 carts.orderItems.map((item) => ({
                     name: item.product.name, // Asumiendo que cada cart tiene un atributo 'productName'
                     unit_amount: {
@@ -172,7 +174,7 @@ export class PaypalService {
                     },
                     quantity: item.quantity.toString(), // Asumiendo que cada cart tiene un atributo 'quantity'
                 }))
-         ],
+            ],
             payment_source: {
                 paypal: {
                     experience_context: {
@@ -180,8 +182,8 @@ export class PaypalService {
                         brand_name: 'ESAKISHOP INC',
                         landing_page: 'LOGIN',
                         user_action: 'PAY_NOW',
-                        return_url: `${HOST}/payments/capture-order`,
-                        cancel_url: `${HOST}/payments/cancel-order`,
+                        return_url: `${HOST}/paypal/capture-order`,
+                        cancel_url: `${HOST}/paypal/cancel-order`,
                     },
                 },
             },
@@ -189,18 +191,18 @@ export class PaypalService {
 
         return order;
     }
-    async calcularprecio_envio__by_kg_and_municipality(kg:number,municipaliti_id:string): Promise<number> {
+    async calcularprecio_envio__by_kg_and_municipality(kg: number, municipaliti_id: string): Promise<number> {
         // Validación de productos
-   
+
         // Cálculo de peso total con validación
         const pesoTotal = kg;
 
         if (pesoTotal <= 0) throw new Error('Peso total inválido');
 
         // Validación de estructura de municipio
-        const municipio =await  this.municipalitirepository.findOne({
+        const municipio = await this.municipalitirepository.findOne({
             relations: {
-            
+
                 prices: true,
             },
             where: { id: municipaliti_id.toString() },
@@ -259,7 +261,7 @@ export class PaypalService {
             (p) => pesoTotal >= p.minWeight!,
         );
 
-        return precioAplicable?.price ??  municipio.basePrice;
+        return precioAplicable?.price ?? municipio.basePrice;
     }
 
     async CreateOrder(orderid: string, userid: string): Promise<string> {
@@ -267,23 +269,23 @@ export class PaypalService {
         const orderbd: OrderEntity = await this.orderRepository.findOne({
             where: { id: orderid },
             relations: {
-                user:true,
-                orderItems:{
-                    product:{
-                        discounts:{
+                user: true,
+                orderItems: {
+                    product: {
+                        discounts: {
                             products: true
                         }
                     }
                 },
-                municipality:{
-                    prices:true
-                      
+                municipality: {
+                    prices: true
+
                 }
             }
         });
         console.log(orderbd)
         const precioenvio: number = await this.calcularprecio_envio(orderbd);
-   
+
         let order: string = '';
 
         if (userid.toString() !== orderbd.user.id.toString()) {
@@ -296,13 +298,14 @@ export class PaypalService {
         console.log(order)
         //Obteniendo Token
         const paramas = new URLSearchParams();
-
-        paramas.append('grant_type', 'client_credentials');
-
         const auth = {
             username: CLIENTID,
             password: SECRET_KEY,
         };
+        paramas.append('grant_type', 'client_credentials');
+        console.log("tirando peticion a " +`${PAYPAL_HOST}/v1/oauth2/token`)
+        console.log(auth)
+ 
         const { data } = await axios.post(
             `${PAYPAL_HOST}/v1/oauth2/token`,
             paramas,
@@ -310,22 +313,26 @@ export class PaypalService {
                 auth: auth,
             },
         );
+       const dato = {paypal_data : data, token :data.access_token }
+       console.log(dato)
         try {
-        const response = await axios.post(
-            `${PAYPAL_HOST}/v2/checkout/orders`,
-            order,
-            {
-                headers: {
-                    Authorization: `Bearer ${data.access_token}`,
-                    'Content-Type': 'application/json',
+            const response = await axios.post(
+                `${PAYPAL_HOST}/v2/checkout/orders`,
+                order,
+                {
+                    headers: {
+                        Authorization: `Bearer ${dato.token}`,
+                        'Content-Type': 'application/json',
+                    },
                 },
-            },
-        );
-        return response.data.links[1];
-    } catch (error) {
-        const axiosError = error as AxiosError;
-        console.log(axiosError)
-    }
-     
+            );
+            
+            return response.data.links[1];
+
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            console.log(axiosError)
+        }
+
     }
 }
