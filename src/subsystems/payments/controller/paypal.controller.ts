@@ -36,7 +36,8 @@ export class PaypalController {
     @Post('create-order')
     async createOrder(
         @Body() body: any,
-        @Req() req: any,
+        @Req() req: any
+        @Res() res: Response,
     ): Promise<any> {
 
         const link: string = await this.servicePaypal.CreateOrder(
@@ -44,7 +45,7 @@ export class PaypalController {
             req.user.Id,
         );
 
-        return link
+         res.redirect(link)
     }
 
     @Get('capture-order')
