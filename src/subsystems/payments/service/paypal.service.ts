@@ -312,13 +312,15 @@ export class PaypalService {
                 auth: auth,
             },
         );
+       const dato = {paypal_data : data, token :data.access_token }
+       console.log(dato)
         try {
             const response = await axios.post(
                 `${PAYPAL_HOST}/v2/checkout/orders`,
                 order,
                 {
                     headers: {
-                        Authorization: `Bearer ${data.access_token}`,
+                        Authorization: `Bearer ${dato.token}`,
                         'Content-Type': 'application/json',
                     },
                 },
