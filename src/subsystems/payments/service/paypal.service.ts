@@ -312,8 +312,8 @@ export class PaypalService {
                 auth: auth,
             },
         );
- 
-        const response = await axios.post(
+        try {
+            const response = await axios.post(
                 `${PAYPAL_HOST}/v2/checkout/orders`,
                 order,
                 {
@@ -323,15 +323,13 @@ export class PaypalService {
                     },
                 },
             );
-
-           if(response.status == 200){
+            
             return response.data.links[1];
-           }else{
-            return "no autenticado"
-           }
 
-         
-
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            console.log(axiosError)
+        }
 
     }
 }
