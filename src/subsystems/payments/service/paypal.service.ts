@@ -104,7 +104,7 @@ export class PaypalService {
         });
 
         order.payment_id = addPrefixId(token, PAYMENT_TYPE.PAYPAL);
-
+        this.orderRepository.save(order)
         if (response.data.status === 'COMPLETED') {
             await this.orderService.processOrders(
                 response.data.purchase_units[0].payments.captures[0].custom_id,
