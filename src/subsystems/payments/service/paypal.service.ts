@@ -6,6 +6,7 @@ import axios, { AxiosError } from 'axios';
 import { OrderEntity } from 'src/subsystems/orders/entities/order.entity';
 import { OrderService } from 'src/subsystems/orders/services/orders.service';
 import {
+    addPrefixId,
     calculateDiscount,
     getPrice,
 } from 'src/common/utils/global-functions.utils';
@@ -13,6 +14,7 @@ import { captureNotFoundException } from '../../../common/exceptions/modular.exc
 import { MunicipalityEntity } from 'src/subsystems/locations/entity/municipality.entity';
 import { OrderProductEntity } from 'src/subsystems/orders/entities/order_products.entity';
 import { ConfirmOrder } from '../interfaces/confirmOrderPaypal';
+import { PAYMENT_TYPE } from '../enums/prefix.constants';
 
 @Injectable()
 export class PaypalService {
@@ -88,6 +90,20 @@ export class PaypalService {
                 },
             },
         );
+
+        const order: OrderEntity = await this.orderRepository.findOne({
+            where: { id: response.data.purchase_units[0].payments.captures[0].custom_id }, relations: {
+                municipality: {
+                    province: {}
+                },
+                orderItems: {
+                    product: {}
+                },
+                user: {}
+            }
+        });
+
+        order.payment_id = addPrefixId(token, PAYMENT_TYPE.PAYPAL);
 
         if (response.data.status === 'COMPLETED') {
             await this.orderService.processOrders(
