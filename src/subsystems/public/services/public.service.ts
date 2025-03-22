@@ -17,7 +17,8 @@ import { IPagination } from "../../../common/interfaces/pagination.interface";
 @Injectable()
 export class PublicService {
     constructor(
-        @Inject(ProductService) private readonly productService: ProductService,
+        @Inject(ProductService)
+        private readonly productService: ProductService,
         @Inject(CategoryService)
         private readonly categoryService: CategoryService,
         @Inject(ProvinceService)

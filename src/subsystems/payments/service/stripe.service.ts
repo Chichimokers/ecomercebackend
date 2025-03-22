@@ -1,5 +1,10 @@
 import Stripe from "stripe";
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import {
+    BadRequestException,
+    ConflictException,
+    Inject,
+    Injectable
+} from "@nestjs/common";
 import { STRIPE_SECRET_KEY, SUCCESS_URL } from "../config.payments";
 import { OrderEntity } from "../../orders/entities/order.entity";
 import { Repository } from "typeorm";
@@ -45,9 +50,12 @@ export class StripeService implements IPaymentCheck {
 
         let session: Stripe.Response<Stripe.Checkout.Session>;
 
-        session = await this.stripe.checkout.sessions.create(order);
-
-        console.log(session);
+        try {
+            session = await this.stripe.checkout.sessions.create(order);
+        } catch (error) {
+            console.error(error);
+            throw new ConflictException('Conflict creating the checkout session');
+        }
 
         orderEntity.payment_id = addPrefixId(session.id, PAYMENT_TYPE.STRIPE);
 
@@ -155,9 +163,14 @@ export class StripeService implements IPaymentCheck {
         }
 
         const sessionId = order.payment_id;
+        let session: Stripe.Response<Stripe.Checkout.Session>;
 
-        const session = await this.stripe.checkout.sessions.retrieve(sessionId);
-
+        try {
+            session = await this.stripe.checkout.sessions.retrieve(sessionId);
+        } catch (error) {
+            console.error(error);
+            throw new ConflictException('Conflict retrieving the checkout session');
+        }
         //console.log(session.payment_status);
         if (session.payment_status !== "paid") {
             return {

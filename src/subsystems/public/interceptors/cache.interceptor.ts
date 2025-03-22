@@ -11,7 +11,10 @@ export class PublicCacheInterceptor implements NestInterceptor {
         '/public/currency',
     ];
 
-    constructor(@Inject(Cache) private cacheManager: Cache) { }
+    constructor(
+        @Inject(Cache)
+        private cacheManager: Cache
+    ) { }
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
         // Solo interceptar peticiones GET
