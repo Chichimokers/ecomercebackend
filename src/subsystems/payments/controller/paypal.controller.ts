@@ -65,12 +65,14 @@ export class PaypalController {
     }
     //Cancelar orden cuando el usuario cancela desde paypal 
     @Get('cancel-order')
-    async cancelorder(@Query() query: any): Promise<any> {
+    async cancelorder(@Query() query: any,   @Res() res: Response): Promise<any> {
 
-        const token = query.token; // Parámetro clave
+        //const token = query.token; // Parámetro clave
 
-        await this.servicePaypal.cancelorder(token);
+        //await this.servicePaypal.cancelorder(token);
 
-        return process.env.WEB
+       // return process.env.WEB
+       res.redirect(`${process.env.WEB}/orders`)
+
     }
 }
