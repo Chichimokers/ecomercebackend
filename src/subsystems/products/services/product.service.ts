@@ -383,7 +383,7 @@ export class ProductService
     public async getRelations(id: string) {
         const product: ProductEntity = await this.productRepository.findOne({
             where: { id },
-            relations: ["category", "subCategory"]
+            relations: ["category", "subCategory", "province"],
         });
 
         captureNotFoundException(product, "Product");
@@ -397,6 +397,7 @@ export class ProductService
 
         const filters: IFilterProduct = {
             notId: id,
+            provinceId: product.province.id,
             categoryIds: [category.id],
             subCategoryIds: [subcategory.id]
         };
