@@ -105,7 +105,7 @@ export class StripeService implements IPaymentCheck {
                             name: orderItem.product.name
                         },
                         unit_amount:
-                         (((getPrice(orderItem.product, orderItem.quantity) * 100) * 100) / 100).toPrecision(0)
+                        Math.round(getPrice(orderItem.product, orderItem.quantity) * 100)
                     },
                     quantity: orderItem.quantity
                 })
@@ -122,7 +122,7 @@ export class StripeService implements IPaymentCheck {
                 display_name: "Envío",
                 type: "fixed_amount",
                 fixed_amount: {
-                    amount: ((order.shipping_price * 100).toPrecision(0)), // Convertir a centavos (entero),// Calcular precio de municipio
+                    amount: Math.round(order.shipping_price * 100), // Convertir a centavos (entero),// Calcular precio de municipio
                     currency: currency
                 },
                 delivery_estimate: {
