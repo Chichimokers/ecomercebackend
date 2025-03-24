@@ -54,6 +54,6 @@ import { MemoryUsageMiddleware } from "./middleware/memory.middleware";
 export class AppModule implements NestModule{
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(LoggingMiddleware).forRoutes('*'); 
-        consumer.apply(MemoryUsageMiddleware).forRoutes('*');// Se aplica a todas las rutas
+
     }
 }
