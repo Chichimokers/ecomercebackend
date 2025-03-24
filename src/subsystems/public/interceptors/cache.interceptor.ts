@@ -9,6 +9,7 @@ import { CACHE_ORM } from '../../../common/constants/cahetimesORM.constants';
 export class PublicCacheInterceptor implements NestInterceptor {
     private excludedPaths: string[] = [
         '/public/currency',
+        '/public/min-price-to-buy'
     ];
 
     constructor(
@@ -19,6 +20,7 @@ export class PublicCacheInterceptor implements NestInterceptor {
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
         // Solo interceptar peticiones GET
         const request = context.switchToHttp().getRequest();
+        console.log(await this.cacheManager.store.keys());
         if (!request.url.startsWith('/public')) {
             return next.handle(); // No aplicar caché a rutas que no sean /public
         }

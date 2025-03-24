@@ -2,18 +2,28 @@
 import { Module } from '@nestjs/common';
 import { PublicModule } from '../public/public.module';
 import { CacheController } from "./controllers/admin.controller";
+import { CacheModule } from "@nestjs/cache-manager";
+import { ConfigService } from "./services/config.service";
+import { AdminService } from "./services/admin.service";
 
 // Otros imports...
 
 @Module({
-  imports: [
-    PublicModule, // Importar el módulo público para acceder a su servicio de caché
-    // Otros imports...
-  ],
-  controllers: [
-    // Otros controladores...
-      CacheController,
-  ],
-  providers: [/* ... */],
+    imports: [
+        PublicModule,
+        CacheModule.register({
+            ttl: 86400,
+            max: 400,
+        }),// Importar el módulo público para acceder a su servicio de caché
+        // Otros imports...
+    ],
+    controllers: [
+        // Otros controladores...
+        CacheController,
+    ],
+    providers: [
+        ConfigService,
+        AdminService,
+    ],
 })
 export class AdminModule {}

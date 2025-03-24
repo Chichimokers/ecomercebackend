@@ -12,4 +12,8 @@ export class CacheService {
         await this.cacheManager.reset();
         console.log("Caché del módulo público limpiada correctamente");
     }
+
+    async getMinPriceToBuy() {
+        return await this.cacheManager.get("/public/min-price-to-buy{}");
+    }
 }

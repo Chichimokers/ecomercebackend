@@ -14,7 +14,7 @@ import { IPagination } from "../../../common/interfaces/pagination.interface";
 @ApiTags('municipality')
 @ApiBearerAuth()
 @Controller('municipality')
-@UseGuards(LocalAuthGuard, RolesGuard)
+//@UseGuards(LocalAuthGuard, RolesGuard)
 export class MunicipalityController {
     constructor(private readonly municipalityService: MunicipalityService) { }
 
@@ -43,6 +43,8 @@ export class MunicipalityController {
         @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateMunicipalityDTO: UpdateMunicipalityDTO,
     ): Promise<Partial<MunicipalityEntity>> {
+        console.log(updateMunicipalityDTO);
+        updateMunicipalityDTO.basePrice = +updateMunicipalityDTO.basePrice;
         return this.municipalityService.update(id, updateMunicipalityDTO);
     }
 
