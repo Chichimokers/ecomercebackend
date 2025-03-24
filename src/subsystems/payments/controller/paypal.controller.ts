@@ -43,9 +43,13 @@ export class PaypalController {
         const link :any = await this.servicePaypal.CreateOrder(
             body.id,
             req.user.Id,
-        );
-
-         res.redirect(link.href)
+        );  
+        if(link.href!=undefined){
+            res.redirect(link.href)
+        }else{
+            return link
+        }
+        
     }
 
     @Get('capture-order')
