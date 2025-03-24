@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocapiBuilder } from './swagger';
 import { ValidationPipe } from "@nestjs/common";
-
+import "./sentry/instrument"
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 

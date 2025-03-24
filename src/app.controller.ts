@@ -11,5 +11,9 @@ export class AppController {
 return "Asere tengo ganas de terminar esto ya pinga";
 
     }
+    @Get("/debug-sentry")
+getError() {
+  throw new Error("My first Sentry error!");
+}
     
 }
