@@ -331,6 +331,7 @@ export class PaypalService {
 
         } catch (error) {
             const axiosError = error as AxiosError;
+   
             console.log(axiosError)
         }
 

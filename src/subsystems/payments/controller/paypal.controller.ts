@@ -47,7 +47,7 @@ export class PaypalController {
         if(link.href!=undefined){
             res.redirect(link.href)
         }else{
-            return link
+            res.write(link)
         }
         
     }
