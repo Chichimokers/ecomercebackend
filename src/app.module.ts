@@ -21,6 +21,7 @@ import { join } from 'path';
 import { LocationsModule } from './subsystems/locations/locations.module';
 import { LoggingMiddleware } from "./middleware/endpoints.middleware";
 import { AdminModule } from "./subsystems/admin/admin.module";
+import { MemoryUsageMiddleware } from "./middleware/memory.middleware";
 
 @Module({
     imports: [
@@ -52,6 +53,7 @@ import { AdminModule } from "./subsystems/admin/admin.module";
 })
 export class AppModule implements NestModule{
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(LoggingMiddleware).forRoutes('*'); // Se aplica a todas las rutas
+        consumer.apply(LoggingMiddleware).forRoutes('*'); 
+        consumer.apply(MemoryUsageMiddleware).forRoutes('*');// Se aplica a todas las rutas
     }
 }

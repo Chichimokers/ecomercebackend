@@ -58,6 +58,7 @@ export class PaypalController {
     ) {
         // Usa el token y payerId según sea necesario
         const response: ConfirmOrder = await this.servicePaypal.confirmorder(token);
+        
         if (response.paid) {
             res.redirect(process.env.SUCCESS_URL + "?order_id=" + response.orderid)
         }

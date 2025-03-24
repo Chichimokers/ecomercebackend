@@ -289,7 +289,7 @@ export class PaypalService {
         let order: string = '';
 
         if (userid.toString() !== orderbd.user.id.toString()) {
-            throw new Error('Esa orden no pertenece a ese usuario');
+            return ('Esa orden no pertenece a ese usuario');
         }
 
         captureNotFoundException(orderbd, 'Order');
