@@ -1,5 +1,6 @@
 import { IsNotEmpty, MaxLength, IsString, IsNumber, IsPositive, IsUUID, IsOptional, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from "class-transformer";
 
 export class priceBWDTO {
     @ApiProperty({
@@ -7,6 +8,7 @@ export class priceBWDTO {
         description: "Price applied for min weight",
         required: true,
     })
+    @Transform(({ value }) => Number(value))
     @IsNotEmpty()
     @IsNumber()
     @IsPositive()
@@ -17,6 +19,7 @@ export class priceBWDTO {
         description: "Weight in kilograms",
         required: true,
     })
+    @Transform(({ value }) => Number(value))
     @IsNotEmpty()
     @IsNumber()
     @IsPositive()
@@ -48,6 +51,7 @@ export class createMunicipalityDTO {
         description: "Base price of the municipality",
         required: true,
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsPositive()
     basePrice: number;
@@ -57,6 +61,7 @@ export class createMunicipalityDTO {
         description: "Min of hours to make delivery",
         required: true,
     })
+    @Transform(({ value }) => Number(value))
     @IsNotEmpty()
     @IsNumber()
     @IsPositive()
@@ -67,6 +72,7 @@ export class createMunicipalityDTO {
         description: "Max of hours to make delivery",
         required: false,
     })
+    @Transform(({ value }) => Number(value))
     @IsOptional()
     @IsNumber()
     @IsPositive()

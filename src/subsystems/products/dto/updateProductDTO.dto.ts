@@ -16,6 +16,7 @@ export class UpdateProductDTO extends BaseDto{
         example: 39,
         description: "peso del producto ",
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @MinLength(2, { message: 'Name must have at least 2 characters.' })
     @MaxLength(20, { message: 'Name must have max 20 characters.' })
@@ -40,6 +41,7 @@ export class UpdateProductDTO extends BaseDto{
         description: "A valid price",
         required: false,
     })
+    @Transform(({ value }) => Number(value))
     @IsOptional()
     @IsNotEmpty()
     @IsNumber({}, { message: 'Please provide valid price.' })
@@ -50,6 +52,7 @@ export class UpdateProductDTO extends BaseDto{
         description: "A valid quantity",
         required: false,
     })
+    @Transform(({ value }) => Number(value))
     @IsOptional()
     @IsNotEmpty()
     quantity?: number;
@@ -98,6 +101,7 @@ export class UpdateProductDTO extends BaseDto{
         example: 40,
         description: "Min of products to apply discount",
     })
+    @Transform(({ value }) => Number(value))
     @IsInt()
     @IsOptional()
     min?: number;
@@ -106,6 +110,7 @@ export class UpdateProductDTO extends BaseDto{
         example: 39.5,
         description: "Reduction of price of the product",
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsOptional()
     reduction?: number;

@@ -25,6 +25,7 @@ export class CreateProductDTO extends BaseDto {
         example: "123.25",
         description: "A valid price",
     })
+    @Transform(({ value }) => Number(value))
     @IsNotEmpty()
     @IsNumber({}, { message: 'Please provide a valid price.' })
     price: number;
@@ -33,6 +34,7 @@ export class CreateProductDTO extends BaseDto {
         example: "100",
         description: "A valid quantity",
     })
+    @Transform(({ value }) => Number(value))
     @IsNotEmpty()
     @IsNumber()
     quantity: number;
@@ -58,6 +60,7 @@ export class CreateProductDTO extends BaseDto {
         description: "Min of products to apply discount",
         required: false,
     })
+    @Transform(({ value }) => Number(value))
     @IsInt()
     @IsOptional()
     min?: number;
@@ -67,6 +70,7 @@ export class CreateProductDTO extends BaseDto {
         description: "Reduction of price of the product",
         required: false,
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsOptional()
     reduction?: number;
@@ -76,6 +80,7 @@ export class CreateProductDTO extends BaseDto {
         description: "ID Category to change",
         required: false,
     })
+    @Transform(({ value }) => Number(value))
     @IsOptional()
     @IsNotEmpty()
     @IsUUID()
@@ -95,6 +100,7 @@ export class CreateProductDTO extends BaseDto {
         example: 30.0,
         description: "Weight of the product"
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsNotEmpty()
     @IsPositive()
