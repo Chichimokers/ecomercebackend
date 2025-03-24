@@ -45,7 +45,7 @@ export class PaypalController {
             req.user.Id,
         );
 
-         res.redirect(link)
+         return link
     }
 
     @Get('capture-order')
