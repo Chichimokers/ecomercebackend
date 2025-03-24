@@ -40,12 +40,12 @@ export class PaypalController {
         @Res() res: Response,
     ): Promise<any> {
 
-        const link: string = await this.servicePaypal.CreateOrder(
+        const link :any = await this.servicePaypal.CreateOrder(
             body.id,
             req.user.Id,
         );
 
-         return link
+         res.redirect(link.href)
     }
 
     @Get('capture-order')
