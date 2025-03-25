@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { DocapiBuilder } from './swagger';
 import { ValidationPipe } from "@nestjs/common";
 import "./sentry/instrument"
+import { Integrations } from '@sentry/tracing';
+import * as Sentry from "@sentry/node";
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
