@@ -12,7 +12,7 @@ import { SetMinPriceToBuyDTO } from "../dto/minPrice.dto";
 @ApiTags("Admin")
 @Controller("admin")
 @ApiBearerAuth()
-//@UseGuards(LocalAuthGuard, RolesGuard)
+@UseGuards(LocalAuthGuard, RolesGuard)
 export class CacheController {
     constructor(
         @Inject(CacheService)
@@ -24,7 +24,7 @@ export class CacheController {
     }
 
     @Get("clear-public")
-    //@Roles(roles.Admin)
+    @Roles(roles.Admin)
     @ApiOperation({ summary: "Limpiar la caché del módulo público" })
     async clearPublicCache() {
         await this.cacheService.clearPublicCache();
@@ -35,7 +35,7 @@ export class CacheController {
     }
 
     @Post("set-min-price")
-    //@Roles(roles.Admin)
+    @Roles(roles.Admin)
     @ApiOperation({ summary: "Set min price" })
     async setMinPrice(@Body() data: SetMinPriceToBuyDTO) {
         await this.adminService.setMinPriceToBuy(data.price);

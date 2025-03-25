@@ -14,7 +14,7 @@ import { IPagination } from "../../../common/interfaces/pagination.interface";
 @ApiTags('municipality')
 @ApiBearerAuth()
 @Controller('municipality')
-//@UseGuards(LocalAuthGuard, RolesGuard)
+@UseGuards(LocalAuthGuard, RolesGuard)
 export class MunicipalityController {
     constructor(private readonly municipalityService: MunicipalityService) { }
 
