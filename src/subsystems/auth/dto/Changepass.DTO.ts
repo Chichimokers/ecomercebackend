@@ -18,10 +18,10 @@ export class ChangepassVerify  extends BaseDto {
     @IsNotEmpty()
     @IsEmail()
     @ApiProperty({
-        example: "ernest@gmail.com",
-        description: "mail used in signup",
+        example: "234234234",
+        description: "the key ",
     })
-    readonly email: string;
+    readonly id: string;
 
     @ApiProperty({
         example: "123233",
