@@ -2,6 +2,8 @@ import {
     BadRequestException,
     Body,
     Controller,
+    HttpException,
+    HttpStatus,
     Inject,
     Post,
     UnauthorizedException,
@@ -107,6 +109,12 @@ export class AuthController {
             throw new UnauthorizedException(error.message);
         }
     }
+    @Post('/change-pass')
+    async changepass():  Promise<any> {
+
+
+    }
+
 
     @Post('/login')
     async Login(@Body() loginBody: LoginBody): Promise<string> {
@@ -136,6 +144,10 @@ export class AuthController {
             const userdata: CreateUserDto =
                 this.authservice.getUserDataDTO(logindata);
 
+                const exist  = this.authservice.userexitst(userdata)
+                if(exist != null ){
+                  throw new HttpException(exist, HttpStatus.CONFLICT);
+                }
             const signupresult =
                 await this.authservice.sendVerificationEmailSignUp(userdata);
 

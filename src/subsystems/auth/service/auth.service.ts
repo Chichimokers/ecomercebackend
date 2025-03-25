@@ -121,6 +121,17 @@ export class AuthService {
         }
         return existingUser;
     }
+    async userexitst(user:CreateUserDto): Promise<any>{
+        const user_found : User  = await this.userRepository.findOne({where:{
+            email:user.email
+        }})
+
+        if(!user_found){
+            return null;
+        }else{
+            return JSON.stringify({error:"user  exsist"});;
+        }
+    }
 
     async generateTokens(user: User) {
         const payload = {
