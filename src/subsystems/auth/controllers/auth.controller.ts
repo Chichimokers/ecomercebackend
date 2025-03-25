@@ -22,6 +22,7 @@ import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
 import { RefresTokenDTO } from '../dto/refrestoken.dto';
 import { stringify } from 'querystring';
 import { jwtConstants } from '../constants';
+import { ChangepassPetition, ChangepassVerify } from '../dto/Changepass.DTO';
 
 @ApiTags('login')
 @Controller('auth')
@@ -112,19 +113,15 @@ export class AuthController {
         }
     }
     @Post('/change-pass')
-    async changepass(@Body() changepass: {email:string}):  Promise<any> {
+    async changepass(@Body() changepass:ChangepassPetition):  Promise<any> {
 
         return await this.authservice.sendChangePass(changepass.email);
 
 
     }
 
-    @Post('/veriofy-change-pass')
-    async verifchangepass(@Body() changepass:{
-        id:string,
-        newpass:string,
-
-    }):  Promise<any> {
+    @Post('/verify-change-pass')
+    async verifchangepass(@Body() changepass:ChangepassVerify ) :Promise<any> {
 
         const ae : boolean = await this.authservice.changepass(changepass)
         if(ae){

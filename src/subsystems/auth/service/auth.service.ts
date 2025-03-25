@@ -10,6 +10,7 @@ import { SingUpBody } from '../dto/signupDTO.dto';
 import { roles } from '../../roles/enum/roles.enum';
 import { OAuth2Client } from 'google-auth-library';
 import { jwtConstants } from '../constants';
+import { ChangepassVerify } from '../dto/Changepass.DTO';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +43,7 @@ export class AuthService {
             message: 'succesfully mail link send',
         };
     }
-    async changepass(changepass:{ id:string,   newpass:string,}):Promise<boolean>{
+    async changepass(changepass:ChangepassVerify):Promise<boolean>{
 
 
         const email:any = await this.CodeServices.getMailUserforLink(changepass.id);
