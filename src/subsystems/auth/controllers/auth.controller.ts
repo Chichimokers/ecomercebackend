@@ -20,6 +20,8 @@ import { CodeService } from '../service/code.service';
 import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
 //import { AuthGuard } from '@nestjs/passport';
 import { RefresTokenDTO } from '../dto/refrestoken.dto';
+import { stringify } from 'querystring';
+import { jwtConstants } from '../constants';
 
 @ApiTags('login')
 @Controller('auth')
@@ -110,11 +112,28 @@ export class AuthController {
         }
     }
     @Post('/change-pass')
-    async changepass():  Promise<any> {
+    async changepass(@Body() changepass: {email:string}):  Promise<any> {
+
+        return await this.authservice.sendChangePass(changepass.email);
 
 
     }
 
+    @Post('/veriofy-change-pass')
+    async verifchangepass(@Body() changepass:{
+        id:string,
+        newpass:string,
+
+    }):  Promise<any> {
+
+        const ae : boolean = await this.authservice.changepass(changepass)
+        if(ae){
+            return JSON.stringify({"message":"sucefully password change"})
+        }else{
+            throw new  HttpException("error",HttpStatus.BAD_REQUEST)
+        }
+
+    }
 
     @Post('/login')
     async Login(@Body() loginBody: LoginBody): Promise<string> {

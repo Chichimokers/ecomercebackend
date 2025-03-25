@@ -36,6 +36,28 @@ export class AuthService {
         };
     }
 
+    async sendChangePass(email:string): Promise<any> {
+        await this.CodeServices.sendLInkEmail(email);
+        return {
+            message: 'succesfully mail link send',
+        };
+    }
+    async changepass(changepass:{ id:string,   newpass:string,}):Promise<boolean>{
+
+
+        const email:any = await this.CodeServices.getMailUserforLink(changepass.id);
+
+        const usuario :User = await this.userRepository.findOne({where:{
+         email:email
+        }});
+        const salt = await bcrypt.genSalt();
+
+        usuario.password = await bcrypt.hash(changepass.newpass, salt)
+
+        return true
+       
+    }
+
     // En el servicio de autenticación (auth.service.ts)
     async verifirefresh_token(refresh_token: string): Promise<User | null> {
         if (!refresh_token) {
