@@ -16,8 +16,6 @@ export class CreateProductDTO extends BaseDto {
     })
     @Transform(({ value }) => value.trim())
     @IsString()
-    @MinLength(2, { message: 'Name must have at least 2 characters.' })
-    @MaxLength(20, { message: 'Name must have max 20 characters.' })
     @IsNotEmpty()
     name: string;
 
@@ -80,7 +78,6 @@ export class CreateProductDTO extends BaseDto {
         description: "ID Category to change",
         required: false,
     })
-    @Transform(({ value }) => Number(value))
     @IsOptional()
     @IsNotEmpty()
     @IsUUID()
