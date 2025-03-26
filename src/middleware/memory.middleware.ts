@@ -20,6 +20,7 @@ export class MemoryUsageMiddleware implements NestMiddleware {
             heapTotal: formatBytes(memoryUsage.heapTotal),
             heapUsed: formatBytes(memoryUsage.heapUsed),
             external: formatBytes(memoryUsage.external),
+            
             arrayBuffers: formatBytes(memoryUsage.arrayBuffers),
         };
         console.log('Uso de memoria:', formattedMemoryUsage);

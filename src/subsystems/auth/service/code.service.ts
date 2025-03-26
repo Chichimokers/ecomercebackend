@@ -6,6 +6,7 @@ import { CreateUserDto } from "../../user/dto";
 import { roles } from "../../roles/enum/roles.enum";
 import * as bcrypt from 'bcrypt';
 import { UserService } from "../../user/service/user.service";
+import { IsEmail } from 'class-validator';
 
 @Injectable()
 export class CodeService {
@@ -34,7 +35,30 @@ export class CodeService {
 
         return verificationCode;
     }
+    async sendLInkEmail(email: string) {
+        
+        const linkid = randomBytes(6).toString('hex'); // Genera un código aleatorio de 6 caracteres
+        // Aquí podrías almacenar el código y el correo del usuario en una base de datos o en memoria por un tiempo limitado
+        const sendmail= await this.mailService.sendChangePAssMail(email, linkid);
 
+        if (!sendmail) throw new ConflictException('Error sending link email');
+
+        const userdata = {
+       
+            email: email,
+            
+            passchange:linkid
+        }
+
+        await this.cacheManager.set(email, userdata, 120000); // Almacena el código en caché por 120 segundos
+
+        return linkid;
+    }
+    async getMailUserforLink(id:string){
+        const data : any = await this.cacheManager.get(id)
+        return  data.email
+
+    }
     async verifyCode(email: string, code: string) {
         // Verifica el código comparando con el almacenado (deberías usar una base de datos o caché)
         const coded: any = await this.cacheManager.get(email);

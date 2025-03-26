@@ -40,12 +40,16 @@ export class PaypalController {
         @Res() res: Response,
     ): Promise<any> {
 
-        const link: string = await this.servicePaypal.CreateOrder(
+        const link :any = await this.servicePaypal.CreateOrder(
             body.id,
             req.user.Id,
-        );
-
-         res.redirect(link)
+        );  
+        if(link.href!=undefined){
+            res.redirect(link.href)
+        }else{
+            res.write(link)
+        }
+        
     }
 
     @Get('capture-order')
@@ -58,6 +62,7 @@ export class PaypalController {
     ) {
         // Usa el token y payerId según sea necesario
         const response: ConfirmOrder = await this.servicePaypal.confirmorder(token);
+        
         if (response.paid) {
             res.redirect(process.env.SUCCESS_URL + "?order_id=" + response.orderid)
         }

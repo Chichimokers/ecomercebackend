@@ -75,6 +75,21 @@ export class MailsService {
             return false;
         }
     }
+    public async sendChangePAssMail(to: string, linkid: string) {
+        try {
+            await this.mailservice.sendMail({
+                to: to, // Dirección de correo del destinatario
+                from: '"Esaki-Shop" <developer1575@gmail.com>', // Remitente
+                subject: 'Change yout pass here ', // Asunto del correo
+                text: `Your link to change pass is : ${linkid}`, 
+            });
+            console.log('link email sent successfully');
+            return true;
+        } catch (error) {
+            console.error('Error sending verification email:', error);
+            return false;
+        }
+    }
 
     // *--- For Notifications Admins ---* //
 

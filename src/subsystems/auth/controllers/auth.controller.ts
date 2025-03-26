@@ -2,6 +2,8 @@ import {
     BadRequestException,
     Body,
     Controller,
+    HttpException,
+    HttpStatus,
     Inject,
     Post,
     UnauthorizedException,
@@ -18,6 +20,9 @@ import { CodeService } from '../service/code.service';
 import { SingUpBodyVerifcation } from '../dto/verficationDTO.dto';
 //import { AuthGuard } from '@nestjs/passport';
 import { RefresTokenDTO } from '../dto/refrestoken.dto';
+import { stringify } from 'querystring';
+import { jwtConstants } from '../constants';
+import { ChangepassPetition, ChangepassVerify } from '../dto/Changepass.DTO';
 
 @ApiTags('login')
 @Controller('auth')
@@ -107,6 +112,25 @@ export class AuthController {
             throw new UnauthorizedException(error.message);
         }
     }
+    @Post('/change-pass')
+    async changepass(@Body() changepass:ChangepassPetition):  Promise<any> {
+
+        return await this.authservice.sendChangePass(changepass.email);
+
+
+    }
+
+    @Post('/verify-change-pass')
+    async verifchangepass(@Body() changepass:ChangepassVerify ) :Promise<any> {
+
+        const ae : boolean = await this.authservice.changepass(changepass)
+        if(ae){
+            return JSON.stringify({"message":"sucefully password change"})
+        }else{
+            throw new  HttpException("error",HttpStatus.BAD_REQUEST)
+        }
+
+    }
 
     @Post('/login')
     async Login(@Body() loginBody: LoginBody): Promise<string> {
@@ -136,6 +160,10 @@ export class AuthController {
             const userdata: CreateUserDto =
                 this.authservice.getUserDataDTO(logindata);
 
+                const exist  = this.authservice.userexitst(userdata)
+                if(exist != null ){
+                  throw new HttpException(exist, HttpStatus.CONFLICT);
+                }
             const signupresult =
                 await this.authservice.sendVerificationEmailSignUp(userdata);
 

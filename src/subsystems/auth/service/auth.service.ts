@@ -10,6 +10,7 @@ import { SingUpBody } from '../dto/signupDTO.dto';
 import { roles } from '../../roles/enum/roles.enum';
 import { OAuth2Client } from 'google-auth-library';
 import { jwtConstants } from '../constants';
+import { ChangepassVerify } from '../dto/Changepass.DTO';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,28 @@ export class AuthService {
             message: 'succesfully mail code send',
             next: '/verify-code-signup',
         };
+    }
+
+    async sendChangePass(email:string): Promise<any> {
+        await this.CodeServices.sendLInkEmail(email);
+        return {
+            message: 'succesfully mail link send',
+        };
+    }
+    async changepass(changepass:ChangepassVerify):Promise<boolean>{
+
+
+        const email:any = await this.CodeServices.getMailUserforLink(changepass.id);
+
+        const usuario :User = await this.userRepository.findOne({where:{
+         email:email
+        }});
+        const salt = await bcrypt.genSalt();
+
+        usuario.password = await bcrypt.hash(changepass.newpass, salt)
+
+        return true
+       
     }
 
     // En el servicio de autenticación (auth.service.ts)
@@ -120,6 +143,17 @@ export class AuthService {
             return this.userRepository.save(newUser);
         }
         return existingUser;
+    }
+    async userexitst(user:CreateUserDto): Promise<any>{
+        const user_found : User  = await this.userRepository.findOne({where:{
+            email:user.email
+        }})
+
+        if(!user_found){
+            return null;
+        }else{
+            return JSON.stringify({error:"user  exsist"});;
+        }
     }
 
     async generateTokens(user: User) {

@@ -21,9 +21,13 @@ import { join } from 'path';
 import { LocationsModule } from './subsystems/locations/locations.module';
 import { LoggingMiddleware } from "./middleware/endpoints.middleware";
 import { AdminModule } from "./subsystems/admin/admin.module";
-
+import { MemoryUsageMiddleware } from "./middleware/memory.middleware";
+import { APP_FILTER } from "@nestjs/core";
+import { SentryGlobalFilter } from '@sentry/nestjs/setup';
+import { SentryModule } from '@sentry/nestjs/setup';
 @Module({
     imports: [
+        SentryModule.forRoot(),
         TypeOrmModule.forRoot(PostgresDataSource.options),
         ConfigModule.forRoot({ isGlobal: true }),
         UserModule,
@@ -48,10 +52,14 @@ import { AdminModule } from "./subsystems/admin/admin.module";
         }),
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService,{
+        provide: APP_FILTER,
+        useClass: SentryGlobalFilter,
+      },],
 })
 export class AppModule implements NestModule{
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(LoggingMiddleware).forRoutes('*'); // Se aplica a todas las rutas
+        consumer.apply(LoggingMiddleware).forRoutes('*'); 
+
     }
 }
