@@ -82,6 +82,10 @@ export class OrderService extends BaseService<OrderEntity> {
             0
         );
 
+        if (subtotal < parseInt(process.env.MIN_PRICE)) {
+            throw new BadRequestException(`You should buy a subtotal of ${process.env.MIN_PRICE}`);
+        }
+
         // Calcular el peso total de los productos
         const totalWeight: number = productsWithQuantities.reduce(
             (total, { product, quantity }) => {
