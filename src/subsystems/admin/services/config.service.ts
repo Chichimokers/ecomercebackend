@@ -25,6 +25,7 @@ export class ConfigService implements OnModuleInit {
     @Cron('0 0 */23 * * *')
     private async loadConfig(): Promise<void> {
         try {
+            console.log(__dirname);
             const data = await fs.readFile(this.filePath, "utf8");
             this.config = JSON.parse(data);
         } catch (error) {
