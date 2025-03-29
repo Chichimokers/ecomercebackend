@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { ProvinceEntity } from '../entity/province.entity';
 import { captureBadRequestException, captureNotFoundException } from '../../../common/exceptions/modular.exception';
 import { PriceByWeightEntity } from '../entity/priceByWeight.entity';
+import { IPagination } from 'src/common/interfaces/pagination.interface';
 
 @Injectable()
 export class MunicipalityService extends BaseService<MunicipalityEntity> {
@@ -23,7 +24,30 @@ export class MunicipalityService extends BaseService<MunicipalityEntity> {
     ) {
         super(municipalityRepository);
     }
+    override async findAll(pagination?: IPagination): Promise<MunicipalityEntity[]> {
+            const take = pagination.page ? pagination.page * pagination.limit : undefined;
+            const skip = pagination.limit ? pagination.limit : undefined; // Desde qué índice empezar
+    
+            return await this.repository.find({
+                skip: skip,
+                take: take,
+                relations:{
+                    province:true,
+                    prices:true,
 
+                }
+                ,
+                select:{
+                    basePrice:true,
+
+                    province:{
+                        name:true
+                    },
+
+                }
+            });
+        }
+    
     override async create(dto: any): Promise<MunicipalityEntity> {
         const province: ProvinceEntity = await this.provinceRepository.findOne({
             where: { id: dto.province },

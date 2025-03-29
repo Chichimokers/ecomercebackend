@@ -31,6 +31,7 @@ export abstract class BaseService<BaseEntity extends ObjectLiteral> implements I
         return await this.repository.find({
             skip: skip,
             take: take,
+            
         });
     }
 
