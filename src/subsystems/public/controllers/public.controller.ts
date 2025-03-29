@@ -1,7 +1,7 @@
 import {
     Body,
     Controller, ForbiddenException,
-    Get, Param,
+    Get, Inject, Param,
     ParseUUIDPipe,
     Post,
     Query
@@ -29,7 +29,9 @@ import { IPagination } from "../../../common/interfaces/pagination.interface";
 @Controller("public")
 export class PublicController {
     constructor(
+        @Inject(PublicService)
         private publicService: PublicService,
+        @Inject(ScrapSchedule)
         private readonly scrapSchedule: ScrapSchedule,
     ) {
     }
@@ -150,5 +152,11 @@ export class PublicController {
             throw new ForbiddenException("Schedules are not available now!");
 
         return this.scrapSchedule.get();
+    }
+
+    // *--- Get Min Price ---* //
+    @Get("/min-price-to-buy")
+    public async getMinPrice() {
+        return await this.publicService.getMinPriceToBuy();
     }
 }

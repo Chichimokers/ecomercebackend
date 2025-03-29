@@ -7,6 +7,7 @@ import {
     IsUUID,
     MaxLength,
 } from 'class-validator';
+import { Transform } from "class-transformer";
 
 export class UpdateMunicipalityDTO {
     @ApiProperty({
@@ -22,6 +23,7 @@ export class UpdateMunicipalityDTO {
         example: 19.99,
         description: 'Price of delivery in dollars',
     })
+    @Transform(({ value }) => Number(value))
     @IsOptional()
     @IsNumber()
     @IsPositive()
@@ -31,6 +33,7 @@ export class UpdateMunicipalityDTO {
         example: 24,
         description: 'Min hours to do delivery',
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsOptional()
     minHours?: number;
@@ -39,6 +42,7 @@ export class UpdateMunicipalityDTO {
         example: 48,
         description: 'Max hours to do delivery',
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsOptional()
     maxHours?: number;

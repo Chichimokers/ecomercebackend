@@ -21,8 +21,8 @@ export class CategoryService extends BaseService<CategoryEntity> {
     override async findAll(pagination: IPagination){
         return await this.categoryRepository.find({
             relations: ['subCategories'],
-            skip: pagination.page * pagination.limit,
-            take: pagination.limit,
+            skip: pagination.page ? pagination.page * pagination.limit : undefined,
+            take: pagination.limit ? pagination.limit : undefined,
         });
     }
 

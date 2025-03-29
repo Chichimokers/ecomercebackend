@@ -4,6 +4,8 @@ import { Between, In, MoreThanOrEqual, Not, MoreThan } from "typeorm";
 export function applyFilter(filters: IFilterProduct) {
     const whereConditions: any = {}
 
+    whereConditions.deleted_at = null;
+
     if (filters.categoryIds && filters.categoryIds.length > 0) {
         whereConditions.category = { id: In(filters.categoryIds) };
     }
@@ -38,6 +40,8 @@ export function applyFilter(filters: IFilterProduct) {
 }
 
 export function applyQueryFilters(query: any, filters: IFilterProduct) {
+    query.where('product.deleted_at IS NULL');
+
     if (filters) {
         if (filters.id) {
             query.andWhere('product.id = :id', { id: filters.id });

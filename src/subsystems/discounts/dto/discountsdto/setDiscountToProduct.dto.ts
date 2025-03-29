@@ -1,5 +1,6 @@
 import { IsNumber, IsPositive, IsUUID } from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from "class-transformer";
 
 export class setDiscountToProductDTO {
     @ApiProperty({
@@ -13,6 +14,7 @@ export class setDiscountToProductDTO {
         example: 29,
         description: 'Percent discount of related product'
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsPositive()
     reduction: number;
@@ -21,6 +23,7 @@ export class setDiscountToProductDTO {
         example: 29,
         description: 'Percent discount of related product'
     })
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsPositive()
     min: number;

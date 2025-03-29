@@ -43,6 +43,8 @@ export class MunicipalityController {
         @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateMunicipalityDTO: UpdateMunicipalityDTO,
     ): Promise<Partial<MunicipalityEntity>> {
+        console.log(updateMunicipalityDTO);
+        updateMunicipalityDTO.basePrice = +updateMunicipalityDTO.basePrice;
         return this.municipalityService.update(id, updateMunicipalityDTO);
     }
 

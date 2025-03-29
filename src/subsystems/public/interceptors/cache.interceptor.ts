@@ -9,9 +9,13 @@ import { CACHE_ORM } from '../../../common/constants/cahetimesORM.constants';
 export class PublicCacheInterceptor implements NestInterceptor {
     private excludedPaths: string[] = [
         '/public/currency',
+        '/public/min-price-to-buy'
     ];
 
-    constructor(@Inject(Cache) private cacheManager: Cache) { }
+    constructor(
+        @Inject(Cache)
+        private cacheManager: Cache
+    ) { }
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
         // Solo interceptar peticiones GET

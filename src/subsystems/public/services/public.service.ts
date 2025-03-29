@@ -13,17 +13,21 @@ import { SearchproductDTO } from "../dto/frontsDTO/productsDTO/searchproduct.dto
 import { ShippingDTO } from "../dto/frontsDTO/ordersDTO/shippingPrice.dto";
 import { ProductEntity } from "../../products/entity/product.entity";
 import { IPagination } from "../../../common/interfaces/pagination.interface";
+import { Cache } from "@nestjs/cache-manager";
 
 @Injectable()
 export class PublicService {
     constructor(
-        @Inject(ProductService) private readonly productService: ProductService,
+        @Inject(ProductService)
+        private readonly productService: ProductService,
         @Inject(CategoryService)
         private readonly categoryService: CategoryService,
         @Inject(ProvinceService)
         private readonly provinceService: ProvinceService,
         @Inject(MunicipalityService)
         private readonly municipalityService: MunicipalityService,
+        @Inject(Cache)
+        private readonly cacheService: Cache,
     ) {
     }
 
@@ -133,5 +137,9 @@ export class PublicService {
         }
 
         return shippingPrice;
+    }
+
+    public async getMinPriceToBuy() {
+        return await this.cacheService.get("minPriceToBuy");
     }
 }

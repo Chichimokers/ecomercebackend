@@ -27,7 +27,6 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ScrapSchedule } from "./schedule/scrap.schedule";
 import { CacheService } from "./services/cacheService.service";
 import { MailsService } from "../mails/services/mails.service";
-import { InitializeSchedule } from "./schedule/initialize.schedule";
 
 @Module({
     imports:[
