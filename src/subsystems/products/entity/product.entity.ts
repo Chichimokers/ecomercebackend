@@ -44,7 +44,8 @@ export class ProductEntity extends BaseEntity {
     @IsPositive()
     weight: number;
 
-    @ManyToOne(() => ProvinceEntity, { nullable: false, cascade: true })
+    @ManyToOne(() => ProvinceEntity,
+        { nullable: false, onDelete: "CASCADE" })
     @JoinColumn({ name: "province_id" })
     province: ProvinceEntity;
 
@@ -61,19 +62,19 @@ export class ProductEntity extends BaseEntity {
     @JoinColumn()
     discounts: DiscountEntity;
 
-    @OneToMany(() => RatingEntity, (rating) => rating.product,{nullable:true})
+    @OneToMany(() => RatingEntity, (rating) => rating.product, { nullable: true })
     ratings: RatingEntity[];
 
     @ManyToOne(
         () => CategoryEntity, (category) => category.products,
-        { nullable: true, cascade: true }
+        { nullable: true, onDelete: "SET NULL" }
     )
     @Index()
     category: CategoryEntity;
 
     @ManyToOne(
         () => SubCategoryEntity, (subCategory) => subCategory.products,
-        { nullable: true, cascade: true }
+        { nullable: true, onDelete: "SET NULL" }
     )
     @Index()
     subCategory: SubCategoryEntity;
