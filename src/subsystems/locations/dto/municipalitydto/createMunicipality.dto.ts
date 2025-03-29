@@ -86,7 +86,7 @@ export class createMunicipalityDTO {
         description: "Price applied for min weight",
         required: true,
     })
-    @IsNotEmpty()
+    @IsOptional()
     @IsArray()
-    weightPrices: priceBWDTO[];
+    weightPrices?: priceBWDTO[];
 }
