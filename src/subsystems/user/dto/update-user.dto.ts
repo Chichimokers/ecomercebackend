@@ -1,12 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
     IsEmail,
-    IsNotEmpty,
     IsString,
     MinLength,
     MaxLength,
-    IsNumber
-} from 'class-validator';
+    IsNumber, IsOptional
+} from "class-validator";
 import { Transform } from 'class-transformer';
 
 export class UpdateUserDto {
@@ -16,9 +15,9 @@ export class UpdateUserDto {
     })
     @Transform(({ value }) => value.trim())
     @IsString()
-    @MinLength(2, { message: 'Name must have atleast 2 characters.' })
-    @MaxLength(20, { message: 'Name must have max 20 characters.' })
-    @IsNotEmpty()
+    @MinLength(2, { message: 'Name must have at least 2 characters.' })
+    @MaxLength(128, { message: 'Name must have max 128 characters.' })
+    @IsOptional()
     name?: string;
 
     @ApiPropertyOptional({
@@ -26,6 +25,7 @@ export class UpdateUserDto {
         description: "A valid email address",
     })
     @IsEmail({}, { message: 'Please provide valid Email.' })
+    @IsOptional()
     email?: string;
 
     @ApiPropertyOptional({
@@ -33,6 +33,6 @@ export class UpdateUserDto {
         description: "1-User 2-Admin",
     })
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     rol?:number
 }
