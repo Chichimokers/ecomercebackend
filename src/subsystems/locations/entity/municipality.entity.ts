@@ -15,7 +15,9 @@ export class MunicipalityEntity extends BaseEntity {
     name: string;
 
     @IsNotEmpty()
-    @ManyToOne(() => ProvinceEntity, (province) => province.municipalities)
+    @ManyToOne(() => ProvinceEntity,
+        (province) => province.municipalities,
+        { nullable: false, onDelete: 'CASCADE', })
     province: ProvinceEntity;
 
     @IsNotEmpty()

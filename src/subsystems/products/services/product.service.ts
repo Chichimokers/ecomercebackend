@@ -285,12 +285,14 @@ export class ProductService
             quantity: product.quantity,
             weight: product.weight,
             averageRating: parseFloat(ratingAVG(product.ratings)) || undefined,
-            province: product.province.name,
+            province: product.province?.name || undefined,
             category:
-                product.category.name || product.category.id || undefined,
+                product.category?.name ||
+                product.category?.id ||
+                undefined,
             subCategory:
-                product.subCategory.name ||
-                product.subCategory.id ||
+                product.subCategory?.name ||
+                product.subCategory?.id ||
                 undefined,
             discount:
                 !product.discounts || product.discounts.reduction === null
