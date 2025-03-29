@@ -7,7 +7,6 @@ import { IServiceDTOC } from '../../../common/interfaces/base-service.interface'
 import { UpdateSubCategoryDTO } from '../dto/subcategorydto/updateSubCategory.dto';
 import { captureNotFoundException } from '../../../common/exceptions/modular.exception';
 import { CreateSubCategoryDTO } from "../dto/subcategorydto/createSubCategory.dto";
-import { IPagination } from "src/common/interfaces/pagination.interface";
 
 @Injectable()
 export class SubCategoryService
@@ -26,24 +25,7 @@ export class SubCategoryService
     ) {
         super(subCategoryRepository);
     }
-    override  async findAll(pagination?: IPagination): Promise<SubCategoryEntity[]> {
-            const take = pagination.page ? pagination.page * pagination.limit : undefined;
-            const skip = pagination.limit ? pagination.limit : undefined; // Desde qué índice empezar
-        
-            return await this.repository.find({
 
-                select:{
-                    category:{name:true},
-                },
-
-                relations:{
-                    category:true
-                },
-                skip: skip,
-                take: take,
-                
-            });
-        }
     async insertByDTO(dto: CreateSubCategoryDTO) {
         // QueryFailedError
         const category: CategoryEntity = await this.categoryRepository.findOne({
