@@ -356,6 +356,7 @@ export class ProductService
                 name: true,
                 image: true,
                 price: true,
+                quantity: true,
                 short_description: true,
                 category: {
                     name: true
