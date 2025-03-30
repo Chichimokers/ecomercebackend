@@ -399,9 +399,9 @@ export class ProductService
 
         const filters: IFilterProduct = {
             notId: id,
-            provinceId: product.province.id,
-            categoryIds: [category.id],
-            subCategoryIds: [subcategory.id]
+            provinceId: product.province?.id || undefined,
+            categoryIds: category ? [category.id] : undefined,
+            subCategoryIds: subcategory ? [subcategory.id] : []
         };
 
         const products: ProductEntity[] = await this.getProductsByORM(filters, 0, 15);

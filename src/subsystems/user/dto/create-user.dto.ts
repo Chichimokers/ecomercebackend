@@ -5,34 +5,34 @@ import {
     MinLength,
     MaxLength,
     IsNumber
-} from 'class-validator';
+} from "class-validator";
 
-import { Transform } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from "class-transformer";
+import { ApiProperty } from "@nestjs/swagger";
 import { BaseDto } from "../../../common/dto/base.dto";
 
 export class CreateUserDto extends BaseDto {
-   @ApiProperty({
+    @ApiProperty({
         example: "User name",
-        description: "Name of your user",
+        description: "Name of your user"
     })
     @Transform(({ value }) => value.trim())
     @IsString()
-    @MinLength(2, { message: 'Name must have atleast 2 characters.' })
-    @MaxLength(20, { message: 'Name must have max 20 characters.' })
+    @MinLength(2, { message: "Name must have at least 2 characters." })
+    @MaxLength(128, { message: "Name must have max 128 characters." })
     @IsNotEmpty()
     name: string;
 
     @ApiProperty({
         example: "User Email",
-        description: "A valid email address",
+        description: "A valid email address"
     })
-    @IsEmail({}, { message: 'Please provide valid Email.' })
+    @IsEmail({}, { message: "Please provide valid Email." })
     email: string;
 
     @ApiProperty({
         example: "User password",
-        description: "A valid user password",
+        description: "A valid user password"
     })
     @Transform(({ value }) => value.trim())
     @IsNotEmpty()
@@ -40,9 +40,9 @@ export class CreateUserDto extends BaseDto {
 
     @ApiProperty({
         example: "1",
-        description: "1-User 2-Admin",
+        description: "1-User 2-Admin"
     })
     @IsNumber()
     @IsNotEmpty()
-    rol :number;
+    rol: number;
 }
