@@ -6,7 +6,7 @@ import {
     Body,
     Patch,
     Param,
-    Delete, ParseUUIDPipe, Query
+    Delete, ParseUUIDPipe, Query, Req
 } from "@nestjs/common";
 import {
     ApiTags,
@@ -21,30 +21,14 @@ import { OrderEntity } from '../entities/order.entity';
 import { updateOrderDTO } from '../dto/updateOrderDTO.dto';
 import { IPagination } from "../../../common/interfaces/pagination.interface";
 
+
 @ApiTags('orders')
 @ApiBearerAuth()
 @Controller('orders')
 @UseGuards(LocalAuthGuard,RolesGuard)
 export class OrderControllers {
     constructor(private readonly orderService: OrderService) { }
-
-    /*@ApiCreatedResponse({ description: 'The record has been created successfully created' })
-    @ApiForbiddenResponse({ description: 'Forbidden' })
-    @Post()
-    @Roles(roles.Admin)
-    @ApiResponse({status: 201, description: "Create an order to do a payment"})
-    create(@Body() createOrderDto: CreateOrderDTO): Promise<any> {
-        return this.orderService.createOrder(
-            createOrderDto.id,
-            createOrderDto.phone,
-            createOrderDto.address,
-            createOrderDto.CI
-        );
-    }*/
-
-    //@UseGuards(JwtAuthGuard)
-
-
+    
     @Get()
     @Roles(roles.Admin)
     async getallorders_prodcts(@Query() pagination?: IPagination): Promise<OrderEntity[]> {
@@ -75,9 +59,15 @@ export class OrderControllers {
         return this.orderService.softDelete(id);
     }
 
-    @Post('complete-order')
+    @Get(':ci')
+    @Roles(roles.Admin, roles.Delivering)
+    async getOrdersByCi(@Param('ci') ci: string): Promise<OrderEntity[]> {
+        return await this.orderService.findOrdersByCi(ci);
+    }
+
+    @Post('complete-order/:id')
     @Roles(roles.Delivering, roles.Admin)
-    async completeOrder(@Param('id', new ParseUUIDPipe()) id: string): Promise<{message: string}> {
-        return await this.orderService.completeOrder(id);
+    async completeOrder(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: any): Promise<{message: string}> {
+        return await this.orderService.completeOrder(id, req.user.id);
     }
 }

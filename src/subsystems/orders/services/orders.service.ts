@@ -13,6 +13,7 @@ import { calculateDiscount } from "../../../common/utils/global-functions.utils"
 import { MunicipalityEntity } from "../../locations/entity/municipality.entity";
 import { MailsService } from "src/subsystems/mails/services/mails.service";
 import { MunicipalityService } from "../../locations/service/municipality.service";
+import { roles } from "../../roles/enum/roles.enum";
 
 @Injectable()
 export class OrderService extends BaseService<OrderEntity> {
@@ -130,6 +131,7 @@ export class OrderService extends BaseService<OrderEntity> {
         );
 
         await this.orderProductRepository.save(orderProducts)
+        await this.mailService.sendOrderConfirmationEmail(order);
 
         return order;
     }
@@ -154,14 +156,15 @@ export class OrderService extends BaseService<OrderEntity> {
     async processOrders(orderid: string): Promise<OrderEntity> {
         // Verificar si la Orden existe
         const order: OrderEntity = await this.orderRepository.findOne({
-            where: { id: orderid }, relations: {
+            where: { id: orderid },
+            relations: {
                 municipality: {
-                    province: {}
+                    province: true
                 },
                 orderItems: {
-                    product: {}
+                    product: true
                 },
-                user: {}
+                user: true
             }
         });
 
@@ -195,8 +198,8 @@ export class OrderService extends BaseService<OrderEntity> {
         // Change order status upon completion
         order.status = OrderStatus.Paid;
         //JAVIERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR AQUI ES LO DE EL MAILLLLLLLLLLLLLLLLLLLLLL
-        //await this.mailService.sendOrderConfirmationEmail(order)
-
+        const response = await this.mailService.sendOrderConfirmationEmail(order)
+        console.log(response);
         return await this.orderRepository.save(order);
     }
 
@@ -228,23 +231,44 @@ export class OrderService extends BaseService<OrderEntity> {
         return true;
     }
 
-    public async completeOrder(orderId: string) {
-        const order: OrderEntity = await this.orderRepository.findOne({
-            where: { id: orderId }
+    public async findOrdersByCi(ci: string) {
+        return await this.orderRepository.find({
+            // TODO ADD SELECT OPTIONS!
+            where: {
+                CI: ci,
+            }
         });
+    }
 
-        captureNotFoundException(order, "Order");
+    public async completeOrder(orderId: string, deliveringId: string) {
+        const [order, delivering] = await Promise.all([
+            this.orderRepository.findOne({
+                relations: {
+                    user: true,
+                    orderItems: true,
+                },
+                where: { id: orderId }
+            }),
+            this.userService.findOneById(deliveringId),
+        ]);
+
+        captureNotFoundException([order, delivering], ["Order", "Delivering"]);
+
+        if (delivering.rol === roles.User) {
+            throw new BadRequestException('You are not administrator or delivery to do this')
+        }
 
         if (order.status !== OrderStatus.Paid) {
             throw new BadRequestException("The order has not yet been paid");
         }
 
         order.status = OrderStatus.Completed;
+        order.delivering = delivering;
+        order.updated_at = new Date();
 
-        await Promise.all([
-            this.orderRepository.save(order),
-            this.mailService.sendOrderConfirmationEmail(order)
-        ]);
+        await this.orderRepository.save(order);
+        await this.mailService.sendOrderCompletedEmail(order);
+        // TODO Cambiar funcion await this.mailService.sendOrderConfirmationEmail(order);
 
         return { message: "La orden ha sido completada satisfactoriamente." };
     }
