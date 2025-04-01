@@ -3,11 +3,12 @@ import { StripeService } from "./stripe.service";
 import { PaypalService } from "./paypal.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { OrderEntity } from "../../orders/entities/order.entity";
-import { Repository } from "typeorm";
+import { IsNull, Not, Repository } from "typeorm";
 import { captureBadRequestException, captureNotFoundException } from "../../../common/exceptions/modular.exception";
 import { validateAndQuitPrefix } from "../utils/prefixs.utils";
 import { PAYMENT_TYPE } from "../enums/prefix.constants";
 import { OrderStatus } from "../../orders/enums/orderStatus.enum";
+import { ValidatePrefix } from "../types/validatePrefix.type";
 
 @Injectable()
 export class PaymentsService {
@@ -23,17 +24,40 @@ export class PaymentsService {
 
     }
 
-    public async confirmPayment(orderId: string) {
-        const order = await this.orderRepository.findOne({ where: {id: orderId}});
+    public async confirmAllPayments(): Promise<void> {
+        const pendingOrders: OrderEntity[] = await this.orderRepository.find({
+            where: {
+                status: OrderStatus.Pending,
+                payment_id: Not(IsNull()),
+            }
+        });
 
-        if(order.status === OrderStatus.Paid) {
-            return true;
+        for (const order of pendingOrders) {
+            const validatedPrefix: ValidatePrefix = validateAndQuitPrefix(order.payment_id);
+            let isValid: boolean = false;
+
+            if (validatedPrefix.type === PAYMENT_TYPE.STRIPE) {
+                isValid = await this.stripeService.checkPayment(order.payment_id);
+            }
+
+            if (validatedPrefix.type === PAYMENT_TYPE.PAYPAL) {
+                // TODO Waiting for checkPayment PAYPAL ERNESTO IMPLEMENTA ESTO SIGUENDO LA INTERFACE QUE CREE EN LA CARPETA INTERFACES Implement
+            }
+
+            if (isValid) {
+                order.status = OrderStatus.Pending;
+                await this.orderRepository.save(order);
+            }
         }
+    }
+
+    public async confirmPayment(orderId: string): Promise<boolean> {
+        const order: OrderEntity = await this.orderRepository.findOne({ where: {id: orderId}});
+
+        if(order.status === OrderStatus.Paid) return true;
 
         captureNotFoundException(order, 'Order');
-        console.log(order);
-        const payment_id = validateAndQuitPrefix(order.payment_id);
-        console.log(payment_id);
+        const payment_id: ValidatePrefix = validateAndQuitPrefix(order.payment_id);
 
         captureBadRequestException(payment_id, 'No ha sido pagada!');
 

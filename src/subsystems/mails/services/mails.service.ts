@@ -8,35 +8,27 @@ import { User } from "src/subsystems/user/entities/user.entity";
 export class MailsService {
     constructor(
         public mailservice: MailerService,
-        /*@InjectRepository(OrderEntity)
-        private readonly orderRepository: Repository<OrderEntity>,*/
         @Inject(UserService)
         private readonly userService: UserService,
-    ) {}
-
-    public async sendOrderAcceptedMail(order: OrderEntity, email: string) {
-        await this.mailservice.sendMail({
-            to: email,
-            subject: 'Tu orden ha sido aceptada. GRACIAS POR COMPRAR!',
-            // TODO Investigar y sacar alguna idea para esto.
-        })
-    }
-
-    public async sendOrderMail(order: OrderEntity, email: string) {
-        await this.mailservice.sendMail({
-            to: email,
-        });
-    }
+    ) {}j0
 
     public async sendOrderConfirmationEmail(order: OrderEntity) {
         try {
-            await this.mailservice.sendMail({
+            // Verificar datos críticos antes de enviar
+            if (!order?.user?.email) {
+                console.error('Error: No se puede enviar el correo. Email de usuario no disponible', order);
+                return false;
+            }
+
+            console.log('Intentando enviar email a:', order.user.email);
+            // TODO MANAGE DISCOUNTS!
+            const mailResult = await this.mailservice.sendMail({
                 to: order.user.email,
                 from: '"Esaki-Shop" <developer1575@gmail.com>',
-                subject: `Confirmación de Pedido #${order.id}`,
-                template: 'order', // Nombre del archivo template (debería coincidir con tu HTML)
+                subject: `Confirmación de Pedido`,
+                template: 'order',
                 context: {
-                    nombreCliente: order.user.name, // Ajusta según tu estructura
+                    nombreCliente: order.user.name,
                     numeroPedido: order.id,
                     productos: order.orderItems.map(item => ({
                         nombre: item.product.name,
@@ -44,20 +36,30 @@ export class MailsService {
                         precio: item.product.price,
                         subtotal: (item.product.price * item.quantity)
                     })),
-                    total: order.subtotal,
+                    subtotal: order.subtotal,
+                    shipping: order.shipping_price,
+                    total: Number(order.subtotal) + Number(order.shipping_price),
                     direccionEnvio: order.address,
-                    metodoPago: order.address
                 }
             });
-            console.log(`Order confirmation sent to ${ order.user.email}`);
+
+            console.log('Correo enviado con éxito:', mailResult);
             return true;
         } catch (error) {
-            console.error('Error sending order confirmation:', error);
+            console.error('Error al enviar confirmación de pedido:', error);
+            // Información más detallada del error
+            if (error.code) console.error(`Código de error: ${error.code}`);
+            if (error.response) console.error(`Respuesta: ${JSON.stringify(error.response)}`);
             return false;
         }
     }
 
+    public async sendOrderCompletedEmail(order: OrderEntity) {
+
+    }
+
     public async sendVerificationEmail(to: string, verificationCode: string) {
+        console.log('Verification code: ' + verificationCode);
         try {
             console.log(verificationCode);
             await this.mailservice.sendMail({
@@ -68,13 +70,13 @@ export class MailsService {
                 template: 'code',
                 context: { verificationCode: verificationCode },
             });
-            console.log('Verification email sent successfully');
             return true;
         } catch (error) {
             console.error('Error sending verification email:', error);
             return false;
         }
     }
+
     public async sendChangePAssMail(to: string, linkid: string) {
         try {
             await this.mailservice.sendMail({
@@ -83,7 +85,6 @@ export class MailsService {
                 subject: 'Change yout pass here ', // Asunto del correo
                 text: `Your link to change pass is : ${linkid}`, 
             });
-            console.log('link email sent successfully');
             return true;
         } catch (error) {
             console.error('Error sending verification email:', error);
@@ -105,7 +106,7 @@ export class MailsService {
         const subject = `Notificación: ${orderCounts} órdenes pendientes de atención`;
         const template = `
             <h2>Notificación automática del sistema</h2>
-            <p>Hay <strong>${orderCounts}</strong> órdenes con estado PAGADO pendientes de atender.</p>
+            <p>Hay <strong>${orderCounts}</strong> órdenes con estado <b>PAGADO</b> pendientes de atender.</p>
             <p>Por favor, procese estas órdenes lo antes posible.</p>
         `;
 
@@ -127,7 +128,7 @@ export class MailsService {
         }
     }
 
-    private async retryFailedEmails(failedEmails, subject: string, template: string): Promise<void> {
+    private async retryFailedEmails(failedEmails: any[], subject: string, template: string): Promise<void> {
         for (const item of failedEmails) {
             try {
                 await this.mailservice.sendMail({

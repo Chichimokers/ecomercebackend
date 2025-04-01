@@ -25,6 +25,8 @@ export class OrderAdminSchedule {
     }
 
     private async schedule(): Promise<void> {
+        // TODO Payments Service!
+
         const counter: number = await this.orderRepository.count({ where: { status: OrderStatus.Paid } });
 
         if(counter > 0) {
