@@ -267,8 +267,7 @@ export class OrderService extends BaseService<OrderEntity> {
         order.updated_at = new Date();
 
         await this.orderRepository.save(order);
-        await this.mailService.sendOrderCompletedEmail(order);
-        // TODO Cambiar funcion await this.mailService.sendOrderConfirmationEmail(order);
+        //await this.mailService.sendOrderCompletedEmail(order);
 
         return { message: "La orden ha sido completada satisfactoriamente." };
     }
