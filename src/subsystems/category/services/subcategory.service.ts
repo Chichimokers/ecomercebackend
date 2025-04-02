@@ -34,7 +34,9 @@ export class SubCategoryService
             skip: skip,
             take: take,
             relations:{
-                category:true
+                category:{
+                    
+                }
             }
             
         });
