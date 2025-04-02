@@ -33,11 +33,8 @@ export class SubCategoryService
         return await this.repository.find({
             skip: skip,
             take: take,
-            relations:{
-                category:{
-                    
-                }
-            }
+            
+            relations:["category"]
             
         });
     }
