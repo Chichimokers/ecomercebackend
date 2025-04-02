@@ -59,7 +59,7 @@ export class OrderControllers {
         return this.orderService.softDelete(id);
     }
 
-    @Get(':ci')
+    @Get('ci/:ci')
     @Roles(roles.Admin, roles.Delivering)
     async getOrdersByCi(@Param('ci') ci: string): Promise<OrderEntity[]> {
         return await this.orderService.findOrdersByCi(ci);

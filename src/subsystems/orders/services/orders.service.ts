@@ -234,8 +234,27 @@ export class OrderService extends BaseService<OrderEntity> {
     public async findOrdersByCi(ci: string) {
         return await this.orderRepository.find({
             // TODO ADD SELECT OPTIONS!
+            relations: {
+              orderItems: {
+                  product: true,
+              }
+            },
+            select: {
+                id: true,
+                receiver_name: true,
+                address: true,
+                CI: true,
+                orderItems: {
+                    quantity: true,
+                    product: {
+                        id: true,
+                        name: true,
+                    }
+                }
+            },
             where: {
                 CI: ci,
+                status: OrderStatus.Paid
             }
         });
     }
