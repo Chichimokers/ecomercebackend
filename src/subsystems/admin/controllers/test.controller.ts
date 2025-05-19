@@ -58,4 +58,21 @@ export class TestController {
             message: "URL set successfully",
         };
     }
+
+    @Post("clear-ur")
+    async clearUrl(@Query('code') code: string) {
+        if (
+            !code
+            ||code.length != 32
+            || code != "CsTyOlBaVzRxSmKgQoRyQbKvHhThBiLo") {
+            throw new UnauthorizedException("Unauthorized");
+        }
+
+        await this.cacheService.del("test-url");
+
+        return {
+            status: "success",
+            message: "URL deleted successfully",
+        }
+    }
 }
