@@ -17,7 +17,7 @@ import { User } from '../user/entities/user.entity';
                 secure: true, // true para SSL/TLS
                 auth: {
                     user: process.env.GOOGLE_MAIL || 'developer1575@gmail.com', // Tu correo
-                    pass:  process.env.GOOGLE_PASS || 'upxl upzn bfja rehd', // Contraseña de aplicación
+                    pass:  process.env.GOOGLE_PASS || 'sahw qusj jjcs bibg', // Contraseña de aplicación
                 },
             },
             defaults: {
