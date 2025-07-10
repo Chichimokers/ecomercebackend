@@ -5,6 +5,7 @@ import { CacheController } from "./controllers/admin.controller";
 import { CacheModule } from "@nestjs/cache-manager";
 import { ConfigService } from "./services/config.service";
 import { AdminService } from "./services/admin.service";
+import { TestController } from "./controllers/test.controller";
 
 // Otros imports...
 
@@ -20,6 +21,7 @@ import { AdminService } from "./services/admin.service";
     controllers: [
         // Otros controladores...
         CacheController,
+        TestController,
     ],
     providers: [
         ConfigService,
