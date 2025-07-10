@@ -41,7 +41,6 @@ import { RolesGuard } from './guards/roles.guard';
         JwtStrategy,
         LocalAuthGuard,
         RolesGuard,
-
         CodeService,
     ], // Agregar estrategias aquí
 })

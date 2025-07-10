@@ -11,6 +11,7 @@ import { roles } from '../../roles/enum/roles.enum';
 import { OAuth2Client } from 'google-auth-library';
 import { jwtConstants } from '../constants';
 import { ChangepassVerify } from '../dto/Changepass.DTO';
+import { GOOGLE_ID_OAUTH } from '../google.config';
 
 @Injectable()
 export class AuthService {
@@ -169,6 +170,7 @@ export class AuthService {
                 secret: process.env.JWT_ACCESS_SECRET || jwtConstants.secret ,
                 expiresIn: '60m',
             }),
+            
             this.jwt.signAsync(payload, {
                 secret: process.env.JWT_REFRESH_SECRET|| jwtConstants.refresh ,
                 expiresIn: '7d',
@@ -226,7 +228,8 @@ export class AuthService {
                 
 
                 idToken: token,
-                audience:"387709889089-qrv4bb6ae2r2epf0j84q63u6vr0qc4b5.apps.googleusercontent.com"
+           
+                audience: "387709889089-qrv4bb6ae2r2epf0j84q63u6vr0qc4b5.apps.googleusercontent.com"//Cambio pinguero porque no cogia directo GOOGLE_ID_OAUTH
             });
 
             return ticket.getPayload();
