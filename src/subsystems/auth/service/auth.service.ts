@@ -228,7 +228,6 @@ export class AuthService {
                 
             
                 idToken: token,
-                
                 audience: "387709889089-qrv4bb6ae2r2epf0j84q63u6vr0qc4b5.apps.googleusercontent.com"//Cambio pinguero porque no cogia directo GOOGLE_ID_OAUTH
             });
 
