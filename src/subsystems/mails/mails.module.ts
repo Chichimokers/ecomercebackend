@@ -17,14 +17,14 @@ import { User } from '../user/entities/user.entity';
                 secure: true, // true para SSL/TLS
                 auth: {
                     user: process.env.GOOGLE_MAIL || 'developer1575@gmail.com', // Tu correo
-                    pass:  process.env.GOOGLE_PASS || 'sahw qusj jjcs bibg', // Contraseña de aplicación
+                    pass: process.env.GOOGLE_PASS || 'vkeo ehdy qray qgly', // Contraseña de aplicación
                 },
             },
             defaults: {
                 from: '"Esaki-Shop" <developer1575@gmail.com>', // Remitente por defecto
             },
             template: {
-                dir: join(__dirname , 'templates/mails'),
+                dir: join(__dirname, 'templates/mails'),
                 adapter: new HandlebarsAdapter(),
                 options: {
                     strict: true,
@@ -32,6 +32,6 @@ import { User } from '../user/entities/user.entity';
             },
         }),
     ],
-    providers: [MailsService,UserService],
+    providers: [MailsService, UserService],
 })
-export class MailsModule {}
+export class MailsModule { }

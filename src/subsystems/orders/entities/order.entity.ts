@@ -9,9 +9,9 @@ import { OrderProductEntity } from "./order_products.entity";
 import { OrderStatus } from "../enums/orderStatus.enum";
 import { MunicipalityEntity } from '../../locations/entity/municipality.entity';
 
-@Entity({name:"tb_orders"})
+@Entity({ name: "tb_orders" })
 @Check(`"subtotal" >= 0`)
-export class OrderEntity  extends BaseEntity{
+export class OrderEntity extends BaseEntity {
     @ManyToOne((): typeof User => User, (user: User): string => user.id)
     user: User;
 
@@ -22,16 +22,16 @@ export class OrderEntity  extends BaseEntity{
     receiver_name: string;
 
     @Column({ length: 25, nullable: false })
-    phone :string;
+    phone: string;
 
     @Column({ length: 25, nullable: true })
     aux_phone: string;
 
     @Column({ length: 255 })
-    address :string;
+    address: string;
 
     @Column({ length: 20 })
-    CI :string;
+    CI: string;
 
     @Column({ type: 'numeric', precision: 10, scale: 2 })
     subtotal: number;
@@ -46,9 +46,9 @@ export class OrderEntity  extends BaseEntity{
     })
     status: OrderStatus;
 
-    @Column({length: 512, nullable: true, default: null})
+    @Column({ length: 512, nullable: true, default: null })
     payment_id: string;
-    
+
     @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.order)
     orderItems: OrderProductEntity[];
 
