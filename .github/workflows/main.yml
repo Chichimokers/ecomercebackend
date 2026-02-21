@@ -11,24 +11,12 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v3
         
-      - name: Limpiar imágenes huérfanas (opcional)
+     
+      - name: Stop and remove all containers
         run: |
-          docker system prune -a --volumes --force  # Elimina imágenes sin uso para ahorrar espacio
-
-      - name: Construir imagen con etiqueta latest
-        run: |
-          docker build -f DockerFile.vps -t esakiback:latest .
-
-      - name: Eliminar contenedor antiguo
-        run: |
-          docker rm -f esakiback || true  # Fuerza eliminación si existe
-
-
-
+              docker-compose down --remove-orphans 
+        
+    
       - name: Ejecutar nuevo contenedor
         run: |
-          docker run -d \
-            --name esakiback \
-            -p 3100:3100 \
-            --restart unless-stopped \
-            esakiback:latest
+          docker-compose up -d
