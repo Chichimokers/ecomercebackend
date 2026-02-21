@@ -1,16 +1,13 @@
-#FROM node:20.14.0-bullseye
-FROM esaki-base:1.0.0
+FROM node:22.2.0-alpine
 
-ENV APP_PORT 5000
-ENV NODE_ENV dev
-ENV WORKDIR_APP /app
+WORKDIR /usr/src/app
 
-WORKDIR ${WORKDIR_APP}
+COPY package*.json ./
+RUN npm install --force
 
 COPY . .
+RUN npm run build
 
+EXPOSE 3100
 
-EXPOSE ${APP_PORT}
-
-VOLUME [${WORKDIR_APP}]
-
+CMD ["npm", "run", "start"]

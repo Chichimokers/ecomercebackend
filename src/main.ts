@@ -28,7 +28,7 @@ bootstrap().then(() =>
 
 function getOrigins() {
     if(process.env.DEBUG === 'true') {
-        return ['http://localhost:3000', 'https://esaki-jrr.com']
+        return ['http://localhost:3100', 'https://esaki-jrr.com']
     }
 
     return ['https://esaki-jrr.com']

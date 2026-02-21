@@ -1,14 +1,57 @@
 version: '3.8'
 
 services:
-  nest-app:
+  postgres:
+    image: postgres:16-alpine
+    container_name: esaki-postgres
+    environment:
+      POSTGRES_USER: basededato1
+      POSTGRES_PASSWORD: basededato2
+      POSTGRES_DATABASE: esaquishop
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U basededato1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: esaki-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: esaki-backend
     ports:
-      - "3000:3000"
+      - "3100:3100"
+    env_file:
+      - ./environments/development.env
     environment:
-      NODE_ENV: production
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: basededato1
+      POSTGRES_PASSWORD: basededato2
+      POSTGRES_DATABASE: esaquishop
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
-      - .:/usr/src/app
-    command: npm run start:dev
+      - ./src:/usr/src/app/src
+      - ./public:/usr/src/app/public
+
+volumes:
+  postgres_data:
+  redis_data:

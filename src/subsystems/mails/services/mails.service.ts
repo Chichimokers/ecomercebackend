@@ -10,7 +10,7 @@ export class MailsService {
         public mailservice: MailerService,
         @Inject(UserService)
         private readonly userService: UserService,
-    ) {}j0
+    ) { } j0
 
     public async sendOrderConfirmationEmail(order: OrderEntity) {
         try {
@@ -45,7 +45,7 @@ export class MailsService {
 
             console.log('Correo enviado con éxito:', mailResult);
             return true;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error al enviar confirmación de pedido:', error);
             // Información más detallada del error
             if (error.code) console.error(`Código de error: ${error.code}`);
@@ -59,6 +59,7 @@ export class MailsService {
     }
 
     public async sendVerificationEmail(to: string, verificationCode: string) {
+
         console.log('Verification code: ' + verificationCode);
         try {
             console.log(verificationCode);
@@ -72,6 +73,7 @@ export class MailsService {
             });
             return true;
         } catch (error) {
+
             console.error('Error sending verification email:', error);
             return false;
         }
@@ -83,7 +85,7 @@ export class MailsService {
                 to: to, // Dirección de correo del destinatario
                 from: '"Esaki-Shop" <developer1575@gmail.com>', // Remitente
                 subject: 'Change yout pass here ', // Asunto del correo
-                text: `Your link to change pass is : ${linkid}`, 
+                text: `Your link to change pass is : ${linkid}`,
             });
             return true;
         } catch (error) {
@@ -101,7 +103,7 @@ export class MailsService {
             return;
         }
 
-        const failedEmails = [];
+        const failedEmails: any = [];
 
         const subject = `Notificación: ${orderCounts} órdenes pendientes de atención`;
         const template = `
@@ -117,7 +119,7 @@ export class MailsService {
                     subject: subject,
                     html: template,
                 });
-            } catch (error) {
+            } catch (error: any) {
                 failedEmails.push({ email: admin.email, error: error.message });
             }
         }
