@@ -27,9 +27,9 @@ bootstrap().then(() =>
 );
 
 function getOrigins() {
-    if(process.env.DEBUG === 'true') {
-        return ['http://localhost:3100', 'https://esaki-jrr.com']
+    if (process.env.DEBUG === 'true') {
+        return ['http://localhost:3100', 'https://inventory.cloudns.be']
     }
 
-    return ['https://esaki-jrr.com']
+    return ['https://inventory.cloudns.be']
 }
