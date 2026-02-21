@@ -19,4 +19,4 @@ jobs:
     
       - name: Ejecutar nuevo contenedor
         run: |
-          docker-compose up -d
+          docker-compose up --build -d

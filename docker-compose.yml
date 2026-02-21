@@ -4,6 +4,8 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: esaki-postgres
+    networks:
+      - esaki-network
     environment:
       POSTGRES_USER: basededato1
       POSTGRES_PASSWORD: basededato2
@@ -22,6 +24,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: esaki-redis
+    networks:
+      - esaki-network
     ports:
       - "6379:6379"
     volumes:
@@ -32,6 +36,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: esaki-backend
+    networks:
+      - esaki-network
     ports:
       - "3100:3100"
     env_file:
@@ -56,3 +62,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  esaki-network:
+    driver: bridge
