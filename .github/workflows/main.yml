@@ -14,7 +14,7 @@ jobs:
      
       - name: Stop and remove all containers
         run: |
-              docker-compose down --remove-orphans 
+              docker-compose down 
         
     
       - name: Ejecutar nuevo contenedor
